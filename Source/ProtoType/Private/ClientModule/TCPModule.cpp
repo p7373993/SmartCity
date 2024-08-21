@@ -1,4 +1,4 @@
-#include "ProtoType/ClientModule/TCPModule.h"
+#include "ProtoType/private/ClientModule/TCPModule.h"
 
 #pragma warning(disable:4996)
 
