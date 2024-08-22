@@ -42,7 +42,6 @@ private:
 
     void HandleError(const char* cause);
 
-    std::vector<APData> SAPData;
     SOCKET Server;
     WSADATA wsaData;
     SOCKADDR_IN addr;

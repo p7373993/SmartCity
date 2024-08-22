@@ -22,7 +22,7 @@ struct APData
 
 struct SaleData
 {
-    int articleNo;
+    UINT articleNo;
     int dealOrWarrantPrc;
     char tradeTypeName[200];
     char realtorName[200];
