@@ -10,10 +10,9 @@
 #include <thread>
 #include <chrono>
 
-#pragma comment(lib, "ws2_32.lib")
+#include "ProtoType/Global/Properties.h"
 
-#define PORT	4960
-#define IP		"203.249.91.175"
+#pragma comment(lib, "ws2_32.lib")
 
 DEFINE_LOG_CATEGORY_STATIC(MyLogCategory, Warning, All);
 
@@ -45,8 +44,6 @@ std::vector<APData> TCPModule::GetAPData(std::vector<float> Elemental)
 	send(s, (char*)&Selector.Type, sizeof(Selector.Type), 0);
 	send(s, (char*)&Selector.MaxElIndex, sizeof(Selector.MaxElIndex), 0);
 	send(s, (char*)&Selector.Elemental, sizeof(Selector.Elemental), 0);
-	
-
 
 	recv(s, (char*)&APSize, sizeof(APSize), 0);
 	UE_LOG(LogTemp, Warning, TEXT("%d"), APSize);
@@ -59,6 +56,11 @@ std::vector<APData> TCPModule::GetAPData(std::vector<float> Elemental)
 	return VAP;
 }
 
+std::vector<SaleData> TCPModule::GetSaleData(std::vector<int> Elemental)
+{
+	return std::vector<SaleData>();
+}
+
 
 
 void TCPModule::TCPCunnect()
@@ -69,7 +71,7 @@ void TCPModule::TCPCunnect()
 	if (s == INVALID_SOCKET)
 		HandleError("socket");
 	addr.sin_family = AF_INET;
-	addr.sin_addr.S_un.S_addr = inet_addr(IP);
+	addr.sin_addr.S_un.S_addr = inet_addr(ServerIP);
 	addr.sin_port = ::htons(PORT);
 
 	if (::connect(s, (const sockaddr*)&addr, sizeof(addr)) == INVALID_SOCKET)
