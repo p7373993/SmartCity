@@ -25,11 +25,11 @@ public:
 
 //Input::Vertex of cube EX:) Elem[0]=(0,0); Elem[1]=(0,1); Elem[2]=(1,1); Elem[3]=(1,0); 
 //Output::Vector APData
-    std::vector<APData> GetAPData(std::vector<float> Elemental);
+    std::vector<APData> GetAPData(float Elemental[20]);
 
-//Input::Vector APIndex Ex:) {0,1,2,3,4,5......99}
+    //Input::Vertex of cube EX:) Elem[0]=(0,0); Elem[1]=(0,1); Elem[2]=(1,1); Elem[3]=(1,0);
 //Output::Vector SaleData
-    std::vector<SaleData> GetSaleData(std::vector<int> Elemental);
+    std::vector<SaleData> GetSaleData(float Elemental[20]);
 
     TCPModule(const TCPModule&) = delete;
     TCPModule& operator=(const TCPModule&) = delete;
@@ -38,10 +38,12 @@ public:
 private:
     TCPModule() {};
 
+    void SendingSelector(int Type, int MaxElIndex, float Elemental[20]);
+
     void HandleError(const char* cause);
-    
+
     std::vector<APData> SAPData;
-    SOCKET s;
+    SOCKET Server;
     WSADATA wsaData;
     SOCKADDR_IN addr;
     char buffer[1024];

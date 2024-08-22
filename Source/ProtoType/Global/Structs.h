@@ -7,13 +7,13 @@ struct SSelectorType
 {
     int Type = 0;
     int MaxElIndex = 0;
-    float Elemental[8];
+    float Elemental[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     int error = 0;
 };
 
 struct APData
 {
-    //std::vector<int> buildingName;
+    char buildingName[200];
     float latitude;
     float longitude;
     int floorInfo;
@@ -24,8 +24,8 @@ struct SaleData
 {
     int articleNo;
     int dealOrWarrantPrc;
-    //std::vector<int> tradeTypeName;
-    //std::vector<int> realtorName;
+    char tradeTypeName[200];
+    char realtorName[200];
     int floorInfo;
     int ApartIndex;
 };

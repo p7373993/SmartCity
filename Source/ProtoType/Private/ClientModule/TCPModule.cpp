@@ -17,64 +17,52 @@
 DEFINE_LOG_CATEGORY_STATIC(MyLogCategory, Warning, All);
 
 
-std::vector<APData> TCPModule::GetAPData(std::vector<float> Elemental)
+std::vector<APData> TCPModule::GetAPData(float Elemental[20])
 {
-	SSelectorType Selector;
-	Selector.Type = 1;
-
-	Selector.Elemental[0] = Elemental[0];
-	Selector.Elemental[1] = Elemental[1];
-
-	Selector.Elemental[2] = Elemental[2];
-	Selector.Elemental[3] = Elemental[3];
-
-	Selector.Elemental[4] = Elemental[4];
-	Selector.Elemental[5] = Elemental[5];
-
-	Selector.Elemental[6] = Elemental[6];
-	Selector.Elemental[7] = Elemental[7];
-
-	Selector.MaxElIndex = 8;
-
+	SendingSelector(1, 8, Elemental);
 	std::vector<APData> VAP;
 
 	APData AP;
 	int APSize;
 	//--Recive001--Complite
-	send(s, (char*)&Selector.Type, sizeof(Selector.Type), 0);
-	send(s, (char*)&Selector.MaxElIndex, sizeof(Selector.MaxElIndex), 0);
-	send(s, (char*)&Selector.Elemental, sizeof(Selector.Elemental), 0);
-
-	recv(s, (char*)&APSize, sizeof(APSize), 0);
+	recv(Server, (char*)&APSize, sizeof(APSize), 0);
 	UE_LOG(LogTemp, Warning, TEXT("%d"), APSize);
 	for (int32 i = 0; i < APSize; ++i)
 	{
-		recv(s, (char*)&AP, sizeof(AP), 0);
+		recv(Server, (char*)&AP, sizeof(AP), 0);
 		VAP.push_back(AP);
 	}
 	SAPData = VAP;
 	return VAP;
 }
 
-std::vector<SaleData> TCPModule::GetSaleData(std::vector<int> Elemental)
+std::vector<SaleData> TCPModule::GetSaleData(float Elemental[20])
 {
+	SendingSelector(2, 8, Elemental);
 	return std::vector<SaleData>();
 }
 
-
+void TCPModule::SendingSelector(int Type, int MaxElIndex, float Elemental[20])
+{
+	SSelectorType Selector;
+	Selector.Type = Type;
+	Selector.MaxElIndex = MaxElIndex;
+	std::copy(Elemental, Elemental + 20, Selector.Elemental);
+	send(Server, (char*)&Selector, sizeof(Selector), 0);
+}
 
 void TCPModule::TCPCunnect()
 {
 	if (::WSAStartup(MAKEWORD(2, 0), &wsaData) != 0)
 		HandleError("WSAStartup");
-	s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (s == INVALID_SOCKET)
+	Server = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (Server == INVALID_SOCKET)
 		HandleError("socket");
 	addr.sin_family = AF_INET;
 	addr.sin_addr.S_un.S_addr = inet_addr(ServerIP);
 	addr.sin_port = ::htons(PORT);
 
-	if (::connect(s, (const sockaddr*)&addr, sizeof(addr)) == INVALID_SOCKET)
+	if (::connect(Server, (const sockaddr*)&addr, sizeof(addr)) == INVALID_SOCKET)
 		HandleError("connet");
 	return;
 }
