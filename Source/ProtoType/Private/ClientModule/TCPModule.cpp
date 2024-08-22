@@ -20,26 +20,37 @@ DEFINE_LOG_CATEGORY_STATIC(MyLogCategory, Warning, All);
 std::vector<APData> TCPModule::GetAPData(float Elemental[20])
 {
 	SendingSelector(1, 8, Elemental);
-	std::vector<APData> VAP;
+	std::vector<APData> VAPDatas;
 
-	APData AP;
 	int APSize;
 	//--Recive001--Complite
 	recv(Server, (char*)&APSize, sizeof(APSize), 0);
 	UE_LOG(LogTemp, Warning, TEXT("%d"), APSize);
 	for (int32 i = 0; i < APSize; ++i)
 	{
-		recv(Server, (char*)&AP, sizeof(AP), 0);
-		VAP.push_back(AP);
+		APData TempAP;
+		recv(Server, (char*)&TempAP, sizeof(TempAP), 0);
+		VAPDatas.push_back(TempAP);
 	}
-	SAPData = VAP;
-	return VAP;
+	return VAPDatas;
 }
 
 std::vector<SaleData> TCPModule::GetSaleData(float Elemental[20])
 {
 	SendingSelector(2, 8, Elemental);
-	return std::vector<SaleData>();
+	std::vector<SaleData> VSaleDatas;
+
+	int SaleSize;
+	//--Recive001--Complite
+	recv(Server, (char*)&SaleSize, sizeof(SaleSize), 0);
+	UE_LOG(LogTemp, Warning, TEXT("%d"), SaleSize);
+	for (int32 i = 0; i < SaleSize; ++i)
+	{
+		SaleData TempSaleData;
+		recv(Server, (char*)&TempSaleData, sizeof(TempSaleData), 0);
+		VSaleDatas.push_back(TempSaleData);
+	}
+	return VSaleDatas;
 }
 
 void TCPModule::SendingSelector(int Type, int MaxElIndex, float Elemental[20])

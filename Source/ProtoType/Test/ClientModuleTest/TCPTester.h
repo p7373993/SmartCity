@@ -20,9 +20,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void GetAPDataLOG();
+
+	UFUNCTION(BlueprintCallable)
+	void GetSaleDataLOG();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	std::vector<APData> TempAPData;
 	TCPModule& TCPServer = TCPModule::GetInstance();
 };
