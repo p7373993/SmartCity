@@ -2,7 +2,7 @@
 
 
 #include "Character/SMCharacterMoveComponent.h"
-#include "GameFramework/Character.h"
+#include "Character/SMCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
@@ -13,8 +13,6 @@
 // Sets default values for this component's properties
 USMCharacterMoveComponent::USMCharacterMoveComponent()
 {
-	OwningActor = Cast<ACharacter>(GetOwner());
-
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> MappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Sungwoo/Input/IMC_Default.IMC_Default'"));
 	if (MappingContextRef.Object)
 	{
@@ -57,8 +55,9 @@ USMCharacterMoveComponent::USMCharacterMoveComponent()
 void USMCharacterMoveComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	OwningActor = Cast<ASMCharacter>(GetOwner());
 
-	APlayerController* PlayerController = Cast<APlayerController>(OwningActor->GetInstigatorController());
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController)
 	{
 		// Enhanced Input Subsystem을 가져옴
@@ -122,7 +121,7 @@ void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 	if (bIsRightClicking)
 	{
 		// 우클릭 상태에서의 화면 회전 처리
-		APlayerController* PlayerController = Cast<APlayerController>(OwningActor->Controller);
+		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 		if (PlayerController)
 		{
 			FRotator NewRotation = PlayerController->GetControlRotation();

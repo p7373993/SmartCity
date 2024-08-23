@@ -4,7 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "ClientModule/TCPModule.h"
+#include "ProtoType/Global/Structs.h"
 #include "SMPointComponent.generated.h"
+
+UENUM(BlueprintType)
+enum class EVisibleType : uint8
+{
+	None = 0,
+	Price,
+	Floor
+};
 
 USTRUCT(BlueprintType)
 struct FViewLocation
@@ -59,13 +69,35 @@ public:
 	TObjectPtr<ACharacter> OwningActor;
 
 	//코너 구하기
-	UFUNCTION(BlueprintCallable, Category = "View")
+	UFUNCTION(BlueprintCallable, Category = "View")//시작 함수
 	FViewLocation GetCornerPoints();
 	
 	//좌표값 통신
 	void GetPoint(FViewLocation& InLocation);
+	void RayCast(const FVector& StartLocation, const FVector& EndLocation, const APData& Data);
 
 	void latLongToXY(double latitude, double longitude, double& x, double& y);
 	void XYTolatLong(double x, double y, double& latitude, double& longitude);
 
+	//통신 모듈
+	TCPModule& MyTCPModule = TCPModule::GetInstance();
+
+	//머트리얼 교체 관련
+protected:
+	UPROPERTY(EditAnywhere, Category = Material, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UMaterialInterface> InstMaterial;
+
+	void ChangeBuildingMaterial(FHitResult& HitResult, FLinearColor InNewColor);
+	FLinearColor GetSpectrumColor(float Value);
+//현재 타입정보
+protected:
+	UPROPERTY(EditAnywhere, Category = TypeControl, Meta = (AllowPrivateAccess = "true"))
+	TMap<EVisibleType, class USMVisibleData*> TypeControlManager;
+
+	EVisibleType CurrentType;
+
+	void SetCurrentType();
+
+	float MaxValue;
+	float MinValue;
 };

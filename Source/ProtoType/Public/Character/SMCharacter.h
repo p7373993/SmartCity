@@ -35,4 +35,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Move, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USMCharacterMoveComponent> DefaultMove;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Move, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class USMPointComponent> RayCast;
 };

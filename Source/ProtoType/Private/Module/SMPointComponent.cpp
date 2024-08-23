@@ -4,8 +4,12 @@
 #include "Module/SMPointComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Character.h"
+#include "Data/SMVisibleData.h"
+#include "Components/StaticMeshComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Materials/MaterialInterface.h"
 
-
+#include<stdio.h>
 #include <cmath>
 
 const double R = 6371000;
@@ -14,7 +18,32 @@ const double DEG_TO_RAD = PI / 180.0;
 // Sets default values for this component's properties
 USMPointComponent::USMPointComponent()
 {
-	OwningActor = Cast<ACharacter>(GetOwner());
+
+
+	static ConstructorHelpers::FObjectFinder<USMVisibleData> PriceDataRef(TEXT("/Script/ProtoType.SMVisibleData'/Game/Sungwoo/Data/VIsible/DA_Price.DA_Price'"));
+	if(PriceDataRef.Object)
+	{
+		TypeControlManager.Add(EVisibleType::Price, PriceDataRef.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USMVisibleData> FloorDataRef(TEXT("/Script/ProtoType.SMVisibleData'/Game/Sungwoo/Data/VIsible/DA_Floor.DA_Floor'"));
+	if (FloorDataRef.Object)
+	{
+		TypeControlManager.Add(EVisibleType::Floor, FloorDataRef.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> MaterialFinder(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Sungwoo/M_DynamicInst.M_DynamicInst'"));
+
+	if (MaterialFinder.Succeeded())
+	{
+		InstMaterial = MaterialFinder.Object;
+	}
+
+
+
+	//현재 타입
+	CurrentType = EVisibleType::Price;
+	SetCurrentType();
 }
 
 
@@ -24,7 +53,8 @@ void USMPointComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+	OwningActor = Cast<ACharacter>(GetOwner());
+	MyTCPModule.TCPCunnect();
 }
 
 FViewLocation USMPointComponent::GetCornerPoints()
@@ -91,28 +121,110 @@ FViewLocation USMPointComponent::GetCornerPoints()
 			}
 		}
 	}
-
+	GetPoint(ViewLocation);
 	return ViewLocation;
 }
 
 void USMPointComponent::GetPoint(FViewLocation& InLocation)
 {
-	std::vector<float> lA;
+	float lA[20];
 
 	double latitude;
 	double longitude;
-
+	int i = 0;
 	for (const FVector2D& Vec : InLocation.GetArray())
 	{
 		XYTolatLong(Vec.X, Vec.Y, latitude, longitude);
-		lA.push_back(latitude);
-		lA.push_back(longitude);
+		lA[i] = latitude;
+		lA[(++i)] = longitude;
+		i++;
+	}
+
+	for (const auto& item : MyTCPModule.GetAPData(lA)) {
+		UE_LOG(LogTemp, Warning, TEXT("%d"), item.ApartIndex);
+
+
+
+		double Latitude;
+		double Longitude;
+
+		Latitude = item.latitude;
+		Longitude = item.longitude;
+
+		double x;
+		double y;
+		latLongToXY(Latitude, Longitude, x, y);
+		RayCast(FVector(x, y, 10000000000), FVector(x, y, -1000), item);
 	}
 
 
-
-
 }
+
+void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& EndLocation, const APData& Data)
+{
+	float value = 0;
+	switch (CurrentType)
+	{
+	case EVisibleType::None:
+
+		break;
+	case EVisibleType::Price:
+		//value = Data.price;
+		break;
+	case EVisibleType::Floor:
+		value = Data.floorInfo;
+		break;
+	default:
+		break;
+	}
+	FLinearColor NewColor = GetSpectrumColor(value);
+
+	UObject* WorldContextObject = GetWorld();
+	if (!WorldContextObject) return;
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	bool bHit = WorldContextObject->GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, QueryParams);
+	if (bHit)
+	{
+		UPrimitiveComponent* HitComponent = HitResult.GetComponent();
+		AActor* HitActor = HitResult.GetActor();
+
+		if (HitActor)
+		{
+			if (HitComponent->GetCollisionObjectType() == ECC_GameTraceChannel1)//건물 맞을떄
+			{
+				ChangeBuildingMaterial(HitResult, NewColor);
+			}
+			else//바닥맞을떄
+			{
+				float SphereRadius = 2000.0f;
+				FHitResult SphereHitResult;
+				FCollisionQueryParams SphereQueryParams;
+				SphereQueryParams.AddIgnoredActor(OwningActor);
+				bool bResult = GetWorld()->SweepSingleByChannel(
+					SphereHitResult,
+					HitResult.ImpactPoint,
+					HitResult.ImpactPoint + FVector(0, 0, 100.0f),
+					FQuat::Identity,
+					ECollisionChannel::ECC_GameTraceChannel3,
+					FCollisionShape::MakeSphere(SphereRadius),
+					SphereQueryParams
+
+				);
+
+				if (bResult) {
+					HitComponent = SphereHitResult.GetComponent();
+					if (HitComponent->GetCollisionObjectType() == ECC_GameTraceChannel1)
+					{
+						ChangeBuildingMaterial(SphereHitResult, NewColor);
+					}
+
+				}
+			}
+		}
+	}
+}
+
 
 void USMPointComponent::latLongToXY(double latitude, double longitude, double& x, double& y)
 {
@@ -149,6 +261,103 @@ void USMPointComponent::XYTolatLong(double x, double y, double& latitude, double
 	latitude = phi / DEG_TO_RAD;
 	longitude = lambda / DEG_TO_RAD;
 }
+
+void USMPointComponent::ChangeBuildingMaterial(FHitResult& HitResult, FLinearColor InNewColor)
+{
+	UPrimitiveComponent* HitComponent = HitResult.GetComponent();
+	AActor* HitActor = HitResult.GetActor();
+	if (HitActor)
+	{
+		if (HitComponent->GetCollisionObjectType() == ECC_GameTraceChannel1)
+		{
+			UStaticMeshComponent* HitStaticMesh = Cast<UStaticMeshComponent>(HitActor->GetComponentByClass(UStaticMeshComponent::StaticClass()));
+
+			if (HitStaticMesh)
+			{
+
+				if (InstMaterial)
+				{
+					UMaterialInstanceDynamic* DynamicMaterialInstance = UMaterialInstanceDynamic::Create(InstMaterial, this);
+					if (DynamicMaterialInstance)
+					{
+						DynamicMaterialInstance->SetVectorParameterValue(FName("Color"), InNewColor);
+
+						// 스태틱 메쉬 컴포넌트에 머티리얼 적용
+						HitStaticMesh->SetMaterial(0, DynamicMaterialInstance);
+
+					}
+
+				}
+			}
+
+		}
+	}
+}
+
+FLinearColor USMPointComponent::GetSpectrumColor(float Value)
+{
+	float Wavelength = FMath::Lerp(400.0f, 700.0f, (Value - MinValue) / (MaxValue - MinValue));
+
+	float RGB_R = 0.0f;
+	float RGB_G = 0.0f;
+	float RGB_B = 0.0f;
+
+	if (Wavelength >= 400.0f && Wavelength <= 440.0f) {
+		RGB_R = -(Wavelength - 440.0f) / (440.0f - 400.0f);
+		RGB_G = 0.0f;
+		RGB_B = 1.0f;
+	}
+	else if (Wavelength > 440.0f && Wavelength <= 490.0f) {
+		RGB_R = 0.0f;
+		RGB_G = (Wavelength - 440.0f) / (490.0f - 440.0f);
+		RGB_B = 1.0f;
+	}
+	else if (Wavelength > 490.0f && Wavelength <= 510.0f) {
+		RGB_R = 0.0f;
+		RGB_G = 1.0f;
+		RGB_B = -(Wavelength - 510.0f) / (510.0f - 490.0f);
+	}
+	else if (Wavelength > 510.0f && Wavelength <= 580.0f) {
+		RGB_R = (Wavelength - 510.0f) / (580.0f - 510.0f);
+		RGB_G = 1.0f;
+		RGB_B = 0.0f;
+	}
+	else if (Wavelength > 580.0f && Wavelength <= 645.0f) {
+		RGB_R = 1.0f;
+		RGB_G = -(Wavelength - 645.0f) / (645.0f - 580.0f);
+		RGB_B = 0.0f;
+	}
+	else if (Wavelength > 645.0f && Wavelength <= 700.0f) {
+		RGB_R = 1.0f;
+		RGB_G = 0.0f;
+		RGB_B = 0.0f;
+	}
+
+	// Apply intensity factor
+	float Intensity = 1.0f;
+	if (Wavelength > 700.0f || Wavelength < 400.0f) {
+		Intensity = 0.0f;
+	}
+	else if (Wavelength > 645.0f) {
+		Intensity = 0.3f + 0.7f * (700.0f - Wavelength) / (700.0f - 645.0f);
+	}
+	else if (Wavelength < 420.0f) {
+		Intensity = 0.3f + 0.7f * (Wavelength - 400.0f) / (420.0f - 400.0f);
+	}
+
+	return FLinearColor(RGB_R * Intensity, RGB_G * Intensity, RGB_B * Intensity);
+}
+
+void USMPointComponent::SetCurrentType()
+{
+	CurrentType = EVisibleType::Floor;
+
+	MaxValue = TypeControlManager[CurrentType]->MaxValue;
+	MinValue = TypeControlManager[CurrentType]->MinValue;
+
+}
+
+
 
 
 

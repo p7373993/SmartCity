@@ -4,6 +4,7 @@
 #include "Character/SMCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Character/SMCharacterMoveComponent.h"
+#include "Module/SMPointComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -24,7 +25,7 @@ ASMCharacter::ASMCharacter()
 	}
 
 	DefaultMove = CreateDefaultSubobject<USMCharacterMoveComponent>(TEXT("DefaultMove"));//마우스 움직임 모듈화
-
+	RayCast = CreateDefaultSubobject<USMPointComponent>(TEXT("RayCast"));//마우스 움직임 모듈화
 }
 
 // Called when the game starts or when spawned
