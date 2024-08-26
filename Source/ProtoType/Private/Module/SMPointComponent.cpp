@@ -367,13 +367,18 @@ FLinearColor USMPointComponent::GetSpectrumColor(float Value)
 	return FLinearColor(RGB_R * Intensity, RGB_G * Intensity, RGB_B * Intensity);
 }
 
-void USMPointComponent::SetCurrentType()
+void USMPointComponent::SetCurrentTypeData()
 {
-	CurrentType = EVisibleType::Floor;
+
 
 	MaxValue = TypeControlManager[CurrentType]->MaxValue;
 	MinValue = TypeControlManager[CurrentType]->MinValue;
 
+}
+
+void USMPointComponent::TempChangeType(EVisibleType NewType)
+{
+	CurrentType = NewType;
 }
 
 
