@@ -394,7 +394,7 @@ void USMPointComponent::TempChangeType(EVisibleType NewType)
 
 void USMPointComponent::OnLevelLoaded(ULevel* InLevel, UWorld* InWorld)
 {
-
+	UE_LOG(LogTemp, Display, TEXT("asdasd"));
 }
 
 
