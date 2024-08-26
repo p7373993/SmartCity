@@ -101,7 +101,7 @@ void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 		if (Camera)
 		{
 
-			float Height = FMath::Clamp(OwningActor->GetActorLocation().Z * 0.005, 0, 500);
+			float Height = FMath::Clamp(OwningActor->GetActorLocation().Z * 0.005, 0, 2000);
 
 			FVector CameraForward = Camera->GetForwardVector();
 			FVector CameraRight = Camera->GetRightVector();
@@ -147,7 +147,7 @@ void USMCharacterMoveComponent::OnRightClick(const FInputActionValue& Value)
 //휠로 위아래
 void USMCharacterMoveComponent::UpDown(const FInputActionValue& Value)
 {
-	float Height = FMath::Clamp(OwningActor->GetActorLocation().Z * 0.1, 0, 1000);
+	float Height = FMath::Clamp(OwningActor->GetActorLocation().Z * 0.5, 0, 10000);
 	float Power = Value.Get<float>();
 	FVector CurrentLocation = OwningActor->GetActorLocation();
 	FVector NewLocation = CurrentLocation + FVector(0.0f, 0.0f, Power * Height); // 이동 속도를 조정합니다.
