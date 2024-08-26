@@ -218,8 +218,27 @@ void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& End
 					{
 						ChangeBuildingMaterial(SphereHitResult, NewColor);
 					}
+#if ENABLE_DRAW_DEBUG//디버그 모드에서만 디버그 캡슐 그리도록
+					FVector TraceVec = FVector(0, 0, 100.f);
+					FVector Center = HitResult.ImpactPoint + TraceVec * 0.5f;
+					float HalfHeight = 50.f;
+					FColor DrawColor = (HitComponent->GetCollisionObjectType() == ECC_GameTraceChannel1) ? FColor::Green : FColor::Red;
+					float DebugLifeTime = 50.0f;
+
+					DrawDebugCapsule(GetWorld(),
+						Center,
+						HalfHeight,
+						SphereRadius,//radius
+						FQuat::Identity,
+						DrawColor,
+						false,
+						DebugLifeTime
+					);
+
+#endif // ENABLE_DRAW_DEBUG//디버그 모드에서만 디버그 캡슐 그리도록
 
 				}
+				
 			}
 		}
 	}
