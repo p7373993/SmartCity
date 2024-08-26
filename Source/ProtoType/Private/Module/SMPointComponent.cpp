@@ -8,6 +8,9 @@
 #include "Components/StaticMeshComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/MaterialInterface.h"
+#include "Engine/LevelStreaming.h"
+#include "Engine/World.h"
+
 
 #include<stdio.h>
 #include <cmath>
@@ -42,8 +45,8 @@ USMPointComponent::USMPointComponent()
 
 
 	//현재 타입
-	CurrentType = EVisibleType::Price;
-	SetCurrentType();
+	CurrentType = EVisibleType::Floor;
+	SetCurrentTypeData();
 }
 
 
@@ -55,6 +58,13 @@ void USMPointComponent::BeginPlay()
 	// ...
 	OwningActor = Cast<ACharacter>(GetOwner());
 	MyTCPModule.TCPCunnect();
+
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		// 델리게이트에 바인딩
+		FWorldDelegates::LevelAddedToWorld.AddUObject(this, &USMPointComponent::OnLevelLoaded);
+	}
 }
 
 FViewLocation USMPointComponent::GetCornerPoints()
@@ -379,6 +389,12 @@ void USMPointComponent::SetCurrentTypeData()
 void USMPointComponent::TempChangeType(EVisibleType NewType)
 {
 	CurrentType = NewType;
+	SetCurrentTypeData();
+}
+
+void USMPointComponent::OnLevelLoaded(ULevel* InLevel, UWorld* InWorld)
+{
+
 }
 
 

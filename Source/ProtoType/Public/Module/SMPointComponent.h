@@ -8,6 +8,7 @@
 #include "ProtoType/Global/Structs.h"
 #include "SMPointComponent.generated.h"
 
+
 UENUM(BlueprintType)
 enum class EVisibleType : uint8
 {
@@ -103,6 +104,12 @@ protected:
 
 	float MaxValue;
 	float MinValue;
+
+
+		// 레벨로드 관련함수
+protected:
+	void OnLevelLoaded(ULevel* InLevel, UWorld* InWorld);
+		
 
 
 };
