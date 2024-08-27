@@ -218,11 +218,12 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 
 void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& EndLocation, const APData& Data)
 {
+	bool IsNone = false;
 	float value = 0;
 	switch (CurrentType)
 	{
 	case EVisibleType::None:
-
+		IsNone = true;
 		break;
 	case EVisibleType::Price:
 		//value = Data.price;
@@ -233,7 +234,7 @@ void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& End
 	default:
 		break;
 	}
-	FLinearColor NewColor = GetSpectrumColor(value);
+	FLinearColor NewColor = IsNone ? FLinearColor::White :GetSpectrumColor(value);
 
 	UObject* WorldContextObject = GetWorld();
 	if (!WorldContextObject) return;
@@ -461,6 +462,7 @@ void USMPointComponent::TempChangeType(EVisibleType NewType)
 {
 	CurrentType = NewType;
 	SetCurrentTypeData();
+	LevelPoint();
 }
 
 void USMPointComponent::OnLevelLoaded(ULevel* InLevel, UWorld* InWorld)
@@ -470,10 +472,7 @@ void USMPointComponent::OnLevelLoaded(ULevel* InLevel, UWorld* InWorld)
 
 void USMPointComponent::OnLevelLoadedWithOffset(ULevel* InLeve, UWorld* InWorld, const FVector& Offset, bool Inbool)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 50.f, FColor::Green, FString::Printf(TEXT("Bottom Left: %s"), *Offset.ToString()));
-	}
+
 }
 
 
