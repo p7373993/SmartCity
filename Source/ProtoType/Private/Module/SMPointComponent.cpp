@@ -8,8 +8,11 @@
 #include "Components/StaticMeshComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/MaterialInterface.h"
-#include "Engine/LevelStreaming.h"
 #include "Engine/World.h"
+#include "Engine/Level.h"
+#include "GameFramework/Actor.h"
+#include "Engine/LevelBounds.h"
+#include "TimerManager.h"
 
 
 #include<stdio.h>
@@ -47,6 +50,7 @@ USMPointComponent::USMPointComponent()
 	//현재 타입
 	CurrentType = EVisibleType::Floor;
 	SetCurrentTypeData();
+
 }
 
 
@@ -64,7 +68,12 @@ void USMPointComponent::BeginPlay()
 	{
 		// 델리게이트에 바인딩
 		FWorldDelegates::LevelAddedToWorld.AddUObject(this, &USMPointComponent::OnLevelLoaded);
+
+		FWorldDelegates::PostApplyLevelOffset.AddUObject(this, &USMPointComponent::OnLevelLoadedWithOffset);
+
 	}
+	FTimerHandle UnusedHandle;
+	OwningActor->GetWorldTimerManager().SetTimer(UnusedHandle, this, &USMPointComponent::OnceAfterBeginPlay, 0.5f, false);
 }
 
 FViewLocation USMPointComponent::GetCornerPoints()
@@ -135,15 +144,52 @@ FViewLocation USMPointComponent::GetCornerPoints()
 	return ViewLocation;
 }
 
+void USMPointComponent::LevelPoint()
+{
+	// 레벨 바운드를 찾기 위해 ALevelBounds 액터를 검색
+	ALevelBounds* LevelBoundsActor = nullptr;
+	ULevel* InLevel = GetWorld()->GetCurrentLevel();
+	for (AActor* Actor : InLevel->Actors)
+	{
+		LevelBoundsActor = Cast<ALevelBounds>(Actor);
+		if (LevelBoundsActor)
+		{
+			break;  // ALevelBounds 액터를 찾았으므로 루프 탈출
+		}
+	}
+
+	if (LevelBoundsActor)
+	{
+		// ALevelBounds에서 경계(Bounds) 가져오기
+		FBox LevelBounds = LevelBoundsActor->GetComponentsBoundingBox();
+
+		FVector Min = LevelBounds.Min;
+		FVector Max = LevelBounds.Max;
+
+		FVector2D BottomLeft = FVector2D(Min.X*0.8, Min.Y*0.8);
+		FVector2D BottomRight = FVector2D(Max.X*0.8, Min.Y*0.8);
+		FVector2D TopLeft = FVector2D(Min.X*0.8, Max.Y*0.8);
+		FVector2D TopRight = FVector2D(Max.X*0.8, Max.Y*0.8);
+		FViewLocation Location = FViewLocation(TopLeft, BottomLeft, BottomRight,TopRight);
+
+		GetPoint(Location);
+	}
+
+}
+
 void USMPointComponent::GetPoint(FViewLocation& InLocation)
 {
 	float lA[20];
 
 	double latitude;
 	double longitude;
+
+
 	int i = 0;
+
 	for (const FVector2D& Vec : InLocation.GetArray())
 	{
+
 		XYTolatLong(Vec.X, Vec.Y, latitude, longitude);
 		lA[i] = latitude;
 		lA[(++i)] = longitude;
@@ -168,7 +214,7 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 	}
 
 
-}
+ }
 
 void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& EndLocation, const APData& Data)
 {
@@ -194,6 +240,9 @@ void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& End
 	FHitResult HitResult;
 	FCollisionQueryParams QueryParams;
 	bool bHit = WorldContextObject->GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, QueryParams);
+
+
+
 	if (bHit)
 	{
 		UPrimitiveComponent* HitComponent = HitResult.GetComponent();
@@ -201,6 +250,23 @@ void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& End
 
 		if (HitActor)
 		{
+
+
+//#if ENABLE_DRAW_DEBUG//디버그 모드에서만 디버그 캡슐 그리도록
+//			FColor LineColor = (HitComponent->GetCollisionObjectType() == ECC_GameTraceChannel1) ? FColor::Green : FColor::Red;
+//			// 라인 트레이스 시각화
+//			DrawDebugLine(
+//				WorldContextObject->GetWorld(), // 월드 참조
+//				StartLocation,                  // 시작 위치
+//				EndLocation,                    // 끝 위치
+//				LineColor,                      // 라인의 색상
+//				false,                          // 영구 표시 여부 (false면 일정 시간 동안만 표시됨)
+//				100.0f,                           // 표시 시간 (초)
+//				0,                              // 깊이 우선 순위
+//				100.0f                            // 선의 두께
+//			);
+//#endif // ENABLE_DRAW_DEBUG//디버그 모드에서만 디버그 캡슐 그리도록
+
 			if (HitComponent->GetCollisionObjectType() == ECC_GameTraceChannel1)//건물 맞을떄
 			{
 				ChangeBuildingMaterial(HitResult, NewColor);
@@ -289,6 +355,11 @@ void USMPointComponent::XYTolatLong(double x, double y, double& latitude, double
 
 	latitude = phi / DEG_TO_RAD;
 	longitude = lambda / DEG_TO_RAD;
+}
+
+void USMPointComponent::OnceAfterBeginPlay()
+{
+	LevelPoint();
 }
 
 void USMPointComponent::ChangeBuildingMaterial(FHitResult& HitResult, FLinearColor InNewColor)
@@ -394,7 +465,15 @@ void USMPointComponent::TempChangeType(EVisibleType NewType)
 
 void USMPointComponent::OnLevelLoaded(ULevel* InLevel, UWorld* InWorld)
 {
-	UE_LOG(LogTemp, Display, TEXT("asdasd"));
+
+}
+
+void USMPointComponent::OnLevelLoadedWithOffset(ULevel* InLeve, UWorld* InWorld, const FVector& Offset, bool Inbool)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 50.f, FColor::Green, FString::Printf(TEXT("Bottom Left: %s"), *Offset.ToString()));
+	}
 }
 
 

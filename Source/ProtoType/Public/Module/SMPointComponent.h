@@ -72,6 +72,9 @@ public:
 	//코너 구하기
 	UFUNCTION(BlueprintCallable, Category = "View")//시작 함수
 	FViewLocation GetCornerPoints();
+
+	//레벨 바운드 좌표로 통시
+	void LevelPoint();
 	
 	//좌표값 통신
 	void GetPoint(FViewLocation& InLocation);
@@ -82,6 +85,10 @@ public:
 
 	//통신 모듈
 	TCPModule& MyTCPModule = TCPModule::GetInstance();
+	
+
+	//beginplay이후 실행
+	void OnceAfterBeginPlay();
 
 	//머트리얼 교체 관련
 protected:
@@ -109,6 +116,8 @@ protected:
 		// 레벨로드 관련함수
 protected:
 	void OnLevelLoaded(ULevel* InLevel, UWorld* InWorld);
+
+	void OnLevelLoadedWithOffset(ULevel* InLeve, UWorld* InWorld, const FVector& Offset, bool Inbool);
 		
 
 
