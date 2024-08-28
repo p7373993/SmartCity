@@ -53,6 +53,16 @@ std::vector<SaleData> TCPModule::GetSaleData(float Elemental[20])
 	return VSaleDatas;
 }
 
+std::vector<DisAndPRE> TCPModule::GetPREDecalData(float Elemental[20])
+{
+	return std::vector<DisAndPRE>();
+}
+
+std::vector<SaleData> TCPModule::GetPRESaleData(float Elemental[20])
+{
+	return std::vector<SaleData>();
+}
+
 void TCPModule::SendingSelector(int Type, int MaxElIndex, float Elemental[20])
 {
 	SSelectorType Selector;

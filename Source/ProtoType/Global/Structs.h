@@ -29,3 +29,9 @@ struct SaleData
     int floorInfo;
     int ApartIndex;
 };
+
+struct DisAndPRE
+{
+    float Distance;
+    float PRE;
+};

@@ -23,13 +23,21 @@ public:
 //Run only once in Game But if Run this when the connection is lost//
     void TCPCunnect();
 
-//Input::Vertex of cube EX:) Elem[0]=(0,0); Elem[1]=(0,1); Elem[2]=(1,1); Elem[3]=(1,0); 
+//Input::Vertex of cube EX:) Elem[0]=latitude Elem[1]=longitude Elem[2]=latitude Elem[3]=longitude Elem[4]=latitude Elem[5]=longitude Elem[6]=latitude Elem[7]=longitude
 //Output::Vector APData
     std::vector<APData> GetAPData(float Elemental[20]);
 
-    //Input::Vertex of cube EX:) Elem[0]=(0,0); Elem[1]=(0,1); Elem[2]=(1,1); Elem[3]=(1,0);
+//Input::Vertex of cube EX:) Elem[0]=latitude Elem[1]=longitude Elem[2]=latitude Elem[3]=longitude Elem[4]=latitude Elem[5]=longitude Elem[6]=latitude Elem[7]=longitude
 //Output::Vector SaleData
     std::vector<SaleData> GetSaleData(float Elemental[20]);
+
+//Input::Vertex of cube EX:) Elem[0] InfraBuildingNameType
+//Output::Vector float Distance, float Price Rate of increase
+    std::vector<DisAndPRE> GetPREDecalData(float Elemental[20]);
+
+//Input::Vertex of cube EX:) Elem[0]=latitude Elem[1]=longitude Elem[2]=latitude Elem[3]=longitude Elem[4]=latitude Elem[5]=longitude Elem[6]=latitude Elem[7]=longitude Elem[8]InfraBuildingNameType Elem[9]=latitude Elem[10]=longitude
+//Output::Vector SaleData(PRE)
+    std::vector<SaleData> GetPRESaleData(float Elemental[20]);
 
     TCPModule(const TCPModule&) = delete;
     TCPModule& operator=(const TCPModule&) = delete;
