@@ -300,7 +300,7 @@ void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& End
 					FVector Center = HitResult.ImpactPoint + TraceVec * 0.5f;
 					float HalfHeight = 50.f;
 					FColor DrawColor = (HitComponent->GetCollisionObjectType() == ECC_GameTraceChannel1) ? FColor::Green : FColor::Red;
-					float DebugLifeTime = 5.0f;
+					float DebugLifeTime = 50.0f;
 
 					DrawDebugCapsule(GetWorld(),
 						Center,
