@@ -21,6 +21,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void GetAPDataLOG();
 
+	void ThreadTest();
+
 	UFUNCTION(BlueprintCallable)
 	void GetSaleDataLOG();
 protected:

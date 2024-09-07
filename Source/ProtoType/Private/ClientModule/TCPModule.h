@@ -8,6 +8,31 @@
 #include <Winsock2.h>
 #include <string.h>
 
+//---Use EX:)----
+
+//#include "ProtoType/Test/ClientModuleTest/TCPTester.h"
+//#include "Async/Async.h"
+
+/*
+    if (TCPServer.IsInUse == false)
+    {
+        Async(EAsyncExecution::Thread, [this]() {ThreadTest(); });
+    }
+*/
+
+//GetData Function
+/*void User::GetData()
+{
+    std::vector<APData> Data;
+    float Element[20] = {Elem};
+    Data = TCPServer.GetAPData(Element);
+    Async(EAsyncExecution::TaskGraphMainThread, [Data]() {
+        for (const auto& APDatas : Data )
+        {
+            //Data Post-processing
+        }
+        });
+}*/
 
 class PROTOTYPE_API TCPModule
 {
@@ -42,9 +67,12 @@ public:
     TCPModule(const TCPModule&) = delete;
     TCPModule& operator=(const TCPModule&) = delete;
 
+    bool IsInUse = false;
 
 private:
     TCPModule() {};
+
+    void CheckAndReconnect();
 
     void SendingSelector(int Type, int MaxElIndex, float Elemental[20]);
 

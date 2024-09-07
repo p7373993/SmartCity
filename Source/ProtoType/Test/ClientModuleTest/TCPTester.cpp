@@ -1,4 +1,5 @@
 ﻿#include "ProtoType/Test/ClientModuleTest/TCPTester.h"
+#include "Async/Async.h"
 
 ATCPTester::ATCPTester()
 {
@@ -13,13 +14,23 @@ void ATCPTester::BeginPlay()
 
 void ATCPTester::GetAPDataLOG()
 {
-	std::vector<APData> TempAPData;
-	float TempAllData[20] = {0,0,200,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-	TempAPData = TCPServer.GetAPData(TempAllData);
-	for (const auto APDatas : TempAPData)
+	if (TCPServer.IsInUse == false)
 	{
-		UE_LOG(LogTemp, Display, TEXT("%d : %d : %fl : %fl"), APDatas.ApartIndex, APDatas.floorInfo, APDatas.latitude, APDatas.longitude);
+		Async(EAsyncExecution::Thread, [this]() {ThreadTest(); });
 	}
+}
+
+void ATCPTester::ThreadTest()
+{
+	std::vector<APData> TempAPData;
+	float TempAllData[20] = { 0, 0, 200, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	TempAPData = TCPServer.GetAPData(TempAllData);
+	Async(EAsyncExecution::TaskGraphMainThread, [TempAPData]() {
+		for (const auto& APDatas : TempAPData)
+		{
+			UE_LOG(LogTemp, Display, TEXT("%d : %d : %f : %f"), APDatas.ApartIndex, APDatas.floorInfo, APDatas.latitude, APDatas.longitude);
+		}
+		});
 }
 
 void ATCPTester::GetSaleDataLOG()
@@ -27,8 +38,5 @@ void ATCPTester::GetSaleDataLOG()
 	std::vector<SaleData> TempSaleData;
 	float TempAllData[20] = { 0,0,200,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 	TempSaleData = TCPServer.GetSaleData(TempAllData);
-	for (const auto SaleDatas : TempSaleData)
-	{
-		UE_LOG(LogTemp, Display, TEXT("%d : %u : %d : %d"), SaleDatas.ApartIndex, SaleDatas.articleNo, SaleDatas.floorInfo, SaleDatas.dealOrWarrantPrc);
-	}
+
 }
