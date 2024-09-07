@@ -73,7 +73,10 @@ void USMPointComponent::BeginPlay()
 
 	}
 	FTimerHandle UnusedHandle;
-	OwningActor->GetWorldTimerManager().SetTimer(UnusedHandle, this, &USMPointComponent::OnceAfterBeginPlay, 0.5f, false);
+	OwningActor->GetWorldTimerManager().SetTimer(UnusedHandle, this, &USMPointComponent::LevelPoint, 0.5f, false);
+
+	FTimerHandle RangeChangeHandle;
+	OwningActor->GetWorldTimerManager().SetTimer(RangeChangeHandle, this, &USMPointComponent::RangeChange, 10.f, true);
 }
 
 FViewLocation USMPointComponent::GetCornerPoints()
@@ -146,6 +149,8 @@ FViewLocation USMPointComponent::GetCornerPoints()
 
 void USMPointComponent::LevelPoint()
 {
+
+
 	// 레벨 바운드를 찾기 위해 ALevelBounds 액터를 검색
 	ALevelBounds* LevelBoundsActor = nullptr;
 	ULevel* InLevel = GetWorld()->GetCurrentLevel();
@@ -175,6 +180,25 @@ void USMPointComponent::LevelPoint()
 		GetPoint(Location);
 	}
 
+}
+
+void USMPointComponent::RangeChange()
+{
+
+	if (OwningActor)
+	{
+		FVector CurrentLocation = OwningActor->GetActorLocation();
+
+		float Offset;
+		Offset = FMath::Clamp(CurrentLocation.Z * 20,50000,500000);//높이랑 연동
+		FVector2D BottomLeft = FVector2D(CurrentLocation.X - Offset, CurrentLocation.Y - Offset);
+		FVector2D BottomRight = FVector2D(CurrentLocation.X + Offset, CurrentLocation.Y - Offset);
+		FVector2D TopLeft = FVector2D(CurrentLocation.X - Offset, CurrentLocation.Y + Offset);
+		FVector2D TopRight = FVector2D(CurrentLocation.X + Offset, CurrentLocation.Y + Offset);
+		FViewLocation Location = FViewLocation(TopLeft, BottomLeft, BottomRight, TopRight);
+
+		GetPoint(Location);
+	}
 }
 
 void USMPointComponent::GetPoint(FViewLocation& InLocation)
@@ -358,10 +382,6 @@ void USMPointComponent::XYTolatLong(double x, double y, double& latitude, double
 	longitude = lambda / DEG_TO_RAD;
 }
 
-void USMPointComponent::OnceAfterBeginPlay()
-{
-	LevelPoint();
-}
 
 void USMPointComponent::ChangeBuildingMaterial(FHitResult& HitResult, FLinearColor InNewColor)
 {

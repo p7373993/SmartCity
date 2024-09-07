@@ -126,7 +126,7 @@ void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 		{
 			FRotator NewRotation = PlayerController->GetControlRotation();
 			NewRotation.Yaw += MovementVector.X;
-			NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch + MovementVector.Y, -89.0f, 0.0f);
+			NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch + MovementVector.Y, -89.0f, -50.0f);
 			PlayerController->SetControlRotation(NewRotation);
 
 			FString DebugMessage = FString::Printf(TEXT("Look with Right Click (%f:%f)"), MovementVector.X, MovementVector.Y);
