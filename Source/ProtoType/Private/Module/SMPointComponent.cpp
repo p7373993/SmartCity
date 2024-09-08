@@ -21,11 +21,11 @@
 const double R = 6371000;
 const double DEG_TO_RAD = PI / 180.0;
 
+float lA[20];
+
 // Sets default values for this component's properties
 USMPointComponent::USMPointComponent()
 {
-
-
 	static ConstructorHelpers::FObjectFinder<USMVisibleData> PriceDataRef(TEXT("/Script/ProtoType.SMVisibleData'/Game/Sungwoo/Data/VIsible/DA_Price.DA_Price'"));
 	if(PriceDataRef.Object)
 	{
@@ -179,8 +179,6 @@ void USMPointComponent::LevelPoint()
 
 void USMPointComponent::GetPoint(FViewLocation& InLocation)
 {
-	float lA[20];
-
 	double latitude;
 	double longitude;
 
@@ -196,24 +194,35 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 		i++;
 	}
 
-	for (const auto& item : MyTCPModule.GetAPData(lA)) {
-		UE_LOG(LogTemp, Warning, TEXT("%d"), item.ApartIndex);
-
-
-
-		double Latitude;
-		double Longitude;
-
-		Latitude = item.latitude;
-		Longitude = item.longitude;
-
-		double x;
-		double y;
-		latLongToXY(Latitude, Longitude, x, y);
-		RayCast(FVector(x, y, 10000000000), FVector(x, y, -1000), item);
+	if (MyTCPModule.IsInUse == false)
+	{
+		Async(EAsyncExecution::Thread, [this]() {GetAPDataThread(); });
 	}
+}
+
+ void USMPointComponent::GetAPDataThread()
+ {
+	 float TemplA[20] = { lA[0],lA[1],lA[2],lA[3],lA[4],lA[5],lA[6],lA[7],lA[8],lA[9],lA[10],lA[11],lA[12],lA[13],lA[14],lA[15],lA[16],lA[17],lA[18],lA[19]};
+	 std::vector<APData> TempAPData = MyTCPModule.GetAPData(TemplA);
+	 Async(EAsyncExecution::TaskGraphMainThread, [&, TempAPData]() {
+		 for (const auto& APDatas : TempAPData)
+		 {
+			 UE_LOG(LogTemp, Warning, TEXT("%d"), APDatas.ApartIndex);
 
 
+
+			 double Latitude;
+			 double Longitude;
+
+			 Latitude = APDatas.latitude;
+			 Longitude = APDatas.longitude;
+
+			 double x;
+			 double y;
+			 latLongToXY(Latitude, Longitude, x, y);
+			 RayCast(FVector(x, y, 10000000000), FVector(x, y, -1000), APDatas);
+		 }
+		 });
  }
 
 void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& EndLocation, const APData& Data)
@@ -479,6 +488,7 @@ void USMPointComponent::OnLevelLoadedWithOffset(ULevel* InLeve, UWorld* InWorld,
 {
 
 }
+
 
 
 

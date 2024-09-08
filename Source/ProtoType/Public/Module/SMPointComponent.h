@@ -112,13 +112,11 @@ protected:
 	float MaxValue;
 	float MinValue;
 
-
 		// 레벨로드 관련함수
 protected:
 	void OnLevelLoaded(ULevel* InLevel, UWorld* InWorld);
 
 	void OnLevelLoadedWithOffset(ULevel* InLeve, UWorld* InWorld, const FVector& Offset, bool Inbool);
 		
-
-
+	void GetAPDataThread();
 };

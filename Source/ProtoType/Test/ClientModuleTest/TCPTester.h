@@ -22,7 +22,7 @@ public:
 	void GetAPDataLOG();
 
 	void ThreadTest();
-
+	void Test(APData ad);
 	UFUNCTION(BlueprintCallable)
 	void GetSaleDataLOG();
 protected:

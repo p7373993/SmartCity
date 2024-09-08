@@ -67,7 +67,7 @@ std::vector<SaleData> TCPModule::GetPRESaleData(float Elemental[20])
 
 void TCPModule::CheckAndReconnect()
 {
-	char buffer[1024];
+	buffer[1024];
 	int result = recv(Server, buffer, sizeof(buffer), 0);
 
 	if (result == SOCKET_ERROR) {
