@@ -50,19 +50,19 @@ public:
 
 //Input::Vertex of cube EX:) Elem[0]=latitude Elem[1]=longitude Elem[2]=latitude Elem[3]=longitude Elem[4]=latitude Elem[5]=longitude Elem[6]=latitude Elem[7]=longitude
 //Output::Vector APData
-    std::vector<APData> GetAPData(float Elemental[20]);
+    std::vector<APData> GetAPData(float *Elemental);
 
 //Input::Vertex of cube EX:) Elem[0]=latitude Elem[1]=longitude Elem[2]=latitude Elem[3]=longitude Elem[4]=latitude Elem[5]=longitude Elem[6]=latitude Elem[7]=longitude
 //Output::Vector SaleData
-    std::vector<SaleData> GetSaleData(float Elemental[20]);
+    std::vector<SaleData> GetSaleData(float *Elemental);
 
 //Input::Vertex of cube EX:) Elem[0] InfraBuildingNameType
 //Output::Vector float Distance, float Price Rate of increase
-    std::vector<DisAndPRE> GetPREDecalData(float Elemental[20]);
+    std::vector<DisAndPRE> GetPREDecalData(float *Elemental);
 
 //Input::Vertex of cube EX:) Elem[0]=latitude Elem[1]=longitude Elem[2]=latitude Elem[3]=longitude Elem[4]=latitude Elem[5]=longitude Elem[6]=latitude Elem[7]=longitude Elem[8]InfraBuildingNameType Elem[9]=latitude Elem[10]=longitude
 //Output::Vector SaleData(PRE)
-    std::vector<SaleData> GetPRESaleData(float Elemental[20]);
+    std::vector<SaleData> GetPRESaleData(float *Elemental);
 
     TCPModule(const TCPModule&) = delete;
     TCPModule& operator=(const TCPModule&) = delete;
@@ -74,7 +74,7 @@ private:
 
     void CheckAndReconnect();
 
-    void SendingSelector(int Type, int MaxElIndex, float Elemental[20]);
+    void SendingSelector(int Type, int MaxElIndex, float *Elemental);
 
     void HandleError(const char* cause);
 

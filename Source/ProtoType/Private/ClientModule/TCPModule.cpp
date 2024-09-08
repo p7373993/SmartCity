@@ -17,7 +17,7 @@
 DEFINE_LOG_CATEGORY_STATIC(MyLogCategory, Warning, All);
 
 
-std::vector<APData> TCPModule::GetAPData(float Elemental[20])
+std::vector<APData> TCPModule::GetAPData(float *Elemental)
 {
 	SendingSelector(1, 8, Elemental);
 	std::vector<APData> VAPDatas;
@@ -36,7 +36,7 @@ std::vector<APData> TCPModule::GetAPData(float Elemental[20])
 	return VAPDatas;
 }
 
-std::vector<SaleData> TCPModule::GetSaleData(float Elemental[20])
+std::vector<SaleData> TCPModule::GetSaleData(float *Elemental)
 {
 	SendingSelector(2, 8, Elemental);
 	std::vector<SaleData> VSaleDatas;
@@ -55,12 +55,12 @@ std::vector<SaleData> TCPModule::GetSaleData(float Elemental[20])
 	return VSaleDatas;
 }
 
-std::vector<DisAndPRE> TCPModule::GetPREDecalData(float Elemental[20])
+std::vector<DisAndPRE> TCPModule::GetPREDecalData(float *Elemental)
 {
 	return std::vector<DisAndPRE>();
 }
 
-std::vector<SaleData> TCPModule::GetPRESaleData(float Elemental[20])
+std::vector<SaleData> TCPModule::GetPRESaleData(float *Elemental)
 {
 	return std::vector<SaleData>();
 }
@@ -86,7 +86,7 @@ void TCPModule::CheckAndReconnect()
 	}
 }
 
-void TCPModule::SendingSelector(int Type, int MaxElIndex, float Elemental[20])
+void TCPModule::SendingSelector(int Type, int MaxElIndex, float *Elemental)
 {
 	IsInUse = true;
 	SSelectorType Selector;
