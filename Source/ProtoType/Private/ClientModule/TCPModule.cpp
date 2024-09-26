@@ -55,11 +55,6 @@ std::vector<SaleData> TCPModule::GetSaleData(float *Elemental)
 	return VSaleDatas;
 }
 
-std::vector<DisAndPRE> TCPModule::GetPREDecalData(float *Elemental)
-{
-	return std::vector<DisAndPRE>();
-}
-
 std::vector<SaleData> TCPModule::GetPRESaleData(float *Elemental)
 {
 	return std::vector<SaleData>();

@@ -58,7 +58,11 @@ public:
 
 //Input::Vertex of cube EX:) Elem[0] InfraBuildingNameType
 //Output::Vector float Distance, float Price Rate of increase
-    std::vector<DisAndPRE> GetPREDecalData(float *Elemental);
+//  std::vector<DisAndPRE> GetPREDecalData(float *Elemental);
+
+//Input::Index and Persent EX:) Elem[0] MaxIndex Elem[1~19]=Persent
+//Output::DecalActDistance in nearest order
+    std::vector<float> GetDecalDistance(float* Elemental);
 
 //Input::Vertex of cube EX:) Elem[0]=latitude Elem[1]=longitude Elem[2]=latitude Elem[3]=longitude Elem[4]=latitude Elem[5]=longitude Elem[6]=latitude Elem[7]=longitude Elem[8]InfraBuildingNameType Elem[9]=latitude Elem[10]=longitude
 //Output::Vector SaleData(PRE)
