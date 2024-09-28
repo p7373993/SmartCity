@@ -21,11 +21,11 @@
 const double R = 6371000;
 const double DEG_TO_RAD = PI / 180.0;
 
+float lA[20];
+
 // Sets default values for this component's properties
 USMPointComponent::USMPointComponent()
 {
-
-
 	static ConstructorHelpers::FObjectFinder<USMVisibleData> PriceDataRef(TEXT("/Script/ProtoType.SMVisibleData'/Game/Sungwoo/Data/VIsible/DA_Price.DA_Price'"));
 	if(PriceDataRef.Object)
 	{
@@ -73,7 +73,10 @@ void USMPointComponent::BeginPlay()
 
 	}
 	FTimerHandle UnusedHandle;
-	OwningActor->GetWorldTimerManager().SetTimer(UnusedHandle, this, &USMPointComponent::OnceAfterBeginPlay, 0.5f, false);
+	OwningActor->GetWorldTimerManager().SetTimer(UnusedHandle, this, &USMPointComponent::LevelPoint, 0.5f, false);
+
+	FTimerHandle RangeChangeHandle;
+	OwningActor->GetWorldTimerManager().SetTimer(RangeChangeHandle, this, &USMPointComponent::RangeChange, 10.f, true);
 }
 
 FViewLocation USMPointComponent::GetCornerPoints()
@@ -146,6 +149,8 @@ FViewLocation USMPointComponent::GetCornerPoints()
 
 void USMPointComponent::LevelPoint()
 {
+
+
 	// 레벨 바운드를 찾기 위해 ALevelBounds 액터를 검색
 	ALevelBounds* LevelBoundsActor = nullptr;
 	ULevel* InLevel = GetWorld()->GetCurrentLevel();
@@ -177,10 +182,27 @@ void USMPointComponent::LevelPoint()
 
 }
 
+void USMPointComponent::RangeChange()
+{
+
+	if (OwningActor)
+	{
+		FVector CurrentLocation = OwningActor->GetActorLocation();
+
+		float Offset;
+		Offset = FMath::Clamp(CurrentLocation.Z * 20,50000,500000);//높이랑 연동
+		FVector2D BottomLeft = FVector2D(CurrentLocation.X - Offset, CurrentLocation.Y - Offset);
+		FVector2D BottomRight = FVector2D(CurrentLocation.X + Offset, CurrentLocation.Y - Offset);
+		FVector2D TopLeft = FVector2D(CurrentLocation.X - Offset, CurrentLocation.Y + Offset);
+		FVector2D TopRight = FVector2D(CurrentLocation.X + Offset, CurrentLocation.Y + Offset);
+		FViewLocation Location = FViewLocation(TopLeft, BottomLeft, BottomRight, TopRight);
+
+		GetPoint(Location);
+	}
+}
+
 void USMPointComponent::GetPoint(FViewLocation& InLocation)
 {
-	float lA[20];
-
 	double latitude;
 	double longitude;
 
@@ -196,33 +218,45 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 		i++;
 	}
 
-	for (const auto& item : MyTCPModule.GetAPData(lA)) {
-		UE_LOG(LogTemp, Warning, TEXT("%d"), item.ApartIndex);
-
-
-
-		double Latitude;
-		double Longitude;
-
-		Latitude = item.latitude;
-		Longitude = item.longitude;
-
-		double x;
-		double y;
-		latLongToXY(Latitude, Longitude, x, y);
-		RayCast(FVector(x, y, 10000000000), FVector(x, y, -1000), item);
+	if (MyTCPModule.IsInUse == false)
+	{
+		Async(EAsyncExecution::Thread, [this]() {GetAPDataThread(); });
 	}
+}
+
+ void USMPointComponent::GetAPDataThread()
+ {
+	 float TemplA[20] = { lA[0],lA[1],lA[2],lA[3],lA[4],lA[5],lA[6],lA[7],lA[8],lA[9],lA[10],lA[11],lA[12],lA[13],lA[14],lA[15],lA[16],lA[17],lA[18],lA[19]};
+	 std::vector<APData> TempAPData = MyTCPModule.GetAPData(TemplA);
+	 Async(EAsyncExecution::TaskGraphMainThread, [&, TempAPData]() {
+		 for (const auto& APDatas : TempAPData)
+		 {
+			 UE_LOG(LogTemp, Warning, TEXT("%d"), APDatas.ApartIndex);
 
 
+
+			 double Latitude;
+			 double Longitude;
+
+			 Latitude = APDatas.latitude;
+			 Longitude = APDatas.longitude;
+
+			 double x;
+			 double y;
+			 latLongToXY(Latitude, Longitude, x, y);
+			 RayCast(FVector(x, y, 10000000000), FVector(x, y, -1000), APDatas);
+		 }
+		 });
  }
 
 void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& EndLocation, const APData& Data)
 {
+	bool IsNone = false;
 	float value = 0;
 	switch (CurrentType)
 	{
 	case EVisibleType::None:
-
+		IsNone = true;
 		break;
 	case EVisibleType::Price:
 		//value = Data.price;
@@ -233,7 +267,7 @@ void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& End
 	default:
 		break;
 	}
-	FLinearColor NewColor = GetSpectrumColor(value);
+	FLinearColor NewColor = IsNone ? FLinearColor::White :GetSpectrumColor(value);
 
 	UObject* WorldContextObject = GetWorld();
 	if (!WorldContextObject) return;
@@ -299,7 +333,7 @@ void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& End
 					FVector Center = HitResult.ImpactPoint + TraceVec * 0.5f;
 					float HalfHeight = 50.f;
 					FColor DrawColor = (HitComponent->GetCollisionObjectType() == ECC_GameTraceChannel1) ? FColor::Green : FColor::Red;
-					float DebugLifeTime = 50.0f;
+					float DebugLifeTime = 5.0f;
 
 					DrawDebugCapsule(GetWorld(),
 						Center,
@@ -357,10 +391,6 @@ void USMPointComponent::XYTolatLong(double x, double y, double& latitude, double
 	longitude = lambda / DEG_TO_RAD;
 }
 
-void USMPointComponent::OnceAfterBeginPlay()
-{
-	LevelPoint();
-}
 
 void USMPointComponent::ChangeBuildingMaterial(FHitResult& HitResult, FLinearColor InNewColor)
 {
@@ -450,7 +480,12 @@ FLinearColor USMPointComponent::GetSpectrumColor(float Value)
 
 void USMPointComponent::SetCurrentTypeData()
 {
-
+	if (CurrentType == EVisibleType::None)
+	{
+		MaxValue = 0.f;
+		MinValue = 0.f;
+			return;
+	}
 
 	MaxValue = TypeControlManager[CurrentType]->MaxValue;
 	MinValue = TypeControlManager[CurrentType]->MinValue;
@@ -461,6 +496,7 @@ void USMPointComponent::TempChangeType(EVisibleType NewType)
 {
 	CurrentType = NewType;
 	SetCurrentTypeData();
+	LevelPoint();
 }
 
 void USMPointComponent::OnLevelLoaded(ULevel* InLevel, UWorld* InWorld)
@@ -470,11 +506,9 @@ void USMPointComponent::OnLevelLoaded(ULevel* InLevel, UWorld* InWorld)
 
 void USMPointComponent::OnLevelLoadedWithOffset(ULevel* InLeve, UWorld* InWorld, const FVector& Offset, bool Inbool)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 50.f, FColor::Green, FString::Printf(TEXT("Bottom Left: %s"), *Offset.ToString()));
-	}
+
 }
+
 
 
 

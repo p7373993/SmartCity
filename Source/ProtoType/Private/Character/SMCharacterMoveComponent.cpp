@@ -46,8 +46,6 @@ USMCharacterMoveComponent::USMCharacterMoveComponent()
 	bIsLeftClicking = false;
 	bIsRightClicking = false;
 
-
-
 }
 
 
@@ -57,7 +55,7 @@ void USMCharacterMoveComponent::BeginPlay()
 	Super::BeginPlay();
 	OwningActor = Cast<ASMCharacter>(GetOwner());
 
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController)
 	{
 		// Enhanced Input Subsystem을 가져옴
@@ -87,6 +85,16 @@ void USMCharacterMoveComponent::BeginPlay()
 			Input->BindAction(UpDownAction, ETriggerEvent::Triggered, this, &USMCharacterMoveComponent::UpDown);
 		}
 	}
+
+
+
+	if (PlayerController)
+	{
+		PlayerController->bShowMouseCursor = true;
+		PlayerController->bEnableClickEvents = true;
+		PlayerController->bEnableMouseOverEvents = true;
+
+	}
 }
 
 void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
@@ -95,6 +103,8 @@ void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 
 	if (bIsLeftClicking)
 	{
+
+
 		UCameraComponent* Camera = OwningActor->FindComponentByClass<UCameraComponent>();
 		ensure(Camera);
 		// 좌클릭 상태에서의 이동 처리
@@ -120,13 +130,15 @@ void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 
 	if (bIsRightClicking)
 	{
+
 		// 우클릭 상태에서의 화면 회전 처리
-		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+
 		if (PlayerController)
 		{
+
 			FRotator NewRotation = PlayerController->GetControlRotation();
 			NewRotation.Yaw += MovementVector.X;
-			NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch + MovementVector.Y, -89.0f, 0.0f);
+			NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch + MovementVector.Y, -89.0f, -50.0f);
 			PlayerController->SetControlRotation(NewRotation);
 
 			FString DebugMessage = FString::Printf(TEXT("Look with Right Click (%f:%f)"), MovementVector.X, MovementVector.Y);
@@ -138,11 +150,57 @@ void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 void USMCharacterMoveComponent::OnLeftClick(const FInputActionValue& Value)
 {
 	bIsLeftClicking = Value.Get<bool>();
+
+	if (PlayerController)
+	{
+		if (bIsLeftClicking)
+		{
+			PlayerController->GetMousePosition(MouseLocation.X, MouseLocation.Y);
+			FInputModeGameOnly InputMode;
+			PlayerController->SetInputMode(InputMode);
+
+			PlayerController->bShowMouseCursor = false;
+
+		}
+		else
+		{
+			PlayerController->bShowMouseCursor = true;
+			PlayerController->bEnableClickEvents = true;
+			PlayerController->bEnableMouseOverEvents = true;
+
+			PlayerController->SetMouseLocation(MouseLocation.X, MouseLocation.Y);
+		}
+	}
+
+
+
 }
 //우클릭
 void USMCharacterMoveComponent::OnRightClick(const FInputActionValue& Value)
 {
 	bIsRightClicking = Value.Get<bool>();
+
+	if (PlayerController)
+	{
+		if (bIsRightClicking)
+		{
+
+
+			PlayerController->GetMousePosition(MouseLocation.X, MouseLocation.Y);
+			FInputModeGameOnly InputMode;
+			PlayerController->SetInputMode(InputMode);
+			PlayerController->bShowMouseCursor = false;
+		}
+		else
+		{
+			PlayerController->bShowMouseCursor = true;
+			PlayerController->bEnableClickEvents = true;
+			PlayerController->bEnableMouseOverEvents = true;
+
+			
+			PlayerController->SetMouseLocation(MouseLocation.X, MouseLocation.Y);
+		}
+	}
 }
 //휠로 위아래
 void USMCharacterMoveComponent::UpDown(const FInputActionValue& Value)
