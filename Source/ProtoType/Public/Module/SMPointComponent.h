@@ -104,8 +104,6 @@ protected:
 	EVisibleType CurrentType;
 
 	void SetCurrentTypeData();
-	float MaxValue;
-	float MinValue;
 public:
 	//임시로 타입바꾸기
 	UFUNCTION(BlueprintCallable)
