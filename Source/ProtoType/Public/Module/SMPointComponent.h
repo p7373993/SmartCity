@@ -105,12 +105,12 @@ protected:
 	EVisibleType CurrentType;
 
 	void SetCurrentTypeData();
+	float MaxValue;
+	float MinValue;
+public:
 	//임시로 타입바꾸기
 	UFUNCTION(BlueprintCallable)
 	void TempChangeType(EVisibleType NewType = EVisibleType::None);
-
-	float MaxValue;
-	float MinValue;
 
 
 		// 레벨로드 관련함수

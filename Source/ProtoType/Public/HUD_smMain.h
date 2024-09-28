@@ -17,11 +17,14 @@ class PROTOTYPE_API AHUD_smMain : public AHUD
 public:
     AHUD_smMain();
 
+    APlayerController* PlayerController;
+
     virtual void BeginPlay() override;
 
 protected:
     UPROPERTY(EditAnywhere, Category = "UI")
     TSubclassOf<class UUW_smMain> MyWidgetClass;
+
 
 private:
     UUW_smMain* MyWidget;

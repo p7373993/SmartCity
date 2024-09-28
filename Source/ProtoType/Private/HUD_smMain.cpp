@@ -18,7 +18,7 @@ void AHUD_smMain::BeginPlay()
     if (MyWidgetClass)
     {
 
-        APlayerController* PlayerController = GetOwningPlayerController();
+        PlayerController = GetOwningPlayerController();
 
         if (PlayerController)
         {
