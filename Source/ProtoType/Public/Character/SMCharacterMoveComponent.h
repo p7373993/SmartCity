@@ -49,5 +49,6 @@ public:
 	bool bIsLeftClicking;
 	bool bIsRightClicking;
 
-		
+	FVector2D MouseLocation;
+	APlayerController* PlayerController;
 };
