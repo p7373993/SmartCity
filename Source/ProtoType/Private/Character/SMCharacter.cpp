@@ -49,3 +49,8 @@ void ASMCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+bool ASMCharacter::GetHitResultUnderCursor(ECollisionChannel TraceChannel, bool bTraceComplex, FHitResult& HitResult) const
+{
+	return false;
+}
+

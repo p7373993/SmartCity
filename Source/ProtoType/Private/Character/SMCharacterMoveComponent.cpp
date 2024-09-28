@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/SMCharacterMoveComponent.h"
@@ -9,6 +9,7 @@
 #include "InputAction.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/PlayerController.h"
 
 // Sets default values for this component's properties
 USMCharacterMoveComponent::USMCharacterMoveComponent()
@@ -50,7 +51,6 @@ USMCharacterMoveComponent::USMCharacterMoveComponent()
 
 }
 
-
 // Called when the game starts
 void USMCharacterMoveComponent::BeginPlay()
 {
@@ -60,30 +60,30 @@ void USMCharacterMoveComponent::BeginPlay()
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController)
 	{
-		// Enhanced Input Subsystem�� ������
+		// Enhanced Input SubsystemÀ» °¡Á®¿È
 		UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
 
-		// ��ǲ ���� ���ؽ�Ʈ �߰�
+		// ÀÎÇ² ¸ÅÇÎ ÄÁÅØ½ºÆ® Ãß°¡
 		if (InputSubsystem && InputMapping)
 		{
 			InputSubsystem->AddMappingContext(InputMapping, 0);
 		}
 
-		// ��ǲ �׼� ���ε�
+		// ÀÎÇ² ¾×¼Ç ¹ÙÀÎµù
 		if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
 		{
-			// ��Ŭ�� �׼� ���ε�
+			// ÁÂÅ¬¸¯ ¾×¼Ç ¹ÙÀÎµù
 			Input->BindAction(LeftClickAction, ETriggerEvent::Started, this, &USMCharacterMoveComponent::OnLeftClick);
 			Input->BindAction(LeftClickAction, ETriggerEvent::Completed, this, &USMCharacterMoveComponent::OnLeftClick);
 
-			// ��Ŭ�� �׼� ���ε�
+			// ¿ìÅ¬¸¯ ¾×¼Ç ¹ÙÀÎµù
 			Input->BindAction(RightClickAction, ETriggerEvent::Started, this, &USMCharacterMoveComponent::OnRightClick);
 			Input->BindAction(RightClickAction, ETriggerEvent::Completed, this, &USMCharacterMoveComponent::OnRightClick);
 
-			// �̵� �׼� ���ε�
+			// ÀÌµ¿ ¾×¼Ç ¹ÙÀÎµù
 			Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &USMCharacterMoveComponent::QuaterMove);
 
-			//�巡�� �׼�
+			//µå·¡±× ¾×¼Ç
 			Input->BindAction(UpDownAction, ETriggerEvent::Triggered, this, &USMCharacterMoveComponent::UpDown);
 		}
 	}
@@ -97,7 +97,7 @@ void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 	{
 		UCameraComponent* Camera = OwningActor->FindComponentByClass<UCameraComponent>();
 		ensure(Camera);
-		// ��Ŭ�� ���¿����� �̵� ó��
+		// ÁÂÅ¬¸¯ »óÅÂ¿¡¼­ÀÇ ÀÌµ¿ Ã³¸®
 		if (Camera)
 		{
 
@@ -120,7 +120,7 @@ void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 
 	if (bIsRightClicking)
 	{
-		// ��Ŭ�� ���¿����� ȭ�� ȸ�� ó��
+		// ¿ìÅ¬¸¯ »óÅÂ¿¡¼­ÀÇ È­¸é È¸Àü Ã³¸®
 		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 		if (PlayerController)
 		{
@@ -134,25 +134,80 @@ void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 	}
 }
 
-//��Ŭ��
+//ÁÂÅ¬¸¯
 void USMCharacterMoveComponent::OnLeftClick(const FInputActionValue& Value)
 {
 	bIsLeftClicking = Value.Get<bool>();
+	FVector2D MousePosition;
+	if (GEngine && GEngine->GameViewport)
+	{
+		// 마우스 위치를 저장할 변수 선언
+		
+
+		// GameViewportClient를 통해 마우스 위치 가져오기
+		if (GEngine->GameViewport->GetMousePosition(MousePosition))
+		{
+			// 마우스 좌표 출력
+			UE_LOG(LogTemp, Warning, TEXT("Mouse Position: X=%f, Y=%f"),
+				MousePosition.X, MousePosition.Y);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to get mouse position."));
+		}
+	}
+
+	float MouseX, MouseY;
+	MouseX = MousePosition.X;
+	MouseY = MousePosition.Y;
+	if (true)
+	{
+		FVector WorldLocation, WorldDirection;
+		FVector End = WorldLocation + (WorldDirection * 10000.f);
+		FHitResult HitResult;
+		FCollisionQueryParams CollisionParams;
+
+		bool bHit = GetWorld()->LineTraceSingleByChannel(
+			HitResult,
+			WorldLocation,
+			End,
+			ECC_Visibility,
+			CollisionParams
+		);
+		if (bHit && HitResult.GetActor())
+		{
+			AActor* HitActor = HitResult.GetActor();
+			UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s"), *HitActor->GetName());
+			if (HitActor->Tags.Num() > 0)
+			{
+				for (const FName& Tag : HitActor->Tags)
+				{
+					// 태그를 출력 (화면에 출력)
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Tag.ToString());
+				}
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No Tags Found"));
+			}
+		}
+	}
+
 }
-//��Ŭ��
+//¿ìÅ¬¸¯
 void USMCharacterMoveComponent::OnRightClick(const FInputActionValue& Value)
 {
 	bIsRightClicking = Value.Get<bool>();
 }
-//�ٷ� ���Ʒ�
+//ÈÙ·Î À§¾Æ·¡
 void USMCharacterMoveComponent::UpDown(const FInputActionValue& Value)
 {
 	float Height = FMath::Clamp(OwningActor->GetActorLocation().Z * 0.5, 0, 10000);
 	float Power = Value.Get<float>();
 	FVector CurrentLocation = OwningActor->GetActorLocation();
-	FVector NewLocation = CurrentLocation + FVector(0.0f, 0.0f, Power * Height); // �̵� �ӵ��� �����մϴ�.
+	FVector NewLocation = CurrentLocation + FVector(0.0f, 0.0f, Power * Height); // ÀÌµ¿ ¼Óµµ¸¦ Á¶Á¤ÇÕ´Ï´Ù.
 
-	OwningActor->SetActorLocation(NewLocation, true); // true�� �浹�� �����Ͽ� ��ġ�� �����մϴ�.
+	OwningActor->SetActorLocation(NewLocation, true); // true´Â Ãæµ¹À» °í·ÁÇÏ¿© À§Ä¡¸¦ ¼³Á¤ÇÕ´Ï´Ù.
 }
 
 

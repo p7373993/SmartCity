@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Module/SMPointComponent.h"
@@ -47,7 +47,7 @@ USMPointComponent::USMPointComponent()
 
 
 
-	//ÇöÀç Å¸ÀÔ
+	//Ã‡Ã¶Ã€Ã§ Ã…Â¸Ã€Ã”
 	CurrentType = EVisibleType::Floor;
 	SetCurrentTypeData();
 
@@ -66,7 +66,7 @@ void USMPointComponent::BeginPlay()
 	UWorld* World = GetWorld();
 	if (World)
 	{
-		// µ¨¸®°ÔÀÌÆ®¿¡ ¹ÙÀÎµù
+		// ÂµÂ¨Â¸Â®Â°Ã”Ã€ÃŒÃ†Â®Â¿Â¡ Â¹Ã™Ã€ÃŽÂµÃ¹
 		FWorldDelegates::LevelAddedToWorld.AddUObject(this, &USMPointComponent::OnLevelLoaded);
 
 		FWorldDelegates::PostApplyLevelOffset.AddUObject(this, &USMPointComponent::OnLevelLoadedWithOffset);
@@ -86,7 +86,7 @@ FViewLocation USMPointComponent::GetCornerPoints()
 
 	FViewLocation ViewLocation = FViewLocation();
 
-	// È­¸é ¸ð¼­¸® ÁÂÇ¥
+	// ÃˆÂ­Â¸Ã© Â¸Ã°Â¼Â­Â¸Â® ÃÃ‚Ã‡Â¥
 	const FVector2D ScreenCorners[4] = {
 		FVector2D(0, 0), // Left-up
 		FVector2D(0, GEngine->GameViewport->Viewport->GetSizeXY().Y), // Left-down
@@ -98,16 +98,16 @@ FViewLocation USMPointComponent::GetCornerPoints()
 	FVector WorldLocation;
 	FVector WorldDirection;
 
-	// °¢ È­¸é ¸ð¼­¸®¿¡ ´ëÇØ Ã³¸®
+	// Â°Â¢ ÃˆÂ­Â¸Ã© Â¸Ã°Â¼Â­Â¸Â®Â¿Â¡ Â´Ã«Ã‡Ã˜ ÃƒÂ³Â¸Â®
 	for (int32 i = 0; i < 4; i++)
 	{
 		if (PlayerController->DeprojectScreenPositionToWorld(ScreenCorners[i].X, ScreenCorners[i].Y, WorldLocation, WorldDirection))
 		{
-			// ¹Ù´Ú°úÀÇ ±³Â÷Á¡À» Ã£±â À§ÇØ ¶óÀÎ Æ®·¹ÀÌ½º ¼öÇà
+			// Â¹Ã™Â´ÃšÂ°ÃºÃ€Ã‡ Â±Â³Ã‚Ã·ÃÂ¡Ã€Â» ÃƒÂ£Â±Ã¢ Ã€Â§Ã‡Ã˜ Â¶Ã³Ã€ÃŽ Ã†Â®Â·Â¹Ã€ÃŒÂ½Âº Â¼Ã¶Ã‡Ã 
 			FVector Start = WorldLocation;
-			FVector End = WorldLocation + (WorldDirection * 1000000.0f); // ÃæºÐÈ÷ ±ä °Å¸®
+			FVector End = WorldLocation + (WorldDirection * 1000000.0f); // ÃƒÃ¦ÂºÃÃˆÃ· Â±Ã¤ Â°Ã…Â¸Â®
 
-			// ¶óÀÎ Æ®·¹ÀÌ½º, ¹Ù´Ú ¿ÀºêÁ§Æ®¸¸ ´ë»óÀ¸·Î
+			// Â¶Ã³Ã€ÃŽ Ã†Â®Â·Â¹Ã€ÃŒÂ½Âº, Â¹Ã™Â´Ãš Â¿Ã€ÂºÃªÃÂ§Ã†Â®Â¸Â¸ Â´Ã«Â»Ã³Ã€Â¸Â·ÃŽ
 			if (GetWorld()->LineTraceSingleByObjectType(
 				HitResult,
 				Start,
@@ -115,7 +115,7 @@ FViewLocation USMPointComponent::GetCornerPoints()
 				FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic)
 			))
 			{
-				// È÷Æ® °á°ú¸¦ ÀúÀå
+				// ÃˆÃ·Ã†Â® Â°Ã¡Â°ÃºÂ¸Â¦ Ã€ÃºÃ€Ã¥
 				switch (i)
 				{
 				case 0:
@@ -134,7 +134,7 @@ FViewLocation USMPointComponent::GetCornerPoints()
 					break;
 				}
 
-				// µð¹ö±× ¶óÀÎ ±×¸®±â
+				// ÂµÃ°Â¹Ã¶Â±Ã— Â¶Ã³Ã€ÃŽ Â±Ã—Â¸Â®Â±Ã¢
 				DrawDebugLine(GetWorld(), Start, HitResult.Location, FColor::Red, false, 5.0f, 0, 1.0f);
 				DrawDebugPoint(GetWorld(), HitResult.Location, 10.0f, FColor::Green, false, 5.0f);
 			}
@@ -146,7 +146,7 @@ FViewLocation USMPointComponent::GetCornerPoints()
 
 void USMPointComponent::LevelPoint()
 {
-	// ·¹º§ ¹Ù¿îµå¸¦ Ã£±â À§ÇØ ALevelBounds ¾×ÅÍ¸¦ °Ë»ö
+	// Â·Â¹ÂºÂ§ Â¹Ã™Â¿Ã®ÂµÃ¥Â¸Â¦ ÃƒÂ£Â±Ã¢ Ã€Â§Ã‡Ã˜ ALevelBounds Â¾Ã—Ã…ÃÂ¸Â¦ Â°Ã‹Â»Ã¶
 	ALevelBounds* LevelBoundsActor = nullptr;
 	ULevel* InLevel = GetWorld()->GetCurrentLevel();
 	for (AActor* Actor : InLevel->Actors)
@@ -154,13 +154,13 @@ void USMPointComponent::LevelPoint()
 		LevelBoundsActor = Cast<ALevelBounds>(Actor);
 		if (LevelBoundsActor)
 		{
-			break;  // ALevelBounds ¾×ÅÍ¸¦ Ã£¾ÒÀ¸¹Ç·Î ·çÇÁ Å»Ãâ
+			break;  // ALevelBounds Â¾Ã—Ã…ÃÂ¸Â¦ ÃƒÂ£Â¾Ã’Ã€Â¸Â¹Ã‡Â·ÃŽ Â·Ã§Ã‡Ã Ã…Â»ÃƒÃ¢
 		}
 	}
 
 	if (LevelBoundsActor)
 	{
-		// ALevelBounds¿¡¼­ °æ°è(Bounds) °¡Á®¿À±â
+		// ALevelBoundsÂ¿Â¡Â¼Â­ Â°Ã¦Â°Ã¨(Bounds) Â°Â¡ÃÂ®Â¿Ã€Â±Ã¢
 		FBox LevelBounds = LevelBoundsActor->GetComponentsBoundingBox();
 
 		FVector Min = LevelBounds.Min;
@@ -260,28 +260,32 @@ void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& End
 
 		if (HitActor)
 		{
+			// íƒœê·¸ë¥¼ ì¶”ê°€í•˜ëŠ” ì½”ë“œ
+			if (!HitActor->Tags.Contains("Target"))
+			{
+				HitActor->Tags.Add("Target");
+			}
 
-
-//#if ENABLE_DRAW_DEBUG//µð¹ö±× ¸ðµå¿¡¼­¸¸ µð¹ö±× Ä¸½¶ ±×¸®µµ·Ï
+//#if ENABLE_DRAW_DEBUG//ÂµÃ°Â¹Ã¶Â±Ã— Â¸Ã°ÂµÃ¥Â¿Â¡Â¼Â­Â¸Â¸ ÂµÃ°Â¹Ã¶Â±Ã— Ã„Â¸Â½Â¶ Â±Ã—Â¸Â®ÂµÂµÂ·Ã
 //			FColor LineColor = (HitComponent->GetCollisionObjectType() == ECC_GameTraceChannel1) ? FColor::Green : FColor::Red;
-//			// ¶óÀÎ Æ®·¹ÀÌ½º ½Ã°¢È­
+//			// Â¶Ã³Ã€ÃŽ Ã†Â®Â·Â¹Ã€ÃŒÂ½Âº Â½ÃƒÂ°Â¢ÃˆÂ­
 //			DrawDebugLine(
-//				WorldContextObject->GetWorld(), // ¿ùµå ÂüÁ¶
-//				StartLocation,                  // ½ÃÀÛ À§Ä¡
-//				EndLocation,                    // ³¡ À§Ä¡
-//				LineColor,                      // ¶óÀÎÀÇ »ö»ó
-//				false,                          // ¿µ±¸ Ç¥½Ã ¿©ºÎ (false¸é ÀÏÁ¤ ½Ã°£ µ¿¾È¸¸ Ç¥½ÃµÊ)
-//				100.0f,                           // Ç¥½Ã ½Ã°£ (ÃÊ)
-//				0,                              // ±íÀÌ ¿ì¼± ¼øÀ§
-//				100.0f                            // ¼±ÀÇ µÎ²²
+//				WorldContextObject->GetWorld(), // Â¿Ã¹ÂµÃ¥ Ã‚Ã¼ÃÂ¶
+//				StartLocation,                  // Â½ÃƒÃ€Ã› Ã€Â§Ã„Â¡
+//				EndLocation,                    // Â³Â¡ Ã€Â§Ã„Â¡
+//				LineColor,                      // Â¶Ã³Ã€ÃŽÃ€Ã‡ Â»Ã¶Â»Ã³
+//				false,                          // Â¿ÂµÂ±Â¸ Ã‡Â¥Â½Ãƒ Â¿Â©ÂºÃŽ (falseÂ¸Ã© Ã€ÃÃÂ¤ Â½ÃƒÂ°Â£ ÂµÂ¿Â¾ÃˆÂ¸Â¸ Ã‡Â¥Â½ÃƒÂµÃŠ)
+//				100.0f,                           // Ã‡Â¥Â½Ãƒ Â½ÃƒÂ°Â£ (ÃƒÃŠ)
+//				0,                              // Â±Ã­Ã€ÃŒ Â¿Ã¬Â¼Â± Â¼Ã¸Ã€Â§
+//				100.0f                            // Â¼Â±Ã€Ã‡ ÂµÃŽÂ²Â²
 //			);
-//#endif // ENABLE_DRAW_DEBUG//µð¹ö±× ¸ðµå¿¡¼­¸¸ µð¹ö±× Ä¸½¶ ±×¸®µµ·Ï
+//#endif // ENABLE_DRAW_DEBUG//ÂµÃ°Â¹Ã¶Â±Ã— Â¸Ã°ÂµÃ¥Â¿Â¡Â¼Â­Â¸Â¸ ÂµÃ°Â¹Ã¶Â±Ã— Ã„Â¸Â½Â¶ Â±Ã—Â¸Â®ÂµÂµÂ·Ã
 
-			if (HitComponent->GetCollisionObjectType() == ECC_GameTraceChannel1)//°Ç¹° ¸ÂÀ»‹š
+			if (HitComponent->GetCollisionObjectType() == ECC_GameTraceChannel1)//Â°Ã‡Â¹Â° Â¸Ã‚Ã€Â»â€¹Å¡
 			{
 				ChangeBuildingMaterial(HitResult, NewColor);
 			}
-			else//¹Ù´Ú¸ÂÀ»‹š
+			else//Â¹Ã™Â´ÃšÂ¸Ã‚Ã€Â»â€¹Å¡
 			{
 				float SphereRadius = 2000.0f;
 				FHitResult SphereHitResult;
@@ -304,7 +308,7 @@ void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& End
 					{
 						ChangeBuildingMaterial(SphereHitResult, NewColor);
 					}
-#if ENABLE_DRAW_DEBUG//µð¹ö±× ¸ðµå¿¡¼­¸¸ µð¹ö±× Ä¸½¶ ±×¸®µµ·Ï
+#if ENABLE_DRAW_DEBUG//ÂµÃ°Â¹Ã¶Â±Ã— Â¸Ã°ÂµÃ¥Â¿Â¡Â¼Â­Â¸Â¸ ÂµÃ°Â¹Ã¶Â±Ã— Ã„Â¸Â½Â¶ Â±Ã—Â¸Â®ÂµÂµÂ·Ã
 					FVector TraceVec = FVector(0, 0, 100.f);
 					FVector Center = HitResult.ImpactPoint + TraceVec * 0.5f;
 					float HalfHeight = 50.f;
@@ -321,7 +325,7 @@ void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& End
 						DebugLifeTime
 					);
 
-#endif // ENABLE_DRAW_DEBUG//µð¹ö±× ¸ðµå¿¡¼­¸¸ µð¹ö±× Ä¸½¶ ±×¸®µµ·Ï
+#endif // ENABLE_DRAW_DEBUG//ÂµÃ°Â¹Ã¶Â±Ã— Â¸Ã°ÂµÃ¥Â¿Â¡Â¼Â­Â¸Â¸ ÂµÃ°Â¹Ã¶Â±Ã— Ã„Â¸Â½Â¶ Â±Ã—Â¸Â®ÂµÂµÂ·Ã
 
 				}
 				
@@ -392,7 +396,7 @@ void USMPointComponent::ChangeBuildingMaterial(FHitResult& HitResult, FLinearCol
 					{
 						DynamicMaterialInstance->SetVectorParameterValue(FName("Color"), InNewColor);
 
-						// ½ºÅÂÆ½ ¸Þ½¬ ÄÄÆ÷³ÍÆ®¿¡ ¸ÓÆ¼¸®¾ó Àû¿ë
+						// Â½ÂºÃ…Ã‚Ã†Â½ Â¸ÃžÂ½Â¬ Ã„Ã„Ã†Ã·Â³ÃÃ†Â®Â¿Â¡ Â¸Ã“Ã†Â¼Â¸Â®Â¾Ã³ Ã€Ã»Â¿Ã«
 						HitStaticMesh->SetMaterial(0, DynamicMaterialInstance);
 
 					}
