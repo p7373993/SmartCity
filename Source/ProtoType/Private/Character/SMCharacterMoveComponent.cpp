@@ -9,7 +9,7 @@
 #include "InputAction.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/CameraComponent.h"
-
+#include "Kismet/GameplayStatics.h"
 // Sets default values for this component's properties
 USMCharacterMoveComponent::USMCharacterMoveComponent()
 {
@@ -97,6 +97,95 @@ void USMCharacterMoveComponent::BeginPlay()
 	}
 }
 
+void USMCharacterMoveComponent::GetActorTag()
+{
+	if (PlayerController)
+	{
+		if (bIsLeftClicking)
+		{
+			PlayerController->GetMousePosition(MouseLocation.X, MouseLocation.Y);
+			FInputModeGameOnly InputMode;
+			PlayerController->SetInputMode(InputMode);
+
+			PlayerController->bShowMouseCursor = false;
+
+		}
+		else
+		{
+			PlayerController->bShowMouseCursor = true;
+			PlayerController->bEnableClickEvents = true;
+			PlayerController->bEnableMouseOverEvents = true;
+
+			PlayerController->SetMouseLocation(MouseLocation.X, MouseLocation.Y);
+		}
+	}
+
+	FVector2D MousePosition;
+	if (GEngine && GEngine->GameViewport)
+	{
+		if (GEngine->GameViewport->GetMousePosition(MousePosition))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Mouse Position: X=%f, Y=%f"),
+				MousePosition.X, MousePosition.Y);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to get mouse position."));
+		}
+	}
+
+
+	float MouseX, MouseY;
+	MouseX = MousePosition.X;
+	MouseY = MousePosition.Y;
+	if (true)
+	{
+		APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		FVector WorldLocation, WorldDirection;
+		PC->DeprojectScreenPositionToWorld(MousePosition.X, MousePosition.Y, WorldLocation, WorldDirection);
+		FVector End = WorldLocation + (WorldDirection * 1000000000000000000000000000000000000.f);
+		FHitResult HitResult;
+		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredActor(PC->GetPawn());
+		bool bHit = GetWorld()->LineTraceSingleByChannel(
+			HitResult,
+			WorldLocation,
+			End,
+			ECC_Visibility,
+			CollisionParams
+		);
+		if (bHit)
+		{
+			DrawDebugLine(GetWorld(), WorldLocation, HitResult.Location, FColor::Green, false, 5.f, 0, 1.f);
+			FString DebugMessage = FString::Printf(TEXT("Hit: %s"), *HitResult.GetActor()->GetName());
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, DebugMessage);
+		}
+		else
+		{
+			DrawDebugLine(GetWorld(), WorldLocation, End, FColor::Red, false, 5.f, 0, 1.f);
+
+			FString DebugMessage = TEXT("No hit");
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, DebugMessage);
+		}
+		if (bHit && HitResult.GetActor())
+		{
+			AActor* HitActor = HitResult.GetActor();
+			UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s"), *HitActor->GetName());
+			if (HitActor->Tags.Num() > 0)
+			{
+				for (const FName& Tag : HitActor->Tags)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Tag.ToString());
+				}
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No Tags Found"));
+			}
+		}
+	}
+}
+
 void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -150,30 +239,7 @@ void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 void USMCharacterMoveComponent::OnLeftClick(const FInputActionValue& Value)
 {
 	bIsLeftClicking = Value.Get<bool>();
-
-	if (PlayerController)
-	{
-		if (bIsLeftClicking)
-		{
-			PlayerController->GetMousePosition(MouseLocation.X, MouseLocation.Y);
-			FInputModeGameOnly InputMode;
-			PlayerController->SetInputMode(InputMode);
-
-			PlayerController->bShowMouseCursor = false;
-
-		}
-		else
-		{
-			PlayerController->bShowMouseCursor = true;
-			PlayerController->bEnableClickEvents = true;
-			PlayerController->bEnableMouseOverEvents = true;
-
-			PlayerController->SetMouseLocation(MouseLocation.X, MouseLocation.Y);
-		}
-	}
-
-
-
+	GetActorTag();
 }
 //우클릭
 void USMCharacterMoveComponent::OnRightClick(const FInputActionValue& Value)
@@ -212,6 +278,3 @@ void USMCharacterMoveComponent::UpDown(const FInputActionValue& Value)
 
 	OwningActor->SetActorLocation(NewLocation, true); // true는 충돌을 고려하여 위치를 설정합니다.
 }
-
-
-
