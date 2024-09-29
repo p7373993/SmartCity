@@ -9,7 +9,7 @@
 #include "InputAction.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/CameraComponent.h"
-
+#include "Kismet/GameplayStatics.h"
 // Sets default values for this component's properties
 USMCharacterMoveComponent::USMCharacterMoveComponent()
 {
@@ -73,11 +73,12 @@ void USMCharacterMoveComponent::BeginPlay()
 			// 좌클릭 액션 바인딩
 			Input->BindAction(LeftClickAction, ETriggerEvent::Started, this, &USMCharacterMoveComponent::OnLeftClick);
 			Input->BindAction(LeftClickAction, ETriggerEvent::Completed, this, &USMCharacterMoveComponent::OnLeftClick);
-
+			//더블 클릭
+			Input->BindAction(LeftClickAction, ETriggerEvent::Started, this, &USMCharacterMoveComponent::Doubleclick);
 			// 우클릭 액션 바인딩
 			Input->BindAction(RightClickAction, ETriggerEvent::Started, this, &USMCharacterMoveComponent::OnRightClick);
 			Input->BindAction(RightClickAction, ETriggerEvent::Completed, this, &USMCharacterMoveComponent::OnRightClick);
-
+			
 			// 이동 액션 바인딩
 			Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &USMCharacterMoveComponent::QuaterMove);
 
@@ -97,6 +98,95 @@ void USMCharacterMoveComponent::BeginPlay()
 	}
 }
 
+void USMCharacterMoveComponent::GetActorTag()
+{
+	if (PlayerController)
+	{
+		if (bIsLeftClicking)
+		{
+			PlayerController->GetMousePosition(MouseLocation.X, MouseLocation.Y);
+			FInputModeGameOnly InputMode;
+			PlayerController->SetInputMode(InputMode);
+
+			PlayerController->bShowMouseCursor = false;
+
+		}
+		else
+		{
+			PlayerController->bShowMouseCursor = true;
+			PlayerController->bEnableClickEvents = true;
+			PlayerController->bEnableMouseOverEvents = true;
+
+			PlayerController->SetMouseLocation(MouseLocation.X, MouseLocation.Y);
+		}
+	}
+
+	FVector2D MousePosition;
+	if (GEngine && GEngine->GameViewport)
+	{
+		if (GEngine->GameViewport->GetMousePosition(MousePosition))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Mouse Position: X=%f, Y=%f"),
+				MousePosition.X, MousePosition.Y);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to get mouse position."));
+		}
+	}
+
+
+	float MouseX, MouseY;
+	MouseX = MousePosition.X;
+	MouseY = MousePosition.Y;
+	if (true)
+	{
+		APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		FVector WorldLocation, WorldDirection;
+		PC->DeprojectScreenPositionToWorld(MousePosition.X, MousePosition.Y, WorldLocation, WorldDirection);
+		FVector End = WorldLocation + (WorldDirection * 1000000000000000000000000000000000000.f);
+		FHitResult HitResult;
+		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredActor(PC->GetPawn());
+		bool bHit = GetWorld()->LineTraceSingleByChannel(
+			HitResult,
+			WorldLocation,
+			End,
+			ECC_Visibility,
+			CollisionParams
+		);
+		if (bHit)
+		{
+			DrawDebugLine(GetWorld(), WorldLocation, HitResult.Location, FColor::Green, false, 5.f, 0, 1.f);
+			FString DebugMessage = FString::Printf(TEXT("Hit: %s"), *HitResult.GetActor()->GetName());
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, DebugMessage);
+		}
+		else
+		{
+			DrawDebugLine(GetWorld(), WorldLocation, End, FColor::Red, false, 5.f, 0, 1.f);
+
+			FString DebugMessage = TEXT("No hit");
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, DebugMessage);
+		}
+		if (bHit && HitResult.GetActor())
+		{
+			AActor* HitActor = HitResult.GetActor();
+			UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s"), *HitActor->GetName());
+			if (HitActor->Tags.Num() > 0)
+			{
+				for (const FName& Tag : HitActor->Tags)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Tag.ToString());
+				}
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No Tags Found"));
+			}
+		}
+	}
+}
+
 void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -104,6 +194,7 @@ void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 	if (bIsLeftClicking)
 	{
 
+		PlayerController->bShowMouseCursor = false;
 
 		UCameraComponent* Camera = OwningActor->FindComponentByClass<UCameraComponent>();
 		ensure(Camera);
@@ -131,6 +222,8 @@ void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 	if (bIsRightClicking)
 	{
 
+		PlayerController->bShowMouseCursor = false;
+
 		// 우클릭 상태에서의 화면 회전 처리
 
 		if (PlayerController)
@@ -150,25 +243,26 @@ void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 void USMCharacterMoveComponent::OnLeftClick(const FInputActionValue& Value)
 {
 	bIsLeftClicking = Value.Get<bool>();
+	GetActorTag();
+
 
 	if (PlayerController)
 	{
-		if (bIsLeftClicking)
-		{
-			PlayerController->GetMousePosition(MouseLocation.X, MouseLocation.Y);
-			FInputModeGameOnly InputMode;
-			PlayerController->SetInputMode(InputMode);
+		FInputModeGameOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
 
-			PlayerController->bShowMouseCursor = false;
-
-		}
-		else
+		if(!bIsLeftClicking)
 		{
 			PlayerController->bShowMouseCursor = true;
 			PlayerController->bEnableClickEvents = true;
 			PlayerController->bEnableMouseOverEvents = true;
 
 			PlayerController->SetMouseLocation(MouseLocation.X, MouseLocation.Y);
+		}
+		else
+		{
+			PlayerController->GetMousePosition(MouseLocation.X, MouseLocation.Y);
+
 		}
 	}
 
@@ -182,23 +276,22 @@ void USMCharacterMoveComponent::OnRightClick(const FInputActionValue& Value)
 
 	if (PlayerController)
 	{
-		if (bIsRightClicking)
-		{
+
+		FInputModeGameOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
 
 
-			PlayerController->GetMousePosition(MouseLocation.X, MouseLocation.Y);
-			FInputModeGameOnly InputMode;
-			PlayerController->SetInputMode(InputMode);
-			PlayerController->bShowMouseCursor = false;
-		}
-		else
+		if (!bIsRightClicking)
 		{
 			PlayerController->bShowMouseCursor = true;
 			PlayerController->bEnableClickEvents = true;
 			PlayerController->bEnableMouseOverEvents = true;
 
-			
 			PlayerController->SetMouseLocation(MouseLocation.X, MouseLocation.Y);
+		}
+		else
+		{
+			PlayerController->GetMousePosition(MouseLocation.X, MouseLocation.Y);
 		}
 	}
 }
@@ -211,6 +304,38 @@ void USMCharacterMoveComponent::UpDown(const FInputActionValue& Value)
 	FVector NewLocation = CurrentLocation + FVector(0.0f, 0.0f, Power * Height); // 이동 속도를 조정합니다.
 
 	OwningActor->SetActorLocation(NewLocation, true); // true는 충돌을 고려하여 위치를 설정합니다.
+}
+
+void USMCharacterMoveComponent::Doubleclick(const FInputActionValue& Value)
+{
+	if (bIsClicking)
+	{
+		// 더블 클릭 처리
+		OnDoubleClick();
+
+		// 타이머를 취소하고, 클릭 상태 초기화
+		GetWorld()->GetTimerManager().ClearTimer(ClickTimerHandle);
+		bIsClicking = false;
+	}
+	else
+	{
+		// 첫 번째 클릭 처리
+		bIsClicking = true;
+
+		// 일정 시간 후에 단일 클릭을 처리하도록 타이머 설정
+		GetWorld()->GetTimerManager().SetTimer(ClickTimerHandle, this, &USMCharacterMoveComponent::OnSingleClick, DoubleClickMaxTime, false);
+	}
+}
+
+void USMCharacterMoveComponent::OnDoubleClick() //여기에 함수 넣으면 됩니다
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("DoubleClick")));
+}
+
+void USMCharacterMoveComponent::OnSingleClick()
+{
+
+	bIsClicking = false;
 }
 
 

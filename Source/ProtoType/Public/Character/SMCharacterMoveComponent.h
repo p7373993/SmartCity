@@ -21,6 +21,8 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	void GetActorTag();
+
 public:	
 
 	UPROPERTY(VisibleAnywhere,Category = "Actor")
@@ -41,14 +43,25 @@ public:
 	UPROPERTY(EditAnywhere, Category = "EnhancedInput")
 	class UInputAction* UpDownAction;
 
+
 	void QuaterMove(const FInputActionValue& Value);
 	void OnLeftClick(const FInputActionValue& Value);
 	void OnRightClick(const FInputActionValue& Value);
 	void UpDown(const FInputActionValue& Value);
+	void Doubleclick(const FInputActionValue& Value);
+
+	void OnDoubleClick();
+	void OnSingleClick();
 
 	bool bIsLeftClicking;
 	bool bIsRightClicking;
 
 	FVector2D MouseLocation;
 	APlayerController* PlayerController;
+
+private:
+	bool bIsClicking = false;        // 현재 클릭 상태를 추적
+	FTimerHandle ClickTimerHandle;   // 타이머 핸들
+	float DoubleClickMaxTime = 0.25f; // 더블 클릭으로 간주할 최대 시간 (0.25초)
+
 };
