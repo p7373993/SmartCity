@@ -14,4 +14,20 @@ class PROTOTYPE_API UChartData : public UUserWidget
 {
 	GENERATED_BODY()
 	
+	
+
+
+protected:
+	virtual void NativeConstruct() override;
+
+	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true"))
+	void SetData();
+
+	UPROPERTY(BlueprintReadOnly, Category = "Data", meta = (AllowPrivateAccess = "true"))
+	TArray<FVector2D> DataSet;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Data", meta = (AllowPrivateAccess = "true"))
+	float LowerBound;
+	UPROPERTY(BlueprintReadOnly, Category = "Data", meta = (AllowPrivateAccess = "true"))
+	float UpperBound;
 };
