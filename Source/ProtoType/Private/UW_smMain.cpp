@@ -19,13 +19,13 @@ void UUW_smMain::NativeConstruct()
 	{
 		Btn_ChangeColor->OnClicked.AddDynamic(this, &UUW_smMain::ColorChangeButtonClicked);
 	}
-	if (Btn_ChangeColor)
+	if (Btn_AddLandmark)
 	{
-		Btn_ChangeColor->OnClicked.AddDynamic(this, &UUW_smMain::AddLandmarkButtonClicked);
+		Btn_AddLandmark->OnClicked.AddDynamic(this, &UUW_smMain::AddLandmarkButtonClicked);
 	}
-	if (Btn_ChangeColor)
+	if (Btn_ShowingMenu)
 	{
-		Btn_ChangeColor->OnClicked.AddDynamic(this, &UUW_smMain::ShowingMenuButtonClicked);
+		Btn_ShowingMenu->OnClicked.AddDynamic(this, &UUW_smMain::ShowingMenuButtonClicked);
 	}
 }
 
