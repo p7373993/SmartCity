@@ -73,11 +73,12 @@ void USMCharacterMoveComponent::BeginPlay()
 			// 좌클릭 액션 바인딩
 			Input->BindAction(LeftClickAction, ETriggerEvent::Started, this, &USMCharacterMoveComponent::OnLeftClick);
 			Input->BindAction(LeftClickAction, ETriggerEvent::Completed, this, &USMCharacterMoveComponent::OnLeftClick);
-
+			//더블 클릭
+			Input->BindAction(LeftClickAction, ETriggerEvent::Started, this, &USMCharacterMoveComponent::Doubleclick);
 			// 우클릭 액션 바인딩
 			Input->BindAction(RightClickAction, ETriggerEvent::Started, this, &USMCharacterMoveComponent::OnRightClick);
 			Input->BindAction(RightClickAction, ETriggerEvent::Completed, this, &USMCharacterMoveComponent::OnRightClick);
-
+			
 			// 이동 액션 바인딩
 			Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &USMCharacterMoveComponent::QuaterMove);
 
@@ -193,6 +194,7 @@ void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 	if (bIsLeftClicking)
 	{
 
+		PlayerController->bShowMouseCursor = false;
 
 		UCameraComponent* Camera = OwningActor->FindComponentByClass<UCameraComponent>();
 		ensure(Camera);
@@ -220,6 +222,8 @@ void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 	if (bIsRightClicking)
 	{
 
+		PlayerController->bShowMouseCursor = false;
+
 		// 우클릭 상태에서의 화면 회전 처리
 
 		if (PlayerController)
@@ -240,6 +244,30 @@ void USMCharacterMoveComponent::OnLeftClick(const FInputActionValue& Value)
 {
 	bIsLeftClicking = Value.Get<bool>();
 	GetActorTag();
+
+
+	if (PlayerController)
+	{
+		FInputModeGameOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
+
+		if(!bIsLeftClicking)
+		{
+			PlayerController->bShowMouseCursor = true;
+			PlayerController->bEnableClickEvents = true;
+			PlayerController->bEnableMouseOverEvents = true;
+
+			PlayerController->SetMouseLocation(MouseLocation.X, MouseLocation.Y);
+		}
+		else
+		{
+			PlayerController->GetMousePosition(MouseLocation.X, MouseLocation.Y);
+
+		}
+	}
+
+
+
 }
 //우클릭
 void USMCharacterMoveComponent::OnRightClick(const FInputActionValue& Value)
@@ -248,23 +276,22 @@ void USMCharacterMoveComponent::OnRightClick(const FInputActionValue& Value)
 
 	if (PlayerController)
 	{
-		if (bIsRightClicking)
-		{
+
+		FInputModeGameOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
 
 
-			PlayerController->GetMousePosition(MouseLocation.X, MouseLocation.Y);
-			FInputModeGameOnly InputMode;
-			PlayerController->SetInputMode(InputMode);
-			PlayerController->bShowMouseCursor = false;
-		}
-		else
+		if (!bIsRightClicking)
 		{
 			PlayerController->bShowMouseCursor = true;
 			PlayerController->bEnableClickEvents = true;
 			PlayerController->bEnableMouseOverEvents = true;
 
-			
 			PlayerController->SetMouseLocation(MouseLocation.X, MouseLocation.Y);
+		}
+		else
+		{
+			PlayerController->GetMousePosition(MouseLocation.X, MouseLocation.Y);
 		}
 	}
 }
@@ -278,3 +305,38 @@ void USMCharacterMoveComponent::UpDown(const FInputActionValue& Value)
 
 	OwningActor->SetActorLocation(NewLocation, true); // true는 충돌을 고려하여 위치를 설정합니다.
 }
+
+void USMCharacterMoveComponent::Doubleclick(const FInputActionValue& Value)
+{
+	if (bIsClicking)
+	{
+		// 더블 클릭 처리
+		OnDoubleClick();
+
+		// 타이머를 취소하고, 클릭 상태 초기화
+		GetWorld()->GetTimerManager().ClearTimer(ClickTimerHandle);
+		bIsClicking = false;
+	}
+	else
+	{
+		// 첫 번째 클릭 처리
+		bIsClicking = true;
+
+		// 일정 시간 후에 단일 클릭을 처리하도록 타이머 설정
+		GetWorld()->GetTimerManager().SetTimer(ClickTimerHandle, this, &USMCharacterMoveComponent::OnSingleClick, DoubleClickMaxTime, false);
+	}
+}
+
+void USMCharacterMoveComponent::OnDoubleClick() //여기에 함수 넣으면 됩니다
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("DoubleClick")));
+}
+
+void USMCharacterMoveComponent::OnSingleClick()
+{
+
+	bIsClicking = false;
+}
+
+
+
