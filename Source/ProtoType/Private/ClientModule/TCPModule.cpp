@@ -24,12 +24,12 @@ std::vector<APData> TCPModule::GetAPData(float *Elemental)
 
 	int APSize;
 	//--Recive001--Complite
-	recv(Server, (char*)&APSize, sizeof(APSize), 0);
+	recv(Server1, (char*)&APSize, sizeof(APSize), 0);
 	UE_LOG(LogTemp, Warning, TEXT("%d"), APSize);
 	for (int32 i = 0; i < APSize; ++i)
 	{
 		APData TempAP;
-		recv(Server, (char*)&TempAP, sizeof(TempAP), 0);
+		recv(Server1, (char*)&TempAP, sizeof(TempAP), 0);
 		VAPDatas.push_back(TempAP);
 	}
 	IsInUse = false;
@@ -43,12 +43,12 @@ std::vector<SaleData> TCPModule::GetSaleData(float *Elemental)
 
 	int SaleSize;
 	//--Recive001--Complite
-	recv(Server, (char*)&SaleSize, sizeof(SaleSize), 0);
+	recv(Server1, (char*)&SaleSize, sizeof(SaleSize), 0);
 	UE_LOG(LogTemp, Warning, TEXT("%d"), SaleSize);
 	for (int32 i = 0; i < SaleSize; ++i)
 	{
 		SaleData TempSaleData;
-		recv(Server, (char*)&TempSaleData, sizeof(TempSaleData), 0);
+		recv(Server1, (char*)&TempSaleData, sizeof(TempSaleData), 0);
 		VSaleDatas.push_back(TempSaleData);
 	}
 	IsInUse = false;
@@ -63,7 +63,7 @@ std::vector<SaleData> TCPModule::GetPRESaleData(float *Elemental)
 void TCPModule::CheckAndReconnect()
 {
 	buffer[1024];
-	int result = recv(Server, buffer, sizeof(buffer), 0);
+	int result = recv(Server1, buffer, sizeof(buffer), 0);
 
 	if (result == SOCKET_ERROR) {
 		if (WSAGetLastError() == WSAETIMEDOUT) {
@@ -71,7 +71,7 @@ void TCPModule::CheckAndReconnect()
 		}
 		else {
 			std::cerr << "Connection lost. Attempting to reconnect..." << std::endl;
-			closesocket(Server);
+			closesocket(Server1);
 
 			TCPCunnect();
 		}
@@ -88,29 +88,39 @@ void TCPModule::SendingSelector(int Type, int MaxElIndex, float *Elemental)
 	Selector.Type = Type;
 	Selector.MaxElIndex = MaxElIndex;
 	std::copy(Elemental, Elemental + 20, Selector.Elemental);
-	send(Server, (char*)&Selector, sizeof(Selector), 0);
+	send(Server1, (char*)&Selector, sizeof(Selector), 0);
 }
 
 void TCPModule::TCPCunnect()
 {
-	if (::WSAStartup(MAKEWORD(2, 0), &wsaData) != 0)
-		HandleError("WSAStartup");
-	Server = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (Server == INVALID_SOCKET)
-		HandleError("socket");
-	addr.sin_family = AF_INET;
-	addr.sin_addr.S_un.S_addr = inet_addr(ServerIP);
-	addr.sin_port = ::htons(PORT);
+	int ports[3] = { PORT1, PORT2, PORT3 };
+	SOCKET Sockets[3];
+	for (int i = 0; i < 3; i++) {
+		WSADATA wsaData;
+		SOCKADDR_IN addr;
+		if (::WSAStartup(MAKEWORD(2, 0), &wsaData) != 0)
+			HandleError("WSAStartup");
+		Sockets[i] = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+		if (Sockets[i] == INVALID_SOCKET)
+			HandleError("socket");
+		addr.sin_family = AF_INET;
+		addr.sin_addr.S_un.S_addr = inet_addr(ServerIP);
+		addr.sin_port = ::htons(Sockets[i]);
 
-	int timeout = 2000;
-	if (setsockopt(Server, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout)) == SOCKET_ERROR)
-		HandleError("setsockopt(SO_RCVTIMEO)");
-	if (setsockopt(Server, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout, sizeof(timeout)) == SOCKET_ERROR)
-		HandleError("setsockopt(SO_SNDTIMEO)");
+		int timeout = 2000;
+		if (setsockopt(Sockets[i], SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout)) == SOCKET_ERROR)
+			HandleError("setsockopt(SO_RCVTIMEO)");
+		if (setsockopt(Sockets[i], SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout, sizeof(timeout)) == SOCKET_ERROR)
+			HandleError("setsockopt(SO_SNDTIMEO)");
+		if (::connect(Sockets[i], (const sockaddr*)&addr, sizeof(addr)) == INVALID_SOCKET)
+			HandleError("connet");
+		return;
+	}
+	Server1 = Sockets[0];
 
-	if (::connect(Server, (const sockaddr*)&addr, sizeof(addr)) == INVALID_SOCKET)
-		HandleError("connet");
-	return;
+	Server2 = Sockets[1];
+
+	Server3 = Sockets[2];
 }
 
 void TCPModule::HandleError(const char* cause)

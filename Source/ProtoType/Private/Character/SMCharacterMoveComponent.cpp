@@ -243,8 +243,6 @@ void USMCharacterMoveComponent::QuaterMove(const FInputActionValue& Value)
 void USMCharacterMoveComponent::OnLeftClick(const FInputActionValue& Value)
 {
 	bIsLeftClicking = Value.Get<bool>();
-	GetActorTag();
-
 
 	if (PlayerController)
 	{
@@ -330,6 +328,7 @@ void USMCharacterMoveComponent::Doubleclick(const FInputActionValue& Value)
 void USMCharacterMoveComponent::OnDoubleClick() //여기에 함수 넣으면 됩니다
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("DoubleClick")));
+	GetActorTag();
 }
 
 void USMCharacterMoveComponent::OnSingleClick()

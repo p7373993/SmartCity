@@ -82,9 +82,9 @@ private:
 
     void HandleError(const char* cause);
 
-    SOCKET Server;
-    WSADATA wsaData;
-    SOCKADDR_IN addr;
+    SOCKET Server1;
+    SOCKET Server2;
+    SOCKET Server3;
     char buffer[1024];
     int len = 0;
 };
