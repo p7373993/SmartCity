@@ -231,10 +231,6 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 	 Async(EAsyncExecution::TaskGraphMainThread, [&, TempAPData]() {
 		 for (const auto& APDatas : TempAPData)
 		 {
-			 UE_LOG(LogTemp, Warning, TEXT("%d"), APDatas.ApartIndex);
-
-
-
 			 double Latitude;
 			 double Longitude;
 
@@ -304,6 +300,22 @@ void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& End
 			if (HitComponent->GetCollisionObjectType() == ECC_GameTraceChannel1)//건물 맞을떄
 			{
 				ChangeBuildingMaterial(HitResult, NewColor);
+
+				if (!HitActor->Tags.Contains("Target"))
+				{
+					bool IsTaged = false;
+					for (const FName& Tag : HitActor->Tags)
+					{
+						IsTaged = true;
+					}
+					if (!IsTaged)
+					{
+						FString TagString = FString::Printf(TEXT("%d"), Data.ApartIndex);
+						HitActor->Tags.Add(FName(*TagString));
+					}
+
+				}
+
 			}
 			else//바닥맞을떄
 			{
@@ -344,6 +356,21 @@ void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& End
 						false,
 						DebugLifeTime
 					);
+					AActor* SphereHitActor = SphereHitResult.GetActor();
+					if (!SphereHitActor->Tags.Contains("Target"))
+					{
+						bool IsTaged = false;
+						for (const FName& Tag : SphereHitActor->Tags)
+						{
+							IsTaged = true;
+						}
+						if (!IsTaged)
+						{
+							FString TagString = FString::Printf(TEXT("%d"), Data.ApartIndex);
+							SphereHitActor->Tags.Add(FName(*TagString));
+						}
+
+					}
 
 #endif // ENABLE_DRAW_DEBUG//디버그 모드에서만 디버그 캡슐 그리도록
 

@@ -21,6 +21,8 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	void GetActorTag();
+
 public:	
 
 	UPROPERTY(VisibleAnywhere,Category = "Actor")
