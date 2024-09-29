@@ -248,11 +248,12 @@ void USMCharacterMoveComponent::OnLeftClick(const FInputActionValue& Value)
 
 	if (PlayerController)
 	{
-		FInputModeGameOnly InputMode;
-		PlayerController->SetInputMode(InputMode);
 
 		if(!bIsLeftClicking)
 		{
+			FInputModeGameAndUI InputMode;
+			PlayerController->SetInputMode(InputMode);
+
 			PlayerController->bShowMouseCursor = true;
 			PlayerController->bEnableClickEvents = true;
 			PlayerController->bEnableMouseOverEvents = true;
@@ -277,12 +278,13 @@ void USMCharacterMoveComponent::OnRightClick(const FInputActionValue& Value)
 	if (PlayerController)
 	{
 
-		FInputModeGameOnly InputMode;
-		PlayerController->SetInputMode(InputMode);
-
 
 		if (!bIsRightClicking)
 		{
+
+			FInputModeGameAndUI InputMode;
+			PlayerController->SetInputMode(InputMode);
+
 			PlayerController->bShowMouseCursor = true;
 			PlayerController->bEnableClickEvents = true;
 			PlayerController->bEnableMouseOverEvents = true;
