@@ -24,7 +24,7 @@ void ATCPTester::ThreadTest()
 {
 	std::vector<APData> TempAPData;
 	float TempAllData[20] = { 0, 0, 200, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	TempAPData = TCPServer.GetAPData(TempAllData);
+	TempAPData = TCPServer.GetAPData(TempAllData, 0);
 	Async(EAsyncExecution::TaskGraphMainThread, [&,TempAPData]() {
 		for (const auto& APDatas : TempAPData)
 		{
@@ -42,6 +42,6 @@ void ATCPTester::GetSaleDataLOG()
 {
 	std::vector<SaleData> TempSaleData;
 	float TempAllData[20] = { 0,0,200,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
-	TempSaleData = TCPServer.GetSaleData(TempAllData);
+	TempSaleData = TCPServer.GetSaleData(TempAllData, 0);
 
 }

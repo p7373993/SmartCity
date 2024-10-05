@@ -227,10 +227,25 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
  void USMPointComponent::GetAPDataThread()
  {
 	 float TemplA[20] = { lA[0],lA[1],lA[2],lA[3],lA[4],lA[5],lA[6],lA[7],lA[8],lA[9],lA[10],lA[11],lA[12],lA[13],lA[14],lA[15],lA[16],lA[17],lA[18],lA[19]};
-	 std::vector<APData> TempAPData = MyTCPModule.GetAPData(TemplA);
-	 Async(EAsyncExecution::TaskGraphMainThread, [&, TempAPData]() {
+	 std::vector<APData> TempAPData = MyTCPModule.GetAPData(TemplA, 0);
+	 std::vector<SaleData> TempSaleData = MyTCPModule.GetSaleData(TemplA, 0);
+	 Async(EAsyncExecution::TaskGraphMainThread, [&, TempAPData, TempSaleData]() {
 		 for (const auto& APDatas : TempAPData)
 		 {
+			 int Price = 0;
+			 int DealIndex = 0;
+			 for (const auto& SaleDatas : TempSaleData)
+			 {
+				 
+				 if (SaleDatas.ApartIndex == APDatas.ApartIndex)
+				 {
+					 if (DealIndex << SaleDatas.articleNo)
+					 {
+						 DealIndex = SaleDatas.articleNo;
+						 Price = SaleDatas.dealOrWarrantPrc;
+					 }
+				 }
+			 }
 			 double Latitude;
 			 double Longitude;
 
@@ -240,12 +255,12 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 			 double x;
 			 double y;
 			 latLongToXY(Latitude, Longitude, x, y);
-			 RayCast(FVector(x, y, 10000000000), FVector(x, y, -1000), APDatas);
+			 RayCast(FVector(x, y, 10000000000), FVector(x, y, -1000), APDatas, Price);
 		 }
 		 });
  }
 
-void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& EndLocation, const APData& Data)
+void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& EndLocation, const APData& Data, int Price)
 {
 	bool IsNone = false;
 	float value = 0;
@@ -258,7 +273,7 @@ void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& End
 		//value = Data.price;
 		break;
 	case EVisibleType::Floor:
-		value = Data.floorInfo;
+		value = Price;
 		break;
 	default:
 		break;

@@ -50,11 +50,11 @@ public:
 
 //Input::Vertex of cube EX:) Elem[0]=latitude Elem[1]=longitude Elem[2]=latitude Elem[3]=longitude Elem[4]=latitude Elem[5]=longitude Elem[6]=latitude Elem[7]=longitude
 //Output::Vector APData
-    std::vector<APData> GetAPData(float *Elemental);
+    std::vector<APData> GetAPData(float *Elemental, int ServerPort);
 
 //Input::Vertex of cube EX:) Elem[0]=latitude Elem[1]=longitude Elem[2]=latitude Elem[3]=longitude Elem[4]=latitude Elem[5]=longitude Elem[6]=latitude Elem[7]=longitude
 //Output::Vector SaleData
-    std::vector<SaleData> GetSaleData(float *Elemental);
+    std::vector<SaleData> GetSaleData(float *Elemental, int ServerPort);
 
 //Input::Vertex of cube EX:) Elem[0] InfraBuildingNameType
 //Output::Vector float Distance, float Price Rate of increase
@@ -62,11 +62,11 @@ public:
 
 //Input::Index and Persent EX:) Elem[0] MaxIndex Elem[1~19]=Persent
 //Output::DecalActDistance in nearest order
-    std::vector<float> GetDecalDistance(float* Elemental);
+    std::vector<float> GetDecalDistance(float* Elemental, int ServerPort);
 
 //Input::Vertex of cube EX:) Elem[0]=latitude Elem[1]=longitude Elem[2]=latitude Elem[3]=longitude Elem[4]=latitude Elem[5]=longitude Elem[6]=latitude Elem[7]=longitude Elem[8]InfraBuildingNameType Elem[9]=latitude Elem[10]=longitude
 //Output::Vector SaleData(PRE)
-    std::vector<SaleData> GetPRESaleData(float *Elemental);
+    std::vector<SaleData> GetPRESaleData(float *Elemental, int ServerPort);
 
     TCPModule(const TCPModule&) = delete;
     TCPModule& operator=(const TCPModule&) = delete;
@@ -76,15 +76,13 @@ public:
 private:
     TCPModule() {};
 
-    void CheckAndReconnect();
+    void CheckAndReconnect(int ServerPort);
 
-    void SendingSelector(int Type, int MaxElIndex, float *Elemental);
+    void SendingSelector(int Type, int MaxElIndex, float *Elemental, int ServerPort);
 
     void HandleError(const char* cause);
 
-    SOCKET Server1;
-    SOCKET Server2;
-    SOCKET Server3;
+    SOCKET Servers[3];
     char buffer[1024];
     int len = 0;
 };

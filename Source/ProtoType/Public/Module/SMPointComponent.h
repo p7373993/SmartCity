@@ -80,11 +80,11 @@ public:
 	
 	//좌표값 통신
 	void GetPoint(FViewLocation& InLocation);
-	void RayCast(const FVector& StartLocation, const FVector& EndLocation, const APData& Data);
+	void RayCast(const FVector& StartLocation, const FVector& EndLocation, const APData& Data, int Price);
 
 	void latLongToXY(double latitude, double longitude, double& x, double& y);
 	void XYTolatLong(double x, double y, double& latitude, double& longitude);
-
+	bool Te = false;
 	//통신 모듈
 	TCPModule& MyTCPModule = TCPModule::GetInstance();
 	
