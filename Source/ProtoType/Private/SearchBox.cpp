@@ -3,9 +3,9 @@
 
 #include "SearchBox.h"
 #include "Components/EditableTextBox.h"
+#include "Components/EditableText.h"
 #include "Components/PanelWidget.h"
 #include "Components/ScrollBox.h"
-#include "NameBox.h"
 
 void USearchBox::NativeConstruct()
 {
@@ -13,7 +13,7 @@ void USearchBox::NativeConstruct()
 
     if (!SearchInput)
     {
-        SearchInput = Cast<UEditableTextBox>(GetWidgetFromName(TEXT("SearchBar")));
+        SearchInput = Cast<UEditableText>(GetWidgetFromName(TEXT("SearchBar")));
     }
     if (!SearchResults)
     {
@@ -37,12 +37,19 @@ void USearchBox::OnSearchTextChanged(const FText& Text)
 
     for (const FString& Result : FilteredResults)
     {
-        // NameBox 위젯 생성 및 이름 설정
-        UNameBox* NameBox = CreateWidget<UNameBox>(this, UNameBox::StaticClass());
-        NameBox->SetName(Result);
+        // UNameTextBox 위젯 생성
+        //if (NameTextBoxWidgetClass)
+        //{
+        //    UNameBox* NameTextBox = CreateWidget<UNameBox>(this, NameTextBoxWidgetClass);
+        //    if (NameTextBox)
+        //    {
+        //        NameTextBox->SetName(Result);  // 이름 텍스트 설정
 
-        // 검색 결과 패널에 추가
-        SearchResults->AddChild(NameBox);
+        //        // 검색 결과 패널에 추가
+        //        SearchResults->AddChild(NameTextBox);
+        //        NameTextBox->SetVisibility(ESlateVisibility::Visible);
+        //    }
+        //}
     }
 }
 

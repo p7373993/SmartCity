@@ -25,8 +25,15 @@ protected:
     UPROPERTY(EditAnywhere, Category = "UI")
     TSubclassOf<class UUW_smMain> MyWidgetClass;
 
+    UPROPERTY(EditAnywhere, Category = "UI")
+    TSubclassOf<class USearchBox> MainSearchBarClass;
+
+    UPROPERTY(EditAnywhere, Category = "UI")
+    TSubclassOf<class UNameBox> NameTextBoxWidgetClass;
 
 private:
     UUW_smMain* MyWidget;
+    USearchBox* MainSearchBar;
+    UNameBox* MainNameBox;
 	
 };

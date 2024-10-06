@@ -9,7 +9,7 @@ void UNameBox::NativeConstruct()
     // BindWidget을 사용하지 않고 동적으로 찾고 싶다면 아래 코드를 사용할 수 있습니다.
     if (!NameText)
     {
-        NameText = Cast<UTextBlock>(GetWidgetFromName(TEXT("Name")));
+        NameText = Cast<UTextBlock>(GetWidgetFromName(TEXT("NameTextBox")));
     }
 
     // NameText가 정상적으로 바인딩되었는지 확인

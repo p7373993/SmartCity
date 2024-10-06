@@ -17,7 +17,7 @@ class PROTOTYPE_API USearchBox : public UUserWidget
 public:
     // 검색 입력 필드를 위한 변수
     UPROPERTY()
-    class UEditableTextBox* SearchInput;
+    class UEditableText* SearchInput;
 
     // 검색 결과 리스트를 위한 변수
     UPROPERTY()
