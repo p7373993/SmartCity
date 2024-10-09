@@ -29,29 +29,34 @@ void USearchBox::NativeConstruct()
 
 void USearchBox::OnSearchTextChanged(const FText& Text)
 {
-    // 기존 검색 결과를 초기화
+    // 기존 검색 결과 초기화
     SearchResults->ClearChildren();
 
-    // 검색어에 따라 필터링된 데이터를 반복 처리
+    // 검색어에 맞는 결과 필터링
     TArray<FString> FilteredResults = GetFilteredResults(Text.ToString());
 
-    for (const FString& Result : FilteredResults)
+    // 블루프린트에서 설정된 W_NameBox 클래스를 참조하는지 확인
+    if (NameTextBoxWidgetClass)
     {
-        // UNameTextBox 위젯 생성
-        //if (NameTextBoxWidgetClass)
-        //{
-        //    UNameBox* NameTextBox = CreateWidget<UNameBox>(this, NameTextBoxWidgetClass);
-        //    if (NameTextBox)
-        //    {
-        //        NameTextBox->SetName(Result);  // 이름 텍스트 설정
+        for (const FString& Result : FilteredResults)
+        {
+            // W_NameBox 생성 (UNameBox의 자식이므로 UNameBox로 캐스팅 가능)
+            UNameBox* NameTextBox = CreateWidget<UNameBox>(this, NameTextBoxWidgetClass);
+            if (NameTextBox)
+            {
+                // ScrollBox에 추가
+                SearchResults->AddChild(NameTextBox);
 
-        //        // 검색 결과 패널에 추가
-        //        SearchResults->AddChild(NameTextBox);
-        //        NameTextBox->SetVisibility(ESlateVisibility::Visible);
-        //    }
-        //}
+                // SetName 함수로 이름 텍스트 설정
+                NameTextBox->SetName(Result);
+
+                NameTextBox->SetVisibility(ESlateVisibility::Visible);
+            }
+        }
     }
 }
+
+
 
 TArray<FString> USearchBox::GetFilteredResults(const FString& SearchText)
 {
@@ -59,7 +64,7 @@ TArray<FString> USearchBox::GetFilteredResults(const FString& SearchText)
     AllNames = 
     {
         /* 데이터를 불러오는 로직 */ 
-        "aa","ab","ac","ba","bb","bc","ca","cb","cc"
+        "aa","ab","ac","ba"
     };
     TArray<FString> FilteredNames;
 

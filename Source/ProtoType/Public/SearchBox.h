@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NameBox.h"
 #include "Blueprint/UserWidget.h"
 #include "SearchBox.generated.h"
 
@@ -32,4 +33,9 @@ public:
 private:
     // 검색 결과를 필터링하는 함수의 선언
     TArray<FString> GetFilteredResults(const FString& SearchText);
+
+protected:
+    // USearchBox.h
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+    TSubclassOf<UNameBox> NameTextBoxWidgetClass;
 };
