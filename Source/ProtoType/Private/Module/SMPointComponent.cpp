@@ -233,16 +233,17 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 		 for (const auto& APDatas : TempAPData)
 		 {
 			 int Price = 0;
-			 int DealIndex = 0;
+			 long long DealIndex = 0;
 			 for (const auto& SaleDatas : TempSaleData)
 			 {
 				 
 				 if (SaleDatas.ApartIndex == APDatas.ApartIndex)
 				 {
-					 if (DealIndex << SaleDatas.articleNo)
+					 if (DealIndex < SaleDatas.articleNo)
 					 {
 						 DealIndex = SaleDatas.articleNo;
 						 Price = SaleDatas.dealOrWarrantPrc;
+						 UE_LOG(LogTemp, Warning, TEXT("001The value of number is: %d"), Price);
 					 }
 				 }
 			 }
@@ -255,6 +256,7 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 			 double x;
 			 double y;
 			 latLongToXY(Latitude, Longitude, x, y);
+			 UE_LOG(LogTemp, Warning, TEXT("002The value of number is: %d"), Price);
 			 RayCast(FVector(x, y, 10000000000), FVector(x, y, -1000), APDatas, Price);
 		 }
 		 });
@@ -263,14 +265,14 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& EndLocation, const APData& Data, int Price)
 {
 	bool IsNone = false;
-	float value = 0;
+	float value = static_cast<float>(Price);
 	switch (CurrentType)
 	{
 	case EVisibleType::None:
 		IsNone = true;
 		break;
 	case EVisibleType::Price:
-		//value = Data.price;
+		value = Price;
 		break;
 	case EVisibleType::Floor:
 		value = Price;
@@ -278,6 +280,9 @@ void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& End
 	default:
 		break;
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("003The value of number is: %d"), Price);
+	UE_LOG(LogTemp, Warning, TEXT("004The value of number is: %f"), value);
 	FLinearColor NewColor = IsNone ? FLinearColor::White :GetSpectrumColor(value);
 
 	UObject* WorldContextObject = GetWorld();
