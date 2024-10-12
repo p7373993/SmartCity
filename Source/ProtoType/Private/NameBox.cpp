@@ -56,6 +56,7 @@ void UNameBox::OnNameBtnClicked()
     }
 }
 
+//임시 건물 데이터
 void UNameBox::InitializeTestData()
 {
     // 데이터를 Map으로 관리
@@ -70,12 +71,6 @@ FString* UNameBox::FindDataByName(FString Name)
     return MyDataMap.Find(Name);
 }
 
-//void UNameBox::DisplayDataInViewport(FString Name, FString Address)
-//{
-//    // 뷰포트에 데이터 표시
-//    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,
-//        FString::Printf(TEXT("Building Name: %s\nAddress: %s"), *Name, *Address));
-//}
 
 void UNameBox::DisplayDataInViewport(FString Name, FString Address)
 {
