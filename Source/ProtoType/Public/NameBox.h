@@ -42,5 +42,9 @@ public:
     void OnNameBtnClicked();
 
     TMap<FString, FString> MyDataMap;
+
+protected:
+    UPROPERTY(EditAnywhere, Category = "UI")
+    TSubclassOf<UUserWidget> WBInformClass;
 	
 };

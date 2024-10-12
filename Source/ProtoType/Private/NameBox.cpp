@@ -6,6 +6,10 @@ void UNameBox::NativeConstruct()
 {
     Super::NativeConstruct();
 
+    ///'/Game/Kichan/WB_Inform.WB_Inform'
+     // 런타임에 WB_inform 클래스를 로드합니다.
+    WBInformClass = LoadClass<UUserWidget>(nullptr, TEXT("/Game/Kichan/WB_Inform.WB_Inform_C"));
+
     if (!NameBtn)
     {
         NameBtn = Cast<UButton>(GetWidgetFromName(TEXT("NameButton")));
@@ -66,9 +70,34 @@ FString* UNameBox::FindDataByName(FString Name)
     return MyDataMap.Find(Name);
 }
 
+//void UNameBox::DisplayDataInViewport(FString Name, FString Address)
+//{
+//    // 뷰포트에 데이터 표시
+//    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,
+//        FString::Printf(TEXT("Building Name: %s\nAddress: %s"), *Name, *Address));
+//}
+
 void UNameBox::DisplayDataInViewport(FString Name, FString Address)
 {
-    // 뷰포트에 데이터 표시
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,
-        FString::Printf(TEXT("Building Name: %s\nAddress: %s"), *Name, *Address));
+    if (WBInformClass)
+    {
+        // WB_inform 위젯을 생성합니다.
+        UUserWidget* InformWidget = CreateWidget<UUserWidget>(GetWorld(), WBInformClass);
+
+        if (InformWidget)
+        {
+            // 위젯에서 BuildingName과 BuildingAddress에 접근하여 텍스트 설정
+            UTextBlock* NameTextBlock = Cast<UTextBlock>(InformWidget->GetWidgetFromName("BuildingName"));
+            UTextBlock* AddressTextBlock = Cast<UTextBlock>(InformWidget->GetWidgetFromName("BuildingAddress"));
+
+            if (NameTextBlock && AddressTextBlock)
+            {
+                NameTextBlock->SetText(FText::FromString(Name));
+                AddressTextBlock->SetText(FText::FromString(Address));
+            }
+
+            // 위젯을 뷰포트에 추가합니다.
+            InformWidget->AddToViewport();
+        }
+    }
 }
