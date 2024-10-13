@@ -43,3 +43,9 @@ struct DisAndPRE
     float Distance;
     float PRE;
 };
+struct SearchStruct
+{
+    FString BuildingName = "";
+    FString tag = "";
+    int index = 0;
+};

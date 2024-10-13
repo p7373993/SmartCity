@@ -6,7 +6,7 @@
 #include "Components/EditableText.h"
 #include "Components/PanelWidget.h"
 #include "Components/ScrollBox.h"
-
+#include "ClientModule/TCPModule.h"
 void USearchBox::NativeConstruct()
 {
     Super::NativeConstruct();
@@ -31,14 +31,15 @@ void USearchBox::OnSearchTextChanged(const FText& Text)
 {
     // 기존 검색 결과 초기화
     SearchResults->ClearChildren();
-
+    TCPModule& SearchTCPModule = TCPModule::GetInstance();
     // 검색어에 맞는 결과 필터링
-    TArray<FString> FilteredResults = GetFilteredResults(Text.ToString());
+    //Add TCP Moudule and create TArray<FString> FilteredResults = TCPModule.GetText()
+    TArray<SearchStruct> FilteredResults = SearchTCPModule.SearchBuildingData(Text.ToString(),2);
 
     // 블루프린트에서 설정된 W_NameBox 클래스를 참조하는지 확인
     if (NameTextBoxWidgetClass)
     {
-        for (const FString& Result : FilteredResults)
+        for (const SearchStruct& Result : FilteredResults)
         {
             // W_NameBox 생성 (UNameBox의 자식이므로 UNameBox로 캐스팅 가능)
             UNameBox* NameTextBox = CreateWidget<UNameBox>(this, NameTextBoxWidgetClass);
@@ -48,8 +49,8 @@ void USearchBox::OnSearchTextChanged(const FText& Text)
                 SearchResults->AddChild(NameTextBox);
 
                 // SetName 함수로 이름 텍스트 설정
-                NameTextBox->SetName(Result);
-
+                NameTextBox->SetName(Result.BuildingName);
+                NameTextBox->BuildingData = Result;
                 NameTextBox->SetVisibility(ESlateVisibility::Visible);
             }
         }

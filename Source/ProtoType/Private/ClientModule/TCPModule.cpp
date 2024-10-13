@@ -55,6 +55,39 @@ std::vector<SaleData> TCPModule::GetSaleData(float *Elemental, int ServerPort)
 	return VSaleDatas;
 }
 
+TArray<SearchStruct> TCPModule::SearchBuildingData(const FString& SearchText, int ServerPort)
+{
+	float Elemental[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	SendingSelector(3, 0, Elemental, ServerPort);
+	TArray<SearchStruct> SendingTextArray;
+	int Size = 0;
+	int index = 0;
+	if (SearchText.Len() < 1024) {
+		FString::Printf(TEXT("%s"), *SearchText).GetCharArray().GetData();
+		strcpy_s(buffer, sizeof(buffer), TCHAR_TO_UTF8(*SearchText));
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("SearchText is too long to fit in buffer!"));
+	}
+
+	send(Servers[ServerPort], buffer, sizeof(buffer), 0);
+	recv(Servers[ServerPort], (char*)&Size, sizeof(Size), 0);
+	for (int32 i = 0; i < Size; ++i)
+	{
+		SearchStruct TempStruct;
+
+		recv(Servers[ServerPort], (char*)&buffer, sizeof(buffer), 0);
+		TempStruct.BuildingName = UTF8_TO_TCHAR(buffer);
+		recv(Servers[ServerPort], (char*)&buffer, sizeof(buffer), 0);
+		TempStruct.tag = UTF8_TO_TCHAR(buffer);
+		recv(Servers[ServerPort], (char*)&index, sizeof(index), 0);
+		TempStruct.index = index;
+
+		SendingTextArray.Add(TempStruct);
+	}
+	return SendingTextArray;
+}
+
 std::vector<SaleData> TCPModule::GetPRESaleData(float *Elemental, int ServerPort)
 {
 	return std::vector<SaleData>();

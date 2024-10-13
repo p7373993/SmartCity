@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "ProtoType/Global/Structs.h"
 #include "NameBox.generated.h"
 
 /**
@@ -21,6 +22,8 @@ public:
     //UPROPERTY(meta = (BindWidget)) 이름이 같을시 자동으로 바인딩
     UPROPERTY()
     class UTextBlock* NameText;
+
+    SearchStruct BuildingData;
 
     // 이름을 설정하는 함수
     void SetName(const FString& InName);
