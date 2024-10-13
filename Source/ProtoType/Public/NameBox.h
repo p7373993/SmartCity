@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "ProtoType/Global/Structs.h"
 #include "NameBox.generated.h"
 
 /**
@@ -24,6 +25,8 @@ public:
 
     UPROPERTY()
     class UButton* NameBtn;
+
+    SearchStruct BuildingData;
 
     // 이름을 설정하는 함수
     void SetName(const FString& InName);
