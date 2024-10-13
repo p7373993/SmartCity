@@ -6,6 +6,10 @@ void UNameBox::NativeConstruct()
 {
     Super::NativeConstruct();
 
+    ///'/Game/Kichan/WB_Inform.WB_Inform'
+     // 런타임에 WB_inform 클래스를 로드합니다.
+   // WBInformClass = LoadClass<UUserWidget>(nullptr, TEXT("/Game/Kichan/WB_Inform.WB_Inform_C"));
+
     if (!NameBtn)
     {
         NameBtn = Cast<UButton>(GetWidgetFromName(TEXT("NameButton")));
@@ -29,7 +33,7 @@ void UNameBox::NativeConstruct()
     }
 
     // 테스트용 데이터 초기화
-    InitializeTestData();
+   // InitializeTestData();
 }
 
 void UNameBox::SetName(const FString& InName)
@@ -42,33 +46,61 @@ void UNameBox::SetName(const FString& InName)
 
 void UNameBox::OnNameBtnClicked()
 {
-    FString NameTextValue = NameText->GetText().ToString();
 
-    // 데이터 검색
-    FString* FoundData = FindDataByName(NameTextValue);
-    if (FoundData)
+    UInfomBox* InformBox = CreateWidget<UInfomBox>(GetWorld(), UInfomBox::StaticClass());
+    if (InformBox)
     {
-        DisplayDataInViewport(NameTextValue, *FoundData);
+        // 데이터를 전달하여 위젯을 생성하고 뷰포트에 추가
+        InformBox->DisplayInformWidget("Name", "Address");
     }
+
+    //FString NameTextValue = NameText->GetText().ToString();
+
+    //// 데이터 검색
+    //FString* FoundData = FindDataByName(NameTextValue);
+    //if (FoundData)
+    //{
+    //    DisplayDataInViewport(NameTextValue, *FoundData);
+    //}
 }
 
-void UNameBox::InitializeTestData()
-{
-    // 데이터를 Map으로 관리
-    MyDataMap.Add("aa", "350 5th Ave, New York, NY 10118, USA");
-    MyDataMap.Add("ab", "Champ de Mars, 5 Avenue Anatole France, 75007 Paris, France");
-    MyDataMap.Add("ac", "Piazza del Colosseo, 1, 00184 Roma RM, Italy");
-}
-
-FString* UNameBox::FindDataByName(FString Name)
-{
-    // Map에서 이름으로 데이터 검색
-    return MyDataMap.Find(Name);
-}
-
-void UNameBox::DisplayDataInViewport(FString Name, FString Address)
-{
-    // 뷰포트에 데이터 표시
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,
-        FString::Printf(TEXT("Building Name: %s\nAddress: %s"), *Name, *Address));
-}
+////임시 건물 데이터
+//void UNameBox::InitializeTestData()
+//{
+//    // 데이터를 Map으로 관리
+//    MyDataMap.Add("aa", "350 5th Ave, New York, NY 10118, USA");
+//    MyDataMap.Add("ab", "Champ de Mars, 5 Avenue Anatole France, 75007 Paris, France");
+//    MyDataMap.Add("ac", "Piazza del Colosseo, 1, 00184 Roma RM, Italy");
+//}
+//
+//FString* UNameBox::FindDataByName(FString Name)
+//{
+//    // Map에서 이름으로 데이터 검색
+//    return MyDataMap.Find(Name);
+//}
+//
+//
+//void UNameBox::DisplayDataInViewport(FString Name, FString Address)
+//{
+//    if (WBInformClass)
+//    {
+//        // WB_inform 위젯을 생성합니다.
+//        UUserWidget* InformWidget = CreateWidget<UUserWidget>(GetWorld(), WBInformClass);
+//
+//        if (InformWidget)
+//        {
+//            // 위젯에서 BuildingName과 BuildingAddress에 접근하여 텍스트 설정
+//            UTextBlock* NameTextBlock = Cast<UTextBlock>(InformWidget->GetWidgetFromName("BuildingName"));
+//            UTextBlock* AddressTextBlock = Cast<UTextBlock>(InformWidget->GetWidgetFromName("BuildingAddress"));
+//
+//            if (NameTextBlock && AddressTextBlock)
+//            {
+//                NameTextBlock->SetText(FText::FromString(Name));
+//                AddressTextBlock->SetText(FText::FromString(Address));
+//            }
+//
+//            // 위젯을 뷰포트에 추가합니다.
+//            InformWidget->AddToViewport();
+//        }
+//    }
+//}
