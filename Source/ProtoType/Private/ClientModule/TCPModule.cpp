@@ -78,10 +78,13 @@ TArray<SearchStruct> TCPModule::SearchBuildingData(const FString& SearchText, in
 
 		recv(Servers[ServerPort], (char*)&buffer, sizeof(buffer), 0);
 		TempStruct.BuildingName = UTF8_TO_TCHAR(buffer);
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *TempStruct.BuildingName);
 		recv(Servers[ServerPort], (char*)&buffer, sizeof(buffer), 0);
 		TempStruct.tag = UTF8_TO_TCHAR(buffer);
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *TempStruct.tag);
 		recv(Servers[ServerPort], (char*)&index, sizeof(index), 0);
 		TempStruct.index = index;
+		UE_LOG(LogTemp, Warning, TEXT("%d"), TempStruct.index);
 
 		SendingTextArray.Add(TempStruct);
 	}
