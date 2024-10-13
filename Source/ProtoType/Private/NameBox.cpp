@@ -46,14 +46,22 @@ void UNameBox::SetName(const FString& InName)
 
 void UNameBox::OnNameBtnClicked()
 {
-    FString NameTextValue = NameText->GetText().ToString();
 
-    // 데이터 검색
-    FString* FoundData = FindDataByName(NameTextValue);
-    if (FoundData)
+    UInfomBox* InformBox = CreateWidget<UInfomBox>(GetWorld(), UInfomBox::StaticClass());
+    if (InformBox)
     {
-        DisplayDataInViewport(NameTextValue, *FoundData);
+        // 데이터를 전달하여 위젯을 생성하고 뷰포트에 추가
+        InformBox->DisplayInformWidget("Name", "Address");
     }
+
+    //FString NameTextValue = NameText->GetText().ToString();
+
+    //// 데이터 검색
+    //FString* FoundData = FindDataByName(NameTextValue);
+    //if (FoundData)
+    //{
+    //    DisplayDataInViewport(NameTextValue, *FoundData);
+    //}
 }
 
 //임시 건물 데이터

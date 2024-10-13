@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "InfomBox.h"
 #include "NameBox.generated.h"
 
 /**
@@ -46,5 +47,14 @@ public:
 protected:
     UPROPERTY(EditAnywhere, Category = "UI")
     TSubclassOf<UUserWidget> WBInformClass;
+
+//protected:
+//    // UInformClass의 블루프린트 클래스를 지정하는 변수
+//    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+//    TSubclassOf<UInfomBox> InformClass;
+//
+//    // 예시 데이터 (임의로 설정)
+//    FString SampleBuildingName = TEXT("Sample Building");
+//    FString SampleBuildingAddress = TEXT("123 Sample St.");
 	
 };
