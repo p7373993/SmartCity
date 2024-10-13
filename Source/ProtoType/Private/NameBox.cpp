@@ -50,11 +50,11 @@ void UNameBox::OnNameBtnClicked()
     UInfomBox* InformBox = CreateWidget<UInfomBox>(GetWorld(), UInfomBox::StaticClass());
     if (InformBox)
     {
+        FString NameTextValue = NameText->GetText().ToString();
         // 데이터를 전달하여 위젯을 생성하고 뷰포트에 추가
-        InformBox->DisplayInformWidget("Name", "Address");
+        InformBox->DisplayInformWidget(NameTextValue, "Address");
     }
 
-    //FString NameTextValue = NameText->GetText().ToString();
 
     //// 데이터 검색
     //FString* FoundData = FindDataByName(NameTextValue);
