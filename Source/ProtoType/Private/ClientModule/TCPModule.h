@@ -60,6 +60,8 @@ public:
 //Output::Vector float Distance, float Price Rate of increase
 //  std::vector<DisAndPRE> GetPREDecalData(float *Elemental);
 
+    TArray<SearchStruct> SearchBuildingData(const FString& SearchText, int ServerPort);
+
 //Input::Index and Persent EX:) Elem[0] MaxIndex Elem[1~19]=Persent
 //Output::DecalActDistance in nearest order
     std::vector<float> GetDecalDistance(float* Elemental, int ServerPort);
