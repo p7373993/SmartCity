@@ -70,6 +70,7 @@ public:
 //Output::Vector SaleData(PRE)
     std::vector<SaleData> GetPRESaleData(float *Elemental, int ServerPort);
 
+    std::vector<PriceData> GetSaleDataAccordingToDate(float* Elemental, int ServerPort);
     TCPModule(const TCPModule&) = delete;
     TCPModule& operator=(const TCPModule&) = delete;
 
