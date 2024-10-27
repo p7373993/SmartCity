@@ -35,7 +35,7 @@ void UInfomBox::DisplayInformWidget(const FString& BuildingName, const FString& 
     }
 }
 
-void UInfomBox::DisplayInformWidget(const int Bulidingindex)
+void UInfomBox::DisplayInformWidget(const int Bulidingindex, const int tag)
 {
     // InformBoxChildClass가 null일 경우 동적으로 블루프린트를 로드
     if (!InformBoxChildClass)
