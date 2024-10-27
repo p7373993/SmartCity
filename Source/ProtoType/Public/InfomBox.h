@@ -18,6 +18,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "UI")
     void DisplayInformWidget(const FString& BuildingName, const FString& BuildingAddress);
 
+    void DisplayInformWidget(const int Bulidingindex);
+
 protected:
     // 자식 블루프린트 위젯을 생성하는 내부 함수
     UInfomBox* CreateChildInformWidget(const FString& BuildingName, const FString& BuildingAddress);
