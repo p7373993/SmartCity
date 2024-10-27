@@ -50,6 +50,9 @@ void USearchBox::OnSearchTextChanged(const FText& Text)
 
                 // SetName 함수로 이름 텍스트 설정
                 NameTextBox->SetName(Result.BuildingName);
+                //임의의 건물 위치 전달
+                NameTextBox->setXpos(10);
+                NameTextBox->setYpos(10);
                 NameTextBox->BuildingData = Result;
                 NameTextBox->SetVisibility(ESlateVisibility::Visible);
             }

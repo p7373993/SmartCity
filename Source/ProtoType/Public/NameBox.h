@@ -16,9 +16,17 @@ class PROTOTYPE_API UNameBox : public UUserWidget
 {
 	GENERATED_BODY()
 
+    int xPos;
+    int yPos;
+
 public:
 
     virtual void NativeConstruct() override;
+
+    void setXpos(int x);
+    void setYpos(int y);
+    int getXpos();
+    int getYpos();
 
     //UPROPERTY(meta = (BindWidget)) 이름이 같을시 자동으로 바인딩
     UPROPERTY()

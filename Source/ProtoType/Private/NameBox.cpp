@@ -36,6 +36,26 @@ void UNameBox::NativeConstruct()
    // InitializeTestData();
 }
 
+void UNameBox::setXpos(int x)
+{
+    xPos = x;
+}
+
+void UNameBox::setYpos(int y)
+{
+    yPos = y;
+}
+
+int UNameBox::getXpos()
+{
+    return xPos;
+}
+
+int UNameBox::getYpos()
+{
+    return yPos;
+}
+
 void UNameBox::SetName(const FString& InName)
 {
     if (NameText)
@@ -46,7 +66,7 @@ void UNameBox::SetName(const FString& InName)
 
 void UNameBox::OnNameBtnClicked()
 {
-
+    //정보 창 생성
     UInfomBox* InformBox = CreateWidget<UInfomBox>(GetWorld(), UInfomBox::StaticClass());
     if (InformBox)
     {
@@ -57,7 +77,8 @@ void UNameBox::OnNameBtnClicked()
         //InformBox->DisplayInformWidget(1);
     }
 
-    
+    //검색한 건물 위치로 이동
+    //위치이동하는 함수 호출 후, 현재 위젯에 담겨진 xpos, ypos의 값을 넘겨주면 된다.
 
     //// 데이터 검색
     //FString* FoundData = FindDataByName(NameTextValue);
