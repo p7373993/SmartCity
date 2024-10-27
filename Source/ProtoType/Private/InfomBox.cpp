@@ -1,5 +1,18 @@
 #include "InfomBox.h"
 #include "Components/TextBlock.h"
+#include "Components/Button.h"
+
+void UInfomBox::NativeConstruct()
+{
+    if (!RemoveBtn)
+    {
+        RemoveBtn = Cast<UButton>(GetWidgetFromName(TEXT("NameButton")));
+    }
+    if (RemoveBtn)
+    {
+        RemoveBtn->OnClicked.AddDynamic(this, &UInfomBox::RemoveBtnClicked);
+    }
+}
 
 void UInfomBox::DisplayInformWidget(const FString& BuildingName, const FString& BuildingAddress)
 {
@@ -111,4 +124,9 @@ void UInfomBox::SetBuildingInfo(const FString& BuildingName, const FString& Buil
     {
         UE_LOG(LogTemp, Warning, TEXT("TextBlocks not found!"));
     }
+}
+
+void UInfomBox::RemoveBtnClicked()
+{
+    RemoveFromParent();
 }

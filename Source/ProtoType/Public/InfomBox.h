@@ -10,9 +10,14 @@ class PROTOTYPE_API UInfomBox : public UUserWidget
     GENERATED_BODY()
 
 public:
+
+    virtual void NativeConstruct() override;
+
     // 자식 블루프린트를 참조할 변수
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
     TSubclassOf<UInfomBox> InformBoxChildClass;
+
+    //remove_btn
 
     // 다른 클래스에서 호출할 함수
     UFUNCTION(BlueprintCallable, Category = "UI")
@@ -27,4 +32,11 @@ protected:
     // BuildingName과 BuildingAddress를 설정하는 함수
     UFUNCTION(BlueprintCallable, Category = "UI")
     virtual void SetBuildingInfo(const FString& BuildingName, const FString& BuildingAddress);
+
+    UPROPERTY()
+    class UButton* RemoveBtn;
+
+    UFUNCTION()
+    void RemoveBtnClicked();
+
 };

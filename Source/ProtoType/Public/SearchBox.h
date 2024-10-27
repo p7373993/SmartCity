@@ -30,6 +30,7 @@ public:
     UFUNCTION()
     void OnSearchTextChanged(const FText& Text);
 
+
 private:
     // 검색 결과를 필터링하는 함수의 선언
     TArray<FString> GetFilteredResults(const FString& SearchText);
@@ -38,4 +39,10 @@ protected:
     // USearchBox.h
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
     TSubclassOf<UNameBox> NameTextBoxWidgetClass;
+
+    UPROPERTY()
+    class UButton* ClearBtn;
+
+    UFUNCTION()
+    void OnClearBtnClicked();
 };

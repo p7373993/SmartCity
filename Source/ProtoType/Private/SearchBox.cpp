@@ -7,6 +7,9 @@
 #include "Components/PanelWidget.h"
 #include "Components/ScrollBox.h"
 #include "ClientModule/TCPModule.h"
+#include "Components/Button.h"
+
+
 void USearchBox::NativeConstruct()
 {
     Super::NativeConstruct();
@@ -18,6 +21,15 @@ void USearchBox::NativeConstruct()
     if (!SearchResults)
     {
         SearchResults = Cast<UScrollBox>(GetWidgetFromName(TEXT("NamesList")));
+    }
+
+    if (!ClearBtn)
+    {
+        ClearBtn = Cast<UButton>(GetWidgetFromName(TEXT("clear_btn")));
+    }
+    if (ClearBtn)
+    {
+        ClearBtn->OnClicked.AddDynamic(this, &USearchBox::OnClearBtnClicked);
     }
 
     if (SearchInput)
@@ -35,6 +47,11 @@ void USearchBox::OnSearchTextChanged(const FText& Text)
     // 검색어에 맞는 결과 필터링
     //Add TCP Moudule and create TArray<FString> FilteredResults = TCPModule.GetText()
     TArray<SearchStruct> FilteredResults = SearchTCPModule.SearchBuildingData(Text.ToString(),2);
+
+    if (FilteredResults.Num() == 0)
+    {
+
+    }
 
     // 블루프린트에서 설정된 W_NameBox 클래스를 참조하는지 확인
     if (NameTextBoxWidgetClass)
@@ -82,5 +99,13 @@ TArray<FString> USearchBox::GetFilteredResults(const FString& SearchText)
     }
 
     return FilteredNames;
+}
+
+void USearchBox::OnClearBtnClicked()
+{
+    if (SearchInput)
+    {
+        SearchInput->SetText(FText::GetEmpty());
+    }
 }
 
