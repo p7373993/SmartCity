@@ -48,11 +48,6 @@ void USearchBox::OnSearchTextChanged(const FText& Text)
     //Add TCP Moudule and create TArray<FString> FilteredResults = TCPModule.GetText()
     TArray<SearchStruct> FilteredResults = SearchTCPModule.SearchBuildingData(Text.ToString(),2);
 
-    if (FilteredResults.Num() == 0)
-    {
-
-    }
-
     // 블루프린트에서 설정된 W_NameBox 클래스를 참조하는지 확인
     if (NameTextBoxWidgetClass)
     {
@@ -75,6 +70,31 @@ void USearchBox::OnSearchTextChanged(const FText& Text)
             }
         }
     }
+
+    //서버와 관령없는 임시의 네임박스
+    if (FilteredResults.Num() == 0)
+    {
+        // 검색어에 맞는 결과 필터링
+        TArray<FString> FilteredResult = GetFilteredResults(Text.ToString());
+        // 블루프린트에서 설정된 W_NameBox 클래스를 참조하는지 확인
+        if (NameTextBoxWidgetClass)
+        {
+            for (const FString& Result : FilteredResult)
+            {
+                // W_NameBox 생성 (UNameBox의 자식이므로 UNameBox로 캐스팅 가능)
+                UNameBox* NameTextBox = CreateWidget<UNameBox>(this, NameTextBoxWidgetClass);
+                if (NameTextBox)
+                {
+                    // ScrollBox에 추가
+                    SearchResults->AddChild(NameTextBox);
+                    // SetName 함수로 이름 텍스트 설정
+                    NameTextBox->SetName(Result);
+                    NameTextBox->SetVisibility(ESlateVisibility::Visible);
+                }
+            }
+        }
+    }
+
 }
 
 

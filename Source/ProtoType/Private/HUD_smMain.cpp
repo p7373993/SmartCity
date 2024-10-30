@@ -18,11 +18,11 @@ AHUD_smMain::AHUD_smMain()
     static ConstructorHelpers::FClassFinder<USearchBox> UI_SearchBar_C(TEXT("/Game/Kichan/WB_SearchBox.WB_SearchBox_C"));
     MainSearchBarClass = UI_SearchBar_C.Class;
 
-    static ConstructorHelpers::FClassFinder<UNameBox> NameTextBoxBPClass(TEXT("/Game/Kichan/W_NameBox.W_NameBox_C")); // 블루프린트 경로
-    if (NameTextBoxBPClass.Succeeded())
-    {
-        NameTextBoxWidgetClass = NameTextBoxBPClass.Class;
-    }
+    //static ConstructorHelpers::FClassFinder<UNameBox> NameTextBoxBPClass(TEXT("/Game/Kichan/W_NameBox.W_NameBox_C")); // 블루프린트 경로
+    //if (NameTextBoxBPClass.Succeeded())
+    //{
+    //    NameTextBoxWidgetClass = NameTextBoxBPClass.Class;
+    //}
 }
 
 void AHUD_smMain::BeginPlay()

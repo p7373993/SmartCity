@@ -6,7 +6,7 @@ void UInfomBox::NativeConstruct()
 {
     if (!RemoveBtn)
     {
-        RemoveBtn = Cast<UButton>(GetWidgetFromName(TEXT("NameButton")));
+        RemoveBtn = Cast<UButton>(GetWidgetFromName(TEXT("remove_btn")));
     }
     if (RemoveBtn)
     {
