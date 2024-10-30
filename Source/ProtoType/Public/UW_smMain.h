@@ -10,6 +10,7 @@
 /**
  * 
  */
+
 UCLASS()
 class PROTOTYPE_API UUW_smMain : public UUserWidget
 {
@@ -25,6 +26,11 @@ public:
 
 protected:
 	virtual void NativeConstruct() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> ColorBoxWidgetClass; // 위젯 클래스 참조
+
+	UUserWidget* ColorBoxInstance; // 위젯 인스턴스를 저장할 변수
 
 private:
 	bool Btn_1On = false;

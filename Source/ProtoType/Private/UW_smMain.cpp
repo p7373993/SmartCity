@@ -12,6 +12,7 @@
 void UUW_smMain::NativeConstruct()
 {
 	Super::NativeConstruct();
+	/*/ Script / UMGEditor.WidgetBlueprint'/Game/Blueprints/ColorWidget.ColorWidget'*/
 	Btn_ChangeColor = Cast<UButton>(GetWidgetFromName(TEXT("Btn_1")));
 	Btn_AddLandmark = Cast<UButton>(GetWidgetFromName(TEXT("Btn_2")));
 	Btn_ShowingMenu = Cast<UButton>(GetWidgetFromName(TEXT("Btn_3")));
@@ -63,9 +64,22 @@ void UUW_smMain::ColorChangeButtonClicked()
 				{
 					SMPointComponent->TempChangeType(EVisibleType::None); // USMPointComponent의 public 함수 호출
 					Btn_1On = false;
+
+					//색깔 그래프 나타내기
+					if (ColorBoxWidgetClass)
+					{
+						ColorBoxInstance = CreateWidget<UUserWidget>(this, ColorBoxWidgetClass);
+						if(ColorBoxInstance) ColorBoxInstance->AddToViewport();
+					}
 				}
 				else
 				{
+					if (ColorBoxInstance)
+					{
+						ColorBoxInstance->RemoveFromParent();
+						ColorBoxInstance = nullptr; // 인스턴스를 null로 설정하여 메모리 관리
+					}
+
 					SMPointComponent->TempChangeType(EVisibleType::Price); // USMPointComponent의 public 함수 호출
 					Btn_1On = true;
 				}
