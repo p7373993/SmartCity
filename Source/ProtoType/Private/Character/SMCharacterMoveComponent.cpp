@@ -46,6 +46,7 @@ USMCharacterMoveComponent::USMCharacterMoveComponent()
 	bIsLeftClicking = false;
 	bIsRightClicking = false;
 
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 
@@ -97,6 +98,44 @@ void USMCharacterMoveComponent::BeginPlay()
 
 	}
 }
+
+void USMCharacterMoveComponent::StartMovingToLocation(const FVector& targetLocation)
+{
+	this->TargetLocation = targetLocation;
+	bIsMovingToTarget = true; // 이동을 시작하도록 설정
+}
+
+void USMCharacterMoveComponent::MoveToLocation()
+{
+	FVector CurrentLocation = OwningActor->GetActorLocation();
+	float DistanceToTarget = FVector::Dist(CurrentLocation, TargetLocation);
+
+	// 목표 위치까지 거리에 따라 속도를 조절합니다 (멀면 더 빠르게 이동)
+	float Speed = FMath::Clamp(DistanceToTarget * 0.1f, 1000000.0f, 100000000.0f);
+	UE_LOG(LogTemp, Warning, TEXT("My Speed is: %f"), Speed);
+	UE_LOG(LogTemp, Warning, TEXT("My DistanceToTarget is: %f"), DistanceToTarget);
+	FVector Direction = (TargetLocation - CurrentLocation).GetSafeNormal();
+	FVector NewLocation = CurrentLocation + Direction * Speed * GetWorld()->DeltaTimeSeconds;
+
+	if (DistanceToTarget <= Speed * GetWorld()->DeltaTimeSeconds)
+	{
+		NewLocation = TargetLocation;
+		bIsMovingToTarget = false; // 목표 위치에 도달하면 이동을 멈춥니다.
+	}
+
+	OwningActor->SetActorLocation(NewLocation);
+}
+
+void USMCharacterMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (bIsMovingToTarget)
+	{
+		MoveToLocation();
+	}
+}
+
 
 void USMCharacterMoveComponent::GetActorTag()
 {

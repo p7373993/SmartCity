@@ -1,6 +1,9 @@
 #include "NameBox.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
+#include "Character/SMCharacterMoveComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Character/SMCharacter.h"
 
 void UNameBox::NativeConstruct()
 {
@@ -79,6 +82,30 @@ void UNameBox::OnNameBtnClicked()
 
     //검색한 건물 위치로 이동
     //위치이동하는 함수 호출 후, 현재 위젯에 담겨진 xpos, ypos의 값을 넘겨주면 된다.
+    //UE_LOG(LogTemp, Warning, TEXT("My xPos is: %d"), xPos);
+    //UE_LOG(LogTemp, Warning, TEXT("My yPos is: %d"), yPos);
+    FVector TargetPosition(xPos, yPos, 80000.0f); // zpos는 고정값 6000
+
+    // StartMovingToLocation 함수를 호출하여 목표 위치로 이동을 시작합니다.
+    TArray<AActor*> FoundActors;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASMCharacter::StaticClass(), FoundActors);
+
+    if (FoundActors.Num() > 0)
+    {
+        // 첫 번째 SMCharacter를 선택
+        ASMCharacter* Character = Cast<ASMCharacter>(FoundActors[0]);
+
+        if (Character)
+        {
+            // SMCharacter에서 USMPointComponent를 찾음
+            USMCharacterMoveComponent* MoveComponent = Character->FindComponentByClass<USMCharacterMoveComponent>();
+
+            if (MoveComponent)
+            {
+                MoveComponent->StartMovingToLocation(TargetPosition);
+            }
+        }
+    }
 
     //// 데이터 검색
     //FString* FoundData = FindDataByName(NameTextValue);
