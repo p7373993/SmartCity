@@ -473,55 +473,37 @@ void USMPointComponent::ChangeBuildingMaterial(FHitResult& HitResult, FLinearCol
 
 FLinearColor USMPointComponent::GetSpectrumColor(float Value)
 {
-	float Wavelength = FMath::Lerp(400.0f, 700.0f, (Value - MinValue) / (MaxValue - MinValue));
-
 	float RGB_R = 0.0f;
 	float RGB_G = 0.0f;
 	float RGB_B = 0.0f;
 
-	if (Wavelength >= 400.0f && Wavelength <= 440.0f) {
-		RGB_R = -(Wavelength - 440.0f) / (440.0f - 400.0f);
-		RGB_G = 0.0f;
-		RGB_B = 1.0f;
+	if (Value >= 0.0f && Value <= 30000.0f) {
+		// Black to Red
+		RGB_R = Value / 30000.0f; // R goes from 0 to 1
+		RGB_G = 0.0f; // G remains 0
+		RGB_B = 0.0f; // B remains 0
 	}
-	else if (Wavelength > 440.0f && Wavelength <= 490.0f) {
-		RGB_R = 0.0f;
-		RGB_G = (Wavelength - 440.0f) / (490.0f - 440.0f);
-		RGB_B = 1.0f;
+	else if (Value > 30000.0f && Value <= 70000.0f) {
+		// Yellow to Green
+		RGB_R = 1.0f - (Value - 30000.0f) / (70000.0f - 30000.0f); // R decreases from 1 to 0
+		RGB_G = (Value - 30000.0f) / (70000.0f - 30000.0f); // G increases from 0 to 1
+		RGB_B = 0.0f; // B remains 0
 	}
-	else if (Wavelength > 490.0f && Wavelength <= 510.0f) {
-		RGB_R = 0.0f;
-		RGB_G = 1.0f;
-		RGB_B = -(Wavelength - 510.0f) / (510.0f - 490.0f);
+	else if (Value > 70000.0f && Value <= 150000.0f) {
+		// Green to Cyan
+		RGB_R = 0.0f; // R remains 0
+		RGB_G = 1.0f - (Value - 70000.0f) / (150000.0f - 70000.0f); // G decreases from 1 to 0
+		RGB_B = (Value - 70000.0f) / (150000.0f - 70000.0f); // B increases from 0 to 1
 	}
-	else if (Wavelength > 510.0f && Wavelength <= 580.0f) {
-		RGB_R = (Wavelength - 510.0f) / (580.0f - 510.0f);
-		RGB_G = 1.0f;
-		RGB_B = 0.0f;
-	}
-	else if (Wavelength > 580.0f && Wavelength <= 645.0f) {
-		RGB_R = 1.0f;
-		RGB_G = -(Wavelength - 645.0f) / (645.0f - 580.0f);
-		RGB_B = 0.0f;
-	}
-	else if (Wavelength > 645.0f && Wavelength <= 700.0f) {
-		RGB_R = 1.0f;
-		RGB_G = 0.0f;
-		RGB_B = 0.0f;
+	else if (Value > 150000.0f) {
+		// White
+		RGB_R = 1.0f; // R = 1
+		RGB_G = 1.0f; // G = 1
+		RGB_B = 1.0f; // B = 1
 	}
 
-	// Apply intensity factor
-	float Intensity = 1.0f;
-	if (Wavelength > 700.0f || Wavelength < 400.0f) {
-		Intensity = 0.0f;
-	}
-	else if (Wavelength > 645.0f) {
-		Intensity = 0.3f + 0.7f * (700.0f - Wavelength) / (700.0f - 645.0f);
-	}
-	else if (Wavelength < 420.0f) {
-		Intensity = 0.3f + 0.7f * (Wavelength - 400.0f) / (420.0f - 400.0f);
-	}
-
+	// Apply intensity factor (optional, but you may want to keep it)
+	float Intensity = 1.0f; // Adjust if you want to manage brightness
 	return FLinearColor(RGB_R * Intensity, RGB_G * Intensity, RGB_B * Intensity);
 }
 
