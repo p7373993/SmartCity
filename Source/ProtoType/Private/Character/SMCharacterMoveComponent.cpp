@@ -121,6 +121,13 @@ void USMCharacterMoveComponent::MoveToLocation()
 	{
 		NewLocation = TargetLocation;
 		bIsMovingToTarget = false; // 목표 위치에 도달하면 이동을 멈춥니다.
+
+		if (PlayerController)
+		{
+			FRotator NewRotation = PlayerController->GetControlRotation();
+			NewRotation.Yaw = 240.0f;
+			PlayerController->SetControlRotation(NewRotation);
+		}
 	}
 
 	OwningActor->SetActorLocation(NewLocation);

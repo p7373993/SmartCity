@@ -69,15 +69,11 @@ void UNameBox::SetName(const FString& InName)
 
 void UNameBox::OnNameBtnClicked()
 {
-    //정보 창 생성
     UInfomBox* InformBox = CreateWidget<UInfomBox>(GetWorld(), UInfomBox::StaticClass());
     if (InformBox)
     {
         FString NameTextValue = NameText->GetText().ToString();
-        // 데이터를 전달하여 위젯을 생성하고 뷰포트에 추가
-        InformBox->DisplayInformWidget(NameTextValue, "Address");
-        //아파트 인덱스를 이용한 테스트 용
-        //InformBox->DisplayInformWidget(1);
+        InformBox->DisplayInformWidget(NameTextValue, "Address"); // 데이터 전달
     }
 
     //검색한 건물 위치로 이동
