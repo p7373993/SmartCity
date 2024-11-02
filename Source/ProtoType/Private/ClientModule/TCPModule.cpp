@@ -96,6 +96,20 @@ std::vector<SaleData> TCPModule::GetPRESaleData(float *Elemental, int ServerPort
 	return std::vector<SaleData>();
 }
 
+TextStruct TCPModule::GetBuildingAddressAndName(float* Elemental, int ServerPort)
+{
+	SendingSelector(3, 0, Elemental, ServerPort);
+	TArray<SearchStruct> SendingTextArray;
+	TextStruct TempStruct;
+	recv(Servers[ServerPort], (char*)&buffer, sizeof(buffer), 0);
+	TempStruct.BuildingName = UTF8_TO_TCHAR(buffer);
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *TempStruct.BuildingName);
+	recv(Servers[ServerPort], (char*)&buffer, sizeof(buffer), 0);
+	TempStruct.BuildingAddress = UTF8_TO_TCHAR(buffer);
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *TempStruct.BuildingAddress);
+	return TempStruct;
+}
+
 void TCPModule::CheckAndReconnect(int ServerPort)
 {
 	buffer[1024];
