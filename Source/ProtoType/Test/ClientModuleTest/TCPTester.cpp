@@ -10,6 +10,13 @@ void ATCPTester::BeginPlay()
 {
 	Super::BeginPlay();
 	TCPServer.TCPCunnect();
+	float Test[20]{3,0,0 ,0,0 ,0,0 ,0,0 ,0,0 ,0,0 ,0,0 ,0,0 ,0,0 ,0};
+	std::vector<PriceData> Temp = TCPServer.GetSaleDataAccordingToDate(Test, 2);
+	for (const auto DataTemp : Temp)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Date: %d Price: %d"), DataTemp.Date ,DataTemp.Price);
+	}
+
 }
 
 void ATCPTester::GetAPDataLOG()
