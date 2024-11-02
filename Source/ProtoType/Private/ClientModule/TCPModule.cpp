@@ -98,7 +98,7 @@ std::vector<SaleData> TCPModule::GetPRESaleData(float *Elemental, int ServerPort
 
 TextStruct TCPModule::GetBuildingAddressAndName(float* Elemental, int ServerPort)
 {
-	SendingSelector(3, 0, Elemental, ServerPort);
+	SendingSelector(5, 0, Elemental, ServerPort);
 	TArray<SearchStruct> SendingTextArray;
 	TextStruct TempStruct;
 	recv(Servers[ServerPort], (char*)&buffer, sizeof(buffer), 0);
