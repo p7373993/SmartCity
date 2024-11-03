@@ -23,13 +23,6 @@ protected:
 	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true"))
 	void SetData();
 
-	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true"))
-	float GetMinValue();
-
-	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true"))
-	float GetMaxValue();
-
-
 	UPROPERTY(BlueprintReadOnly, Category = "Data", meta = (AllowPrivateAccess = "true"))
 	TArray<FVector2D> DataSet;
 
