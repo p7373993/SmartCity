@@ -96,6 +96,21 @@ std::vector<SaleData> TCPModule::GetPRESaleData(float *Elemental, int ServerPort
 	return std::vector<SaleData>();
 }
 
+std::vector<PriceData> TCPModule::GetSaleDataAccordingToDate(float* Elemental, int ServerPort)
+{
+	SendingSelector(4, 1, Elemental, ServerPort);
+	std::vector<PriceData> Data;
+	int Size;
+	recv(Servers[ServerPort], (char*)&Size, sizeof(Size), 0);
+	for (int i=0; i<Size; ++i) 
+	{
+		PriceData DataTemp;
+		recv(Servers[ServerPort], (char*)&DataTemp, sizeof(DataTemp), 0);
+		Data.push_back(DataTemp);
+	}
+	return Data;
+}
+
 void TCPModule::CheckAndReconnect(int ServerPort)
 {
 	buffer[1024];

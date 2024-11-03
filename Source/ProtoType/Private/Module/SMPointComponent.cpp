@@ -48,7 +48,7 @@ USMPointComponent::USMPointComponent()
 
 
 	//현재 타입
-	CurrentType = EVisibleType::Floor;
+	CurrentType = EVisibleType::None;
 	SetCurrentTypeData();
 
 }

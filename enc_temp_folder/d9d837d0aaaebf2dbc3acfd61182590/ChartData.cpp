@@ -3,8 +3,6 @@
 
 #include "UI/ChartData.h"
 #include "ProtoType/private/ClientModule/TCPModule.h"
-#include <algorithm> // std::min_element, std::max_element
-#include <vector>
 
 //#include <algorithm> // std::min_element, std::max_element
 //#include <vector>
@@ -22,7 +20,7 @@ void UChartData::SetData()
 	float A[20] = { 107678 ,0,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0};
 	std::vector<PriceData> Temp = MyTCPModule.GetSaleDataAccordingToDate(A, 2);
 
-	for (size_t i = 0; i<Temp.size(); i++)
+	for (size_t i = 0; i<30; i++)
 	{
 		DataSet.Add(FVector2D(Temp[i].Date, Temp[i].Price));
 	}
@@ -33,30 +31,7 @@ void UChartData::SetData()
 	//UE_LOG(LogTemp, Display, TEXT("%f:%f"),Temp[1].Date,Temp[1].Price);
 
 
-// Temp º¤ÅÍÀÇ Price °ª Áß ÃÖ´ñ°ª°ú ÃÖ¼Ú°ª ±¸ÇÏ±â
-	MaxPrice = std::max_element(Temp.begin(), Temp.end(),
-		[](const PriceData& a, const PriceData& b) {
-			return a.Price < b.Price;
-		})->Price;
-
-	MinPrice = std::min_element(Temp.begin(), Temp.end(),
-		[](const PriceData& a, const PriceData& b) {
-			return a.Price < b.Price;
-		})->Price;
-
-	std::cout << "ÃÖ´ñ°ª: " << MaxPrice << ", ÃÖ¼Ú°ª: " << MinPrice << std::endl;
-
 	
-}
-
-float UChartData::GetMinValue()
-{
-	return MinPrice;
-}
-
-float UChartData::GetMaxValue()
-{
-	return MaxPrice;
 }
 
 

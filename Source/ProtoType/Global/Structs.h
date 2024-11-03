@@ -49,3 +49,8 @@ struct SearchStruct
     FString tag = "";
     int index = 0;
 };
+struct PriceData
+{
+    int Date;
+    int Price;
+};
