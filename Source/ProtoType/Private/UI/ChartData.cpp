@@ -49,6 +49,16 @@ void UChartData::SetData()
 	
 }
 
+void UChartData::PredictData()//예측데이터 설정
+{
+	//std::vector<PriceData> Temp = MyTCPModule.predictData();// example
+
+	//for (size_t i = 0; i < Temp.size(); i++)
+	//{
+	//	AIData.Add(FVector2D(Temp[i].Date, Temp[i].Price));
+	//}
+}
+
 float UChartData::GetMinValue()
 {
 	return MinPrice;

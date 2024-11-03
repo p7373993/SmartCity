@@ -24,6 +24,9 @@ protected:
 	void SetData();
 
 	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true"))
+	void PredictData();
+
+	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true"))
 	float GetMinValue();
 
 	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true"))
@@ -32,6 +35,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Data", meta = (AllowPrivateAccess = "true"))
 	TArray<FVector2D> DataSet;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Data", meta = (AllowPrivateAccess = "true"))
+	TArray<FVector2D> AIData;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Data", meta = (AllowPrivateAccess = "true"))
 	float LowerBound;
