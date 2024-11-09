@@ -102,13 +102,26 @@ std::vector<PriceData> TCPModule::GetSaleDataAccordingToDate(float* Elemental, i
 	std::vector<PriceData> Data;
 	int Size;
 	recv(Servers[ServerPort], (char*)&Size, sizeof(Size), 0);
-	for (int i=0; i<Size; ++i) 
+	for (int i = 0; i < Size; ++i)
 	{
 		PriceData DataTemp;
 		recv(Servers[ServerPort], (char*)&DataTemp, sizeof(DataTemp), 0);
 		Data.push_back(DataTemp);
 	}
 	return Data;
+}
+TextStruct TCPModule::GetBuildingAddressAndName(float* Elemental, int ServerPort)
+{
+	SendingSelector(5, 0, Elemental, ServerPort);
+	TArray<SearchStruct> SendingTextArray;
+	TextStruct TempStruct;
+	recv(Servers[ServerPort], (char*)&buffer, sizeof(buffer), 0);
+	TempStruct.BuildingName = UTF8_TO_TCHAR(buffer);
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *TempStruct.BuildingName);
+	recv(Servers[ServerPort], (char*)&buffer, sizeof(buffer), 0);
+	TempStruct.BuildingAddress = UTF8_TO_TCHAR(buffer);
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *TempStruct.BuildingAddress);
+	return TempStruct;
 }
 
 void TCPModule::CheckAndReconnect(int ServerPort)

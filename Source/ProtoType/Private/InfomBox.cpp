@@ -1,4 +1,4 @@
-#include "InfomBox.h"
+ï»¿#include "InfomBox.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 
@@ -11,7 +11,7 @@ UInfomBox* UInfomBox::GetInstance(UObject* WorldContextObject)
         Instance = CreateWidget<UInfomBox>(WorldContextObject->GetWorld(), UInfomBox::StaticClass());
     }
 
-    return Instance; // ÀÌ¹Ì »ı¼ºµÈ ÀÎ½ºÅÏ½º ¹İÈ¯
+    return Instance; // Ã€ÃŒÂ¹ÃŒ Â»Ã½Â¼ÂºÂµÃˆ Ã€ÃÂ½ÂºÃ…ÃÂ½Âº Â¹ÃÃˆÂ¯
 }
 
 void UInfomBox::NativeConstruct()
@@ -30,10 +30,10 @@ void UInfomBox::DisplayInformWidget(const FString& BuildingName, const FString& 
 {
     UWorld* World = GetWorld();
 
-    // InformBoxChildClass°¡ nullÀÏ °æ¿ì µ¿ÀûÀ¸·Î ºí·çÇÁ¸°Æ®¸¦ ·Îµå
+    // InformBoxChildClassÂ°Â¡ nullÃ€Ã Â°Ã¦Â¿Ã¬ ÂµÂ¿Ã€Ã»Ã€Â¸Â·Ã ÂºÃ­Â·Ã§Ã‡ÃÂ¸Â°Ã†Â®Â¸Â¦ Â·ÃÂµÃ¥
     if (!InformBoxChildClass)
     {
-        FStringClassReference WidgetClassRef(TEXT("/Game/Kichan/WB_Inform.WB_Inform_C"));  // ½ÇÁ¦ °æ·Î·Î ¼öÁ¤
+        FStringClassReference WidgetClassRef(TEXT("/Game/Kichan/WB_Inform.WB_Inform_C"));  // Â½Ã‡ÃÂ¦ Â°Ã¦Â·ÃÂ·Ã Â¼Ã¶ÃÂ¤
         UClass* WidgetClass = WidgetClassRef.TryLoadClass<UUserWidget>();
 
         if (WidgetClass)
@@ -47,13 +47,13 @@ void UInfomBox::DisplayInformWidget(const FString& BuildingName, const FString& 
         }
     }
 
-    // ÀÚ½Ä ºí·çÇÁ¸°Æ® À§Á¬À» »ı¼ºÇÏ°í µ¥ÀÌÅÍ ¼³Á¤ ¹× ºäÆ÷Æ®¿¡ Ãß°¡
+    // Ã€ÃšÂ½Ã„ ÂºÃ­Â·Ã§Ã‡ÃÂ¸Â°Ã†Â® Ã€Â§ÃÂ¬Ã€Â» Â»Ã½Â¼ÂºÃ‡ÃÂ°Ã­ ÂµÂ¥Ã€ÃŒÃ…Ã Â¼Â³ÃÂ¤ Â¹Ã— ÂºÃ¤Ã†Ã·Ã†Â®Â¿Â¡ ÃƒÃŸÂ°Â¡
     //UInfomBox* ChildWidget = CreateChildInformWidget(BuildingName, BuildingAddress);
     
     if (Instance)
     {
-        // ÀÌ¹Ì ÀÖÀ» °æ¿ì Áö¿î ÈÄ
-        // Ãß°¡
+        // Ã€ÃŒÂ¹ÃŒ Ã€Ã–Ã€Â» Â°Ã¦Â¿Ã¬ ÃÃ¶Â¿Ã® ÃˆÃ„
+        // ÃƒÃŸÂ°Â¡
         Instance->RemoveFromParent();
     }
 
@@ -61,13 +61,13 @@ void UInfomBox::DisplayInformWidget(const FString& BuildingName, const FString& 
     cChildWidget->AddToViewport();
 }
 
-//ºôµù ÀÎµ¦½º, Å×±× ±â¹İÀ¸·Î Á¤º¸Ã¢ »ı¼º
+//ÂºÃ´ÂµÃ¹ Ã€ÃÂµÂ¦Â½Âº, Ã…Ã—Â±Ã— Â±Ã¢Â¹ÃÃ€Â¸Â·Ã ÃÂ¤ÂºÂ¸ÃƒÂ¢ Â»Ã½Â¼Âº
 void UInfomBox::DisplayInformWidget(const int Bulidingindex, const int tag)
 {
-    // InformBoxChildClass°¡ nullÀÏ °æ¿ì µ¿ÀûÀ¸·Î ºí·çÇÁ¸°Æ®¸¦ ·Îµå
+    // InformBoxChildClassÂ°Â¡ nullÃ€Ã Â°Ã¦Â¿Ã¬ ÂµÂ¿Ã€Ã»Ã€Â¸Â·Ã ÂºÃ­Â·Ã§Ã‡ÃÂ¸Â°Ã†Â®Â¸Â¦ Â·ÃÂµÃ¥
     if (!InformBoxChildClass)
     {
-        FStringClassReference WidgetClassRef(TEXT("/Game/Kichan/WB_Inform.WB_Inform_C"));  // ½ÇÁ¦ °æ·Î·Î ¼öÁ¤
+        FStringClassReference WidgetClassRef(TEXT("/Game/Kichan/WB_Inform.WB_Inform_C"));  // Â½Ã‡ÃÂ¦ Â°Ã¦Â·ÃÂ·Ã Â¼Ã¶ÃÂ¤
         UClass* WidgetClass = WidgetClassRef.TryLoadClass<UUserWidget>();
 
         if (WidgetClass)
@@ -81,15 +81,15 @@ void UInfomBox::DisplayInformWidget(const int Bulidingindex, const int tag)
         }
     }
 
-    // ¿©±â¿¡ index ±âÁØÀ¸·Î ¹Ş¾Æ¿Â °Ç¹° ÀÌ¸§ÀÌ¶û ÁÖ¼Ò ³ÖÀ¸¸é µË´Ï´Ù~
+    // Â¿Â©Â±Ã¢Â¿Â¡ index Â±Ã¢ÃÃ˜Ã€Â¸Â·Ã Â¹ÃÂ¾Ã†Â¿Ã‚ Â°Ã‡Â¹Â° Ã€ÃŒÂ¸Â§Ã€ÃŒÂ¶Ã» ÃÃ–Â¼Ã’ Â³Ã–Ã€Â¸Â¸Ã© ÂµÃ‹Â´ÃÂ´Ã™~
     FString BuildingName = "buliding name";
     FString BuildingAddress = "buliding address";
 
-    // ÀÚ½Ä ºí·çÇÁ¸°Æ® À§Á¬À» »ı¼ºÇÏ°í µ¥ÀÌÅÍ ¼³Á¤ ¹× ºäÆ÷Æ®¿¡ Ãß°¡
+    // Ã€ÃšÂ½Ã„ ÂºÃ­Â·Ã§Ã‡ÃÂ¸Â°Ã†Â® Ã€Â§ÃÂ¬Ã€Â» Â»Ã½Â¼ÂºÃ‡ÃÂ°Ã­ ÂµÂ¥Ã€ÃŒÃ…Ã Â¼Â³ÃÂ¤ Â¹Ã— ÂºÃ¤Ã†Ã·Ã†Â®Â¿Â¡ ÃƒÃŸÂ°Â¡
     UInfomBox* ChildWidget = CreateChildInformWidget(BuildingName, BuildingAddress);
     if (ChildWidget)
     {
-        // ºäÆ÷Æ®¿¡ Ãß°¡
+        // ÂºÃ¤Ã†Ã·Ã†Â®Â¿Â¡ ÃƒÃŸÂ°Â¡
         ChildWidget->AddToViewport();
     }
     else
@@ -107,12 +107,12 @@ UInfomBox* UInfomBox::CreateChildInformWidget(const FString& BuildingName, const
         return nullptr;
     }
 
-    // ÀÚ½Ä ºí·çÇÁ¸°Æ® À§Á¬ »ı¼º
+    // Ã€ÃšÂ½Ã„ ÂºÃ­Â·Ã§Ã‡ÃÂ¸Â°Ã†Â® Ã€Â§ÃÂ¬ Â»Ã½Â¼Âº
     UInfomBox* ChildWidget = CreateWidget<UInfomBox>(World, InformBoxChildClass);
 
     if (ChildWidget)
     {
-        // ÀÚ½Ä À§Á¬¿¡ BuildingName°ú BuildingAddress ¼³Á¤
+        // Ã€ÃšÂ½Ã„ Ã€Â§ÃÂ¬Â¿Â¡ BuildingNameÂ°Ãº BuildingAddress Â¼Â³ÃÂ¤
         ChildWidget->SetBuildingInfo(BuildingName, BuildingAddress);
     }
     else
@@ -125,7 +125,7 @@ UInfomBox* UInfomBox::CreateChildInformWidget(const FString& BuildingName, const
 
 void UInfomBox::SetBuildingInfo(const FString& BuildingName, const FString& BuildingAddress)
 {
-    // TextBlockÀ» Ã£°í ÀÌ¸§°ú ÁÖ¼Ò¸¦ ¼³Á¤
+    // TextBlockÃ€Â» ÃƒÂ£Â°Ã­ Ã€ÃŒÂ¸Â§Â°Ãº ÃÃ–Â¼Ã’Â¸Â¦ Â¼Â³ÃÂ¤
     UTextBlock* NameTextBlock = Cast<UTextBlock>(GetWidgetFromName(TEXT("BuildingName")));
     UTextBlock* AddressTextBlock = Cast<UTextBlock>(GetWidgetFromName(TEXT("BuildingAddress")));
 
