@@ -246,8 +246,9 @@ void USMCharacterMoveComponent::GetActorTag()
 						if (isNumeric)
 						{
 							std::string Temp = std::string(TCHAR_TO_UTF8(*Tag.ToString()));
+							int TagIntValue = std::stoi(Temp);
 							number = std::stoi(Temp);
-							float TempEL[20] = { Type, 1121, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+							float TempEL[20] = { Type, TagIntValue, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 							TCPModule& TCPModuleA = TCPModule::GetInstance();
 							TextStruct TempText = TCPModuleA.GetBuildingAddressAndName(TempEL, 2);
 

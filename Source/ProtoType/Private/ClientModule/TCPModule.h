@@ -47,7 +47,7 @@ public:
 
 //Run only once in Game But if Run this when the connection is lost//
     void TCPCunnect();
-
+    void TCPReCunnect();
 //Input::Vertex of cube EX:) Elem[0]=latitude Elem[1]=longitude Elem[2]=latitude Elem[3]=longitude Elem[4]=latitude Elem[5]=longitude Elem[6]=latitude Elem[7]=longitude
 //Output::Vector APData
     std::vector<APData> GetAPData(float *Elemental, int ServerPort);
@@ -71,6 +71,7 @@ public:
     std::vector<SaleData> GetPRESaleData(float *Elemental, int ServerPort);
 
     std::vector<PriceData> GetSaleDataAccordingToDate(float* Elemental, int ServerPort);
+    std::vector<PriceData> GetPRESaleDataAccordingToDate(float* Elemental, int ServerPort);
     TextStruct GetBuildingAddressAndName(float* Elemental, int ServerPort);
 
     TCPModule(const TCPModule&) = delete;

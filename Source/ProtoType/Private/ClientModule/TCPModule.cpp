@@ -110,6 +110,32 @@ std::vector<PriceData> TCPModule::GetSaleDataAccordingToDate(float* Elemental, i
 	}
 	return Data;
 }
+std::vector<PriceData> TCPModule::GetPRESaleDataAccordingToDate(float* Elemental, int ServerPort)
+{
+	timeval timeout;
+	timeout.tv_sec = 100;
+
+	if (setsockopt(Servers[ServerPort], SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout)) == SOCKET_ERROR) {
+		std::cerr << "Failed to set receive timeout\n";
+		closesocket(Servers[ServerPort]);
+		WSACleanup();
+
+		std::vector<PriceData> Null = { {0,0},{0,0} };
+		return Null;
+	}
+
+	SendingSelector(6, 1, Elemental, ServerPort);
+	std::vector<PriceData> Data;
+	int Size;
+	recv(Servers[ServerPort], (char*)&Size, sizeof(Size), 0);
+	for (int i = 0; i < Size; ++i)
+	{
+		PriceData DataTemp;
+		recv(Servers[ServerPort], (char*)&DataTemp, sizeof(DataTemp), 0);
+		Data.push_back(DataTemp);
+	}
+	return Data;
+}
 TextStruct TCPModule::GetBuildingAddressAndName(float* Elemental, int ServerPort)
 {
 	SendingSelector(5, 0, Elemental, ServerPort);
@@ -179,6 +205,13 @@ void TCPModule::TCPCunnect()
 		if (::connect(Servers[i], (const sockaddr*)&addr, sizeof(addr)) == INVALID_SOCKET)
 			HandleError("connet");
 	}
+}
+
+void TCPModule::TCPReCunnect()
+{
+	CheckAndReconnect(0);
+	CheckAndReconnect(1);
+	CheckAndReconnect(2);
 }
 
 void TCPModule::HandleError(const char* cause)
