@@ -4,6 +4,7 @@
 #include "Character/SMCharacterMoveComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Character/SMCharacter.h"
+#include "ProtoType/private/ClientModule/TCPModule.h"
 
 void UNameBox::NativeConstruct()
 {
@@ -72,8 +73,13 @@ void UNameBox::OnNameBtnClicked()
     UInfomBox* InformBox = CreateWidget<UInfomBox>(GetWorld(), UInfomBox::StaticClass());
     if (InformBox)
     {
+        int Type = 1;
+        float TempEL[20] = { Type,BuildingData.index,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
         FString NameTextValue = NameText->GetText().ToString();
-        InformBox->DisplayInformWidget(NameTextValue, "Address"); // 데이터 전달
+        TCPModule& TCPModuleA = TCPModule::GetInstance();
+        TextStruct TempText = TCPModuleA.GetBuildingAddressAndName(TempEL,2);
+
+        InformBox->DisplayInformWidget(TempText.BuildingName, TempText.BuildingAddress); // 데이터 전달
     }
 
     //검색한 건물 위치로 이동
