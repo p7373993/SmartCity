@@ -227,7 +227,8 @@ void USMCharacterMoveComponent::GetActorTag()
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Tag.ToString());
 
-					UInfomBox* InformBox = CreateWidget<UInfomBox>(GetWorld(), UInfomBox::StaticClass());
+					//UInfomBox* InformBox = CreateWidget<UInfomBox>(GetWorld(), UInfomBox::StaticClass());
+					UInfomBox* InformBox = UInfomBox::GetInstance(GetWorld());
 					if (InformBox)
 					{
 						int Type = 2;

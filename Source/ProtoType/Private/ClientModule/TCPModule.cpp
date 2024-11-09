@@ -209,9 +209,12 @@ void TCPModule::TCPCunnect()
 
 void TCPModule::TCPReCunnect()
 {
-	CheckAndReconnect(0);
-	CheckAndReconnect(1);
-	CheckAndReconnect(2);
+	closesocket(Servers[0]);
+
+	closesocket(Servers[1]);
+
+	closesocket(Servers[2]);
+	TCPCunnect();
 }
 
 void TCPModule::HandleError(const char* cause)

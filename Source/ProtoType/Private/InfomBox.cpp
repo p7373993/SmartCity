@@ -10,6 +10,10 @@ UInfomBox* UInfomBox::GetInstance(UObject* WorldContextObject)
     {
         Instance = CreateWidget<UInfomBox>(WorldContextObject->GetWorld(), UInfomBox::StaticClass());
     }
+    else
+    {
+        Instance->RemoveFromViewport();
+    }
 
     return Instance; 
 }
@@ -47,10 +51,10 @@ void UInfomBox::DisplayInformWidget(const FString& BuildingName, const FString& 
     }
 
     //UInfomBox* ChildWidget = CreateChildInformWidget(BuildingName, BuildingAddress);
-    if (Instance->cChildWidget)
-    {
-        cChildWidget->RemoveFromParent();
-    }
+    //if (Instance->cChildWidget)
+    //{
+    //    cChildWidget->RemoveFromParent();
+    //}
     cChildWidget = CreateChildInformWidget(BuildingName, BuildingAddress);
     cChildWidget->AddToViewport();
 
