@@ -53,6 +53,9 @@ public:
     UFUNCTION()
     void OnNameBtnClicked();
 
+
+private:
+    UInfomBox* CurrentInformBox; // 현재 InformBox 인스턴스를 저장할 변수
     //TMap<FString, FString> MyDataMap;
 
 //protected:

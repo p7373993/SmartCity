@@ -2,6 +2,18 @@
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 
+UInfomBox* UInfomBox::Instance = nullptr;
+
+UInfomBox* UInfomBox::GetInstance(UObject* WorldContextObject)
+{
+    if (!Instance)
+    {
+        Instance = CreateWidget<UInfomBox>(WorldContextObject->GetWorld(), UInfomBox::StaticClass());
+    }
+
+    return Instance; // 이미 생성된 인스턴스 반환
+}
+
 void UInfomBox::NativeConstruct()
 {
     if (!RemoveBtn)
@@ -36,18 +48,20 @@ void UInfomBox::DisplayInformWidget(const FString& BuildingName, const FString& 
     }
 
     // 자식 블루프린트 위젯을 생성하고 데이터 설정 및 뷰포트에 추가
-    UInfomBox* ChildWidget = CreateChildInformWidget(BuildingName, BuildingAddress);
-    if (ChildWidget)
+    //UInfomBox* ChildWidget = CreateChildInformWidget(BuildingName, BuildingAddress);
+    
+    if (Instance)
     {
-        // 뷰포트에 추가
-        ChildWidget->AddToViewport();
+        // 이미 있을 경우 지운 후
+        // 추가
+        Instance->RemoveFromParent();
     }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Failed to create child widget!"));
-    }
+
+    cChildWidget = CreateChildInformWidget(BuildingName, BuildingAddress);
+    cChildWidget->AddToViewport();
 }
 
+//빌딩 인덱스, 테그 기반으로 정보창 생성
 void UInfomBox::DisplayInformWidget(const int Bulidingindex, const int tag)
 {
     // InformBoxChildClass가 null일 경우 동적으로 블루프린트를 로드

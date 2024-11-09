@@ -10,6 +10,7 @@ class PROTOTYPE_API UInfomBox : public UUserWidget
     GENERATED_BODY()
 
 public:
+    static UInfomBox* GetInstance(UObject* WorldContextObject);
 
     virtual void NativeConstruct() override;
 
@@ -38,5 +39,10 @@ protected:
 
     UFUNCTION()
     void RemoveBtnClicked();
+
+    UInfomBox* cChildWidget;
+
+private:
+    static UInfomBox* Instance;
 
 };
