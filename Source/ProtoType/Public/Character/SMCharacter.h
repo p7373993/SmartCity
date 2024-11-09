@@ -25,8 +25,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-
+	UFUNCTION(BlueprintCallable, Category = "TCP")
+	void TCPRecunnect();
 //기본 캐릭터 조작
 protected:
 
