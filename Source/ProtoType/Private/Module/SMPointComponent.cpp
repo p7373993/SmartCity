@@ -218,10 +218,12 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 		i++;
 	}
 
-	if (MyTCPModule.IsInUse == false)
+	GetAPDataThread();
+
+	/*if (MyTCPModule.IsInUse == false)
 	{
-		Async(EAsyncExecution::Thread, [this]() {GetAPDataThread(); });
-	}
+		Async(EAsyncExecution::Thread, [this]() { });
+	}*/
 }
 
  void USMPointComponent::GetAPDataThread()
