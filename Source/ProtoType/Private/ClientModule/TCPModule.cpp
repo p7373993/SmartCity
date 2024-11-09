@@ -196,7 +196,7 @@ void TCPModule::TCPCunnect()
 		addr.sin_addr.S_un.S_addr = inet_addr(ServerIP);
 		addr.sin_port = ::htons(ports[i]);
 
-		int timeout = 2000;
+		int timeout = 1;
 		if (setsockopt(Servers[i], SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout)) == SOCKET_ERROR)
 			HandleError("setsockopt(SO_RCVTIMEO)");
 		if (setsockopt(Servers[i], SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout, sizeof(timeout)) == SOCKET_ERROR)
