@@ -11,7 +11,7 @@ UInfomBox* UInfomBox::GetInstance(UObject* WorldContextObject)
         Instance = CreateWidget<UInfomBox>(WorldContextObject->GetWorld(), UInfomBox::StaticClass());
     }
 
-    return Instance; // ÀÌ¹Ì »ý¼ºµÈ ÀÎ½ºÅÏ½º ¹ÝÈ¯
+    return Instance; 
 }
 
 void UInfomBox::NativeConstruct()
@@ -30,7 +30,6 @@ void UInfomBox::DisplayInformWidget(const FString& BuildingName, const FString& 
 {
     UWorld* World = GetWorld();
 
-    // InformBoxChildClass°¡ nullÀÏ °æ¿ì µ¿ÀûÀ¸·Î ºí·çÇÁ¸°Æ®¸¦ ·Îµå
     if (!InformBoxChildClass)
     {
         FStringClassReference WidgetClassRef(TEXT("/Game/Kichan/WB_Inform.WB_Inform_C"));  // ½ÇÁ¦ °æ·Î·Î ¼öÁ¤
@@ -47,27 +46,43 @@ void UInfomBox::DisplayInformWidget(const FString& BuildingName, const FString& 
         }
     }
 
-    // ÀÚ½Ä ºí·çÇÁ¸°Æ® À§Á¬À» »ý¼ºÇÏ°í µ¥ÀÌÅÍ ¼³Á¤ ¹× ºäÆ÷Æ®¿¡ Ãß°¡
     //UInfomBox* ChildWidget = CreateChildInformWidget(BuildingName, BuildingAddress);
-    
-    if (Instance)
+    if (Instance->cChildWidget)
     {
-        // ÀÌ¹Ì ÀÖÀ» °æ¿ì Áö¿î ÈÄ
-        // Ãß°¡
-        Instance->RemoveFromParent();
+        cChildWidget->RemoveFromParent();
     }
-
     cChildWidget = CreateChildInformWidget(BuildingName, BuildingAddress);
     cChildWidget->AddToViewport();
+
 }
 
-//ºôµù ÀÎµ¦½º, Å×±× ±â¹ÝÀ¸·Î Á¤º¸Ã¢ »ý¼º
+//void UInfomBox::DisplayInformWidget(const FString& BuildingName, const FString& BuildingAddress)
+//{
+//    if (Instance)
+//    {
+//        Instance->RemoveFromParent();
+//    }
+//
+//    Instance = CreateWidget<UInfomBox>(GetWorld(), UInfomBox::StaticClass());
+//    if (Instance)
+//    {
+//        UTextBlock* NameTextBlock = Cast<UTextBlock>(Instance->GetWidgetFromName(TEXT("BuildingName")));
+//        UTextBlock* AddressTextBlock = Cast<UTextBlock>(Instance->GetWidgetFromName(TEXT("BuildingAddress")));
+//
+//        if (NameTextBlock && AddressTextBlock)
+//        {
+//            NameTextBlock->SetText(FText::FromString(BuildingName));
+//            AddressTextBlock->SetText(FText::FromString(BuildingAddress));
+//        }
+//        Instance->AddToViewport();
+//    }
+//}
+
 void UInfomBox::DisplayInformWidget(const int Bulidingindex, const int tag)
 {
-    // InformBoxChildClass°¡ nullÀÏ °æ¿ì µ¿ÀûÀ¸·Î ºí·çÇÁ¸°Æ®¸¦ ·Îµå
     if (!InformBoxChildClass)
     {
-        FStringClassReference WidgetClassRef(TEXT("/Game/Kichan/WB_Inform.WB_Inform_C"));  // ½ÇÁ¦ °æ·Î·Î ¼öÁ¤
+        FStringClassReference WidgetClassRef(TEXT("/Game/Kichan/WB_Inform.WB_Inform_C"));  
         UClass* WidgetClass = WidgetClassRef.TryLoadClass<UUserWidget>();
 
         if (WidgetClass)
@@ -81,20 +96,28 @@ void UInfomBox::DisplayInformWidget(const int Bulidingindex, const int tag)
         }
     }
 
-    // ¿©±â¿¡ index ±âÁØÀ¸·Î ¹Þ¾Æ¿Â °Ç¹° ÀÌ¸§ÀÌ¶û ÁÖ¼Ò ³ÖÀ¸¸é µË´Ï´Ù~
     FString BuildingName = "buliding name";
     FString BuildingAddress = "buliding address";
 
-    // ÀÚ½Ä ºí·çÇÁ¸°Æ® À§Á¬À» »ý¼ºÇÏ°í µ¥ÀÌÅÍ ¼³Á¤ ¹× ºäÆ÷Æ®¿¡ Ãß°¡
     UInfomBox* ChildWidget = CreateChildInformWidget(BuildingName, BuildingAddress);
     if (ChildWidget)
     {
-        // ºäÆ÷Æ®¿¡ Ãß°¡
         ChildWidget->AddToViewport();
     }
     else
     {
         UE_LOG(LogTemp, Warning, TEXT("Failed to create child widget!"));
+    }
+}
+
+
+
+void UInfomBox::RemoveInstance()
+{
+    if (Instance)
+    {
+        Instance->RemoveFromParent();
+        Instance = nullptr;
     }
 }
 
@@ -107,26 +130,35 @@ UInfomBox* UInfomBox::CreateChildInformWidget(const FString& BuildingName, const
         return nullptr;
     }
 
-    // ÀÚ½Ä ºí·çÇÁ¸°Æ® À§Á¬ »ý¼º
     UInfomBox* ChildWidget = CreateWidget<UInfomBox>(World, InformBoxChildClass);
 
-    if (ChildWidget)
+    //if (ChildWidget)
+    //{
+    //    ChildWidget->SetBuildingInfo(BuildingName, BuildingAddress);
+    //}
+    //else
+    //{
+    //    UE_LOG(LogTemp, Error, TEXT("Failed to create InformBox child widget!"));
+    //}
+
+    //return ChildWidget;
+
+    if (Instance)
     {
-        // ÀÚ½Ä À§Á¬¿¡ BuildingName°ú BuildingAddress ¼³Á¤
-        ChildWidget->SetBuildingInfo(BuildingName, BuildingAddress);
+        Instance = ChildWidget;
+        Instance->SetBuildingInfo(BuildingName, BuildingAddress);
     }
     else
     {
         UE_LOG(LogTemp, Error, TEXT("Failed to create InformBox child widget!"));
     }
 
-    return ChildWidget;
+    return Instance;
 }
 
 void UInfomBox::SetBuildingInfo(const FString& BuildingName, const FString& BuildingAddress)
 {
-    // TextBlockÀ» Ã£°í ÀÌ¸§°ú ÁÖ¼Ò¸¦ ¼³Á¤
-    UTextBlock* NameTextBlock = Cast<UTextBlock>(GetWidgetFromName(TEXT("BuildingName")));
+    /*UTextBlock* NameTextBlock = Cast<UTextBlock>(GetWidgetFromName(TEXT("BuildingName")));
     UTextBlock* AddressTextBlock = Cast<UTextBlock>(GetWidgetFromName(TEXT("BuildingAddress")));
 
     if (NameTextBlock && AddressTextBlock)
@@ -137,10 +169,19 @@ void UInfomBox::SetBuildingInfo(const FString& BuildingName, const FString& Buil
     else
     {
         UE_LOG(LogTemp, Warning, TEXT("TextBlocks not found!"));
+    }*/
+    UTextBlock* NameTextBlock = Cast<UTextBlock>(Instance->GetWidgetFromName(TEXT("BuildingName")));
+    UTextBlock* AddressTextBlock = Cast<UTextBlock>(Instance->GetWidgetFromName(TEXT("BuildingAddress")));
+    
+    if (NameTextBlock && AddressTextBlock)
+    {
+        NameTextBlock->SetText(FText::FromString(BuildingName));
+        AddressTextBlock->SetText(FText::FromString(BuildingAddress));
     }
 }
 
 void UInfomBox::RemoveBtnClicked()
 {
     RemoveFromParent();
+    //RemoveInstance();
 }

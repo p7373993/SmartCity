@@ -70,14 +70,26 @@ void UNameBox::SetName(const FString& InName)
 
 void UNameBox::OnNameBtnClicked()
 {
-    UInfomBox* InformBox = CreateWidget<UInfomBox>(GetWorld(), UInfomBox::StaticClass());
+    //UInfomBox* InformBox = CreateWidget<UInfomBox>(GetWorld(), UInfomBox::StaticClass());
+    //if (InformBox)
+    //{
+    //    int Type = 1;
+    //    float TempEL[20] = { Type,BuildingData.index,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    //    FString NameTextValue = NameText->GetText().ToString();
+    //    TCPModule& TCPModuleA = TCPModule::GetInstance();
+    //    TextStruct TempText = TCPModuleA.GetBuildingAddressAndName(TempEL,2);
+
+    //    InformBox->DisplayInformWidget(TempText.BuildingName, TempText.BuildingAddress); // 데이터 전달
+    //}
+
+    UInfomBox* InformBox = UInfomBox::GetInstance(GetWorld());
     if (InformBox)
     {
         int Type = 1;
-        float TempEL[20] = { Type,BuildingData.index,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+        float TempEL[20] = { Type,BuildingData.index,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
         FString NameTextValue = NameText->GetText().ToString();
         TCPModule& TCPModuleA = TCPModule::GetInstance();
-        TextStruct TempText = TCPModuleA.GetBuildingAddressAndName(TempEL,2);
+        TextStruct TempText = TCPModuleA.GetBuildingAddressAndName(TempEL, 2);
 
         InformBox->DisplayInformWidget(TempText.BuildingName, TempText.BuildingAddress); // 데이터 전달
     }
