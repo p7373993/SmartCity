@@ -217,13 +217,11 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 		lA[(++i)] = longitude;
 		i++;
 	}
-
 	GetAPDataThread();
-
-	/*if (MyTCPModule.IsInUse == false)
+	if (MyTCPModule.IsInUse == false)
 	{
-		Async(EAsyncExecution::Thread, [this]() { });
-	}*/
+		Async(EAsyncExecution::Thread, [this]() {GetAPDataThread(); });
+	}
 }
 
  void USMPointComponent::GetAPDataThread()
