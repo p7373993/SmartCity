@@ -217,7 +217,7 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 		lA[(++i)] = longitude;
 		i++;
 	}
-
+	GetAPDataThread();
 	if (MyTCPModule.IsInUse == false)
 	{
 		Async(EAsyncExecution::Thread, [this]() {GetAPDataThread(); });
