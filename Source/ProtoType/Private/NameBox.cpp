@@ -162,8 +162,6 @@ void UNameBox::OnNameBtnClicked()
 //        }
 //    }
 //}
-const double R = 6371000;
-const double DEG_TO_RAD = PI / 180.0;
 
 void UNameBox::latLongToXY(double latitude, double longitude, double& x, double& y)
 {
@@ -175,11 +173,11 @@ void UNameBox::latLongToXY(double latitude, double longitude, double& x, double&
     const double scaleX = -8691673.56;
     const double scaleY = -10995829.86;
 
-    double phi0 = 36.50476937 * DEG_TO_RAD;
-    double lambda0 = 127.2784241 * DEG_TO_RAD;
-    double phi = latitude * DEG_TO_RAD;
-    double lambda = longitude * DEG_TO_RAD;
+    double phi0 = 36.50476937 * PI / 180.0;
+    double lambda0 = 127.2784241 * PI / 180.0;
+    double phi = latitude * PI / 180.0;
+    double lambda = longitude * PI / 180.0;
 
-    x = R * (lambda - lambda0) * cos(phi0) * 100 + 13167 - 3040 + 1000 + 1000;
-    y = -R * (phi - phi0) * 100 + 3073 + 6597 - 6000 - 200;
+    x = 6371000 * (lambda - lambda0) * cos(phi0) * 100 + 13167 - 3040 + 1000 + 1000;
+    y = -6371000 * (phi - phi0) * 100 + 3073 + 6597 - 6000 - 200;
 }
