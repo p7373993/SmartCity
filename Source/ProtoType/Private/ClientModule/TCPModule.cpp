@@ -204,7 +204,6 @@ void TCPModule::SendingSelector(int Type, int MaxElIndex, float *Elemental, int 
 
 void TCPModule::TCPCunnect()
 {	
-	
 	int ports[3] = { PORT1, PORT2, PORT3 };
 	for (int i = 0; i < 3; i++) {
 		WSADATA wsaData;
@@ -219,7 +218,7 @@ void TCPModule::TCPCunnect()
 		addr.sin_addr.S_un.S_addr = inet_addr(ServerIP);
 		addr.sin_port = ::htons(ports[i]);
 
-		int timeout = 1;
+		int timeout = 2000;
 		if (setsockopt(Servers[i], SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout)) == SOCKET_ERROR)
 			HandleError("setsockopt(SO_RCVTIMEO)");
 		if (setsockopt(Servers[i], SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout, sizeof(timeout)) == SOCKET_ERROR)
