@@ -74,6 +74,8 @@ public:
     std::vector<PriceData> GetPRESaleDataAccordingToDate(float* Elemental, int ServerPort);
     TextStruct GetBuildingAddressAndName(float* Elemental, int ServerPort);
 
+    std::vector<float> GetXYLocation(float* Elemental, int ServerPort);
+
     TCPModule(const TCPModule&) = delete;
     TCPModule& operator=(const TCPModule&) = delete;
 

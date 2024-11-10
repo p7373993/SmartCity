@@ -70,26 +70,15 @@ void UNameBox::SetName(const FString& InName)
 
 void UNameBox::OnNameBtnClicked()
 {
-    //UInfomBox* InformBox = CreateWidget<UInfomBox>(GetWorld(), UInfomBox::StaticClass());
-    //if (InformBox)
-    //{
-    //    int Type = 1;
-    //    float TempEL[20] = { Type,BuildingData.index,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    //    FString NameTextValue = NameText->GetText().ToString();
-    //    TCPModule& TCPModuleA = TCPModule::GetInstance();
-    //    TextStruct TempText = TCPModuleA.GetBuildingAddressAndName(TempEL,2);
-
-    //    InformBox->DisplayInformWidget(TempText.BuildingName, TempText.BuildingAddress); // 데이터 전달
-    //}
-
-    UInfomBox* InformBox = UInfomBox::GetInstance(GetWorld());
+    TCPModule& TCPModuleA = TCPModule::GetInstance();
+    int Type = 1;
+    float TempEL[20] = { Type,BuildingData.index,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+    UInfomBox* InformBox = CreateWidget<UInfomBox>(GetWorld(), UInfomBox::StaticClass());
     if (InformBox)
     {
-        int Type = 1;
-        float TempEL[20] = { Type,BuildingData.index,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+
         FString NameTextValue = NameText->GetText().ToString();
-        TCPModule& TCPModuleA = TCPModule::GetInstance();
-        TextStruct TempText = TCPModuleA.GetBuildingAddressAndName(TempEL, 2);
+        TextStruct TempText = TCPModuleA.GetBuildingAddressAndName(TempEL,2);
 
         InformBox->DisplayInformWidget(TempText.BuildingName, TempText.BuildingAddress); // 데이터 전달
     }
@@ -98,7 +87,11 @@ void UNameBox::OnNameBtnClicked()
     //위치이동하는 함수 호출 후, 현재 위젯에 담겨진 xpos, ypos의 값을 넘겨주면 된다.
     //UE_LOG(LogTemp, Warning, TEXT("My xPos is: %d"), xPos);
     //UE_LOG(LogTemp, Warning, TEXT("My yPos is: %d"), yPos);
-    FVector TargetPosition(xPos, yPos, 80000.0f); // zpos는 고정값 6000
+    std::vector<float> XYpos = TCPModuleA.GetXYLocation(TempEL,2);
+    double X = 0;
+    double Y = 0;
+    latLongToXY(XYpos[0], XYpos[1], X, Y);
+    FVector TargetPosition(X, Y, 80000.0f); // zpos는 고정값 6000
 
     // StartMovingToLocation 함수를 호출하여 목표 위치로 이동을 시작합니다.
     TArray<AActor*> FoundActors;
@@ -169,3 +162,22 @@ void UNameBox::OnNameBtnClicked()
 //        }
 //    }
 //}
+
+void UNameBox::latLongToXY(double latitude, double longitude, double& x, double& y)
+{
+    const double baseLatitude = 36.50476937;
+    const double baseLongitude = 127.2784241;
+
+
+
+    const double scaleX = -8691673.56;
+    const double scaleY = -10995829.86;
+
+    double phi0 = 36.50476937 * PI / 180.0;
+    double lambda0 = 127.2784241 * PI / 180.0;
+    double phi = latitude * PI / 180.0;
+    double lambda = longitude * PI / 180.0;
+
+    x = 6371000 * (lambda - lambda0) * cos(phi0) * 100 + 13167 - 3040 + 1000 + 1000;
+    y = -6371000 * (phi - phi0) * 100 + 3073 + 6597 - 6000 - 200;
+}

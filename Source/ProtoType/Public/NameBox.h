@@ -52,7 +52,7 @@ public:
     // NameBtn이 클릭되었을 때 호출되는 함수
     UFUNCTION()
     void OnNameBtnClicked();
-
+    void latLongToXY(double latitude, double longitude, double& x, double& y);
 
 private:
     UInfomBox* CurrentInformBox; // 현재 InformBox 인스턴스를 저장할 변수
