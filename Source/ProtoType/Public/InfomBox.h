@@ -10,6 +10,7 @@ class PROTOTYPE_API UInfomBox : public UUserWidget
     GENERATED_BODY()
 
 public:
+    static UInfomBox* GetInstance(UObject* WorldContextObject);
 
     virtual void NativeConstruct() override;
 
@@ -25,6 +26,8 @@ public:
 
     void DisplayInformWidget(const int Bulidingindex, const int tag);
 
+    void RemoveInstance();
+
 protected:
     // 자식 블루프린트 위젯을 생성하는 내부 함수
     UInfomBox* CreateChildInformWidget(const FString& BuildingName, const FString& BuildingAddress);
@@ -38,5 +41,10 @@ protected:
 
     UFUNCTION()
     void RemoveBtnClicked();
+
+    UInfomBox* cChildWidget;
+
+private:
+    static UInfomBox* Instance;
 
 };

@@ -50,3 +50,9 @@ void ASMCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+void ASMCharacter::TCPRecunnect()
+{
+	TCPModule& MyTCPModule = TCPModule::GetInstance();
+	MyTCPModule.TCPReCunnect();
+}
+

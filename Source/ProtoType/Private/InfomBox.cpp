@@ -1,6 +1,22 @@
-#include "InfomBox.h"
+癤�#include "InfomBox.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
+
+UInfomBox* UInfomBox::Instance = nullptr;
+
+UInfomBox* UInfomBox::GetInstance(UObject* WorldContextObject)
+{
+    if (!Instance)
+    {
+        Instance = CreateWidget<UInfomBox>(WorldContextObject->GetWorld(), UInfomBox::StaticClass());
+    }
+    else
+    {
+        Instance->RemoveFromViewport();
+    }
+
+    return Instance; 
+}
 
 void UInfomBox::NativeConstruct()
 {
@@ -18,10 +34,9 @@ void UInfomBox::DisplayInformWidget(const FString& BuildingName, const FString& 
 {
     UWorld* World = GetWorld();
 
-    // InformBoxChildClass가 null일 경우 동적으로 블루프린트를 로드
     if (!InformBoxChildClass)
     {
-        FStringClassReference WidgetClassRef(TEXT("/Game/Kichan/WB_Inform.WB_Inform_C"));  // 실제 경로로 수정
+        FStringClassReference WidgetClassRef(TEXT("/Game/Kichan/WB_Inform.WB_Inform_C"));  // 쩍횉횁짝 째챈쨌횓쨌횓 쩌철횁짚
         UClass* WidgetClass = WidgetClassRef.TryLoadClass<UUserWidget>();
 
         if (WidgetClass)
@@ -35,11 +50,62 @@ void UInfomBox::DisplayInformWidget(const FString& BuildingName, const FString& 
         }
     }
 
-    // 자식 블루프린트 위젯을 생성하고 데이터 설정 및 뷰포트에 추가
+    //UInfomBox* ChildWidget = CreateChildInformWidget(BuildingName, BuildingAddress);
+    //if (Instance->cChildWidget)
+    //{
+    //    cChildWidget->RemoveFromParent();
+    //}
+    cChildWidget = CreateChildInformWidget(BuildingName, BuildingAddress);
+    cChildWidget->AddToViewport();
+
+}
+
+//void UInfomBox::DisplayInformWidget(const FString& BuildingName, const FString& BuildingAddress)
+//{
+//    if (Instance)
+//    {
+//        Instance->RemoveFromParent();
+//    }
+//
+//    Instance = CreateWidget<UInfomBox>(GetWorld(), UInfomBox::StaticClass());
+//    if (Instance)
+//    {
+//        UTextBlock* NameTextBlock = Cast<UTextBlock>(Instance->GetWidgetFromName(TEXT("BuildingName")));
+//        UTextBlock* AddressTextBlock = Cast<UTextBlock>(Instance->GetWidgetFromName(TEXT("BuildingAddress")));
+//
+//        if (NameTextBlock && AddressTextBlock)
+//        {
+//            NameTextBlock->SetText(FText::FromString(BuildingName));
+//            AddressTextBlock->SetText(FText::FromString(BuildingAddress));
+//        }
+//        Instance->AddToViewport();
+//    }
+//}
+
+void UInfomBox::DisplayInformWidget(const int Bulidingindex, const int tag)
+{
+    if (!InformBoxChildClass)
+    {
+        FStringClassReference WidgetClassRef(TEXT("/Game/Kichan/WB_Inform.WB_Inform_C"));  
+        UClass* WidgetClass = WidgetClassRef.TryLoadClass<UUserWidget>();
+
+        if (WidgetClass)
+        {
+            InformBoxChildClass = WidgetClass;
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Failed to load InformBoxChildClass!"));
+            return;
+        }
+    }
+
+    FString BuildingName = "buliding name";
+    FString BuildingAddress = "buliding address";
+
     UInfomBox* ChildWidget = CreateChildInformWidget(BuildingName, BuildingAddress);
     if (ChildWidget)
     {
-        // 뷰포트에 추가
         ChildWidget->AddToViewport();
     }
     else
@@ -48,39 +114,14 @@ void UInfomBox::DisplayInformWidget(const FString& BuildingName, const FString& 
     }
 }
 
-void UInfomBox::DisplayInformWidget(const int Bulidingindex, const int tag)
+
+
+void UInfomBox::RemoveInstance()
 {
-    // InformBoxChildClass가 null일 경우 동적으로 블루프린트를 로드
-    if (!InformBoxChildClass)
+    if (Instance)
     {
-        FStringClassReference WidgetClassRef(TEXT("/Game/Kichan/WB_Inform.WB_Inform_C"));  // 실제 경로로 수정
-        UClass* WidgetClass = WidgetClassRef.TryLoadClass<UUserWidget>();
-
-        if (WidgetClass)
-        {
-            InformBoxChildClass = WidgetClass;
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Failed to load InformBoxChildClass!"));
-            return;
-        }
-    }
-
-    // 여기에 index 기준으로 받아온 건물 이름이랑 주소 넣으면 됩니다~
-    FString BuildingName = "buliding name";
-    FString BuildingAddress = "buliding address";
-
-    // 자식 블루프린트 위젯을 생성하고 데이터 설정 및 뷰포트에 추가
-    UInfomBox* ChildWidget = CreateChildInformWidget(BuildingName, BuildingAddress);
-    if (ChildWidget)
-    {
-        // 뷰포트에 추가
-        ChildWidget->AddToViewport();
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Failed to create child widget!"));
+        Instance->RemoveFromParent();
+        Instance = nullptr;
     }
 }
 
@@ -93,26 +134,35 @@ UInfomBox* UInfomBox::CreateChildInformWidget(const FString& BuildingName, const
         return nullptr;
     }
 
-    // 자식 블루프린트 위젯 생성
     UInfomBox* ChildWidget = CreateWidget<UInfomBox>(World, InformBoxChildClass);
 
-    if (ChildWidget)
+    //if (ChildWidget)
+    //{
+    //    ChildWidget->SetBuildingInfo(BuildingName, BuildingAddress);
+    //}
+    //else
+    //{
+    //    UE_LOG(LogTemp, Error, TEXT("Failed to create InformBox child widget!"));
+    //}
+
+    //return ChildWidget;
+
+    if (Instance)
     {
-        // 자식 위젯에 BuildingName과 BuildingAddress 설정
-        ChildWidget->SetBuildingInfo(BuildingName, BuildingAddress);
+        Instance = ChildWidget;
+        Instance->SetBuildingInfo(BuildingName, BuildingAddress);
     }
     else
     {
         UE_LOG(LogTemp, Error, TEXT("Failed to create InformBox child widget!"));
     }
 
-    return ChildWidget;
+    return Instance;
 }
 
 void UInfomBox::SetBuildingInfo(const FString& BuildingName, const FString& BuildingAddress)
 {
-    // TextBlock을 찾고 이름과 주소를 설정
-    UTextBlock* NameTextBlock = Cast<UTextBlock>(GetWidgetFromName(TEXT("BuildingName")));
+    /*UTextBlock* NameTextBlock = Cast<UTextBlock>(GetWidgetFromName(TEXT("BuildingName")));
     UTextBlock* AddressTextBlock = Cast<UTextBlock>(GetWidgetFromName(TEXT("BuildingAddress")));
 
     if (NameTextBlock && AddressTextBlock)
@@ -123,10 +173,19 @@ void UInfomBox::SetBuildingInfo(const FString& BuildingName, const FString& Buil
     else
     {
         UE_LOG(LogTemp, Warning, TEXT("TextBlocks not found!"));
+    }*/
+    UTextBlock* NameTextBlock = Cast<UTextBlock>(Instance->GetWidgetFromName(TEXT("BuildingName")));
+    UTextBlock* AddressTextBlock = Cast<UTextBlock>(Instance->GetWidgetFromName(TEXT("BuildingAddress")));
+    
+    if (NameTextBlock && AddressTextBlock)
+    {
+        NameTextBlock->SetText(FText::FromString(BuildingName));
+        AddressTextBlock->SetText(FText::FromString(BuildingAddress));
     }
 }
 
 void UInfomBox::RemoveBtnClicked()
 {
     RemoveFromParent();
+    //RemoveInstance();
 }

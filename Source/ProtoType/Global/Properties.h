@@ -5,8 +5,8 @@
 #define PORT2 4961
 #define PORT3 4962
 
-//#define ServerIP "203.249.91.170"
-#define ServerIP "203.249.91.175"//학교
+#define ServerIP "203.249.91.170"
+//#define ServerIP "203.249.91.175"//학교
 
 /* $ git update - index --assume - unchanged Properties.h
 Properties(서버 IP나 PORT 등등 개인 설정값) 변경 무시하기(개인설정으로 프로젝트 시험할때 사용)

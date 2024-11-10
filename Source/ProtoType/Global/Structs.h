@@ -54,3 +54,8 @@ struct PriceData
     int Date;
     int Price;
 };
+struct TextStruct
+{
+    FString BuildingName = "";
+    FString BuildingAddress = "";
+};

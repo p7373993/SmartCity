@@ -65,23 +65,24 @@ void UUW_smMain::ColorChangeButtonClicked()
 					SMPointComponent->TempChangeType(EVisibleType::None); // USMPointComponent의 public 함수 호출
 					Btn_1On = false;
 
-					//색깔 그래프 나타내기
-					if (ColorBoxWidgetClass)
-					{
-						ColorBoxInstance = CreateWidget<UUserWidget>(this, ColorBoxWidgetClass);
-						if(ColorBoxInstance) ColorBoxInstance->AddToViewport();
-					}
-				}
-				else
-				{
 					if (ColorBoxInstance)
 					{
 						ColorBoxInstance->RemoveFromParent();
 						ColorBoxInstance = nullptr; // 인스턴스를 null로 설정하여 메모리 관리
 					}
+				}
+				else
+				{
 
 					SMPointComponent->TempChangeType(EVisibleType::Price); // USMPointComponent의 public 함수 호출
 					Btn_1On = true;
+
+					//색깔 그래프 나타내기
+					if (ColorBoxWidgetClass)
+					{
+						ColorBoxInstance = CreateWidget<UUserWidget>(this, ColorBoxWidgetClass);
+						if (ColorBoxInstance) ColorBoxInstance->AddToViewport();
+					}
 				}
 			}
 		}

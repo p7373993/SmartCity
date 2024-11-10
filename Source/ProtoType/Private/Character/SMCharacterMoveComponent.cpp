@@ -10,6 +10,9 @@
 #include "GameFramework/PlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "InfomBox.h"
+#include "ProtoType/private/ClientModule/TCPModule.h"
+#include <String>
 // Sets default values for this component's properties
 USMCharacterMoveComponent::USMCharacterMoveComponent()
 {
@@ -121,6 +124,13 @@ void USMCharacterMoveComponent::MoveToLocation()
 	{
 		NewLocation = TargetLocation;
 		bIsMovingToTarget = false; // 목표 위치에 도달하면 이동을 멈춥니다.
+
+		if (PlayerController)
+		{
+			FRotator NewRotation = PlayerController->GetControlRotation();
+			NewRotation.Yaw = 240.0f;
+			PlayerController->SetControlRotation(NewRotation);
+		}
 	}
 
 	OwningActor->SetActorLocation(NewLocation);
@@ -216,6 +226,36 @@ void USMCharacterMoveComponent::GetActorTag()
 				for (const FName& Tag : HitActor->Tags)
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, Tag.ToString());
+
+					//UInfomBox* InformBox = CreateWidget<UInfomBox>(GetWorld(), UInfomBox::StaticClass());
+					UInfomBox* InformBox = UInfomBox::GetInstance(GetWorld());
+					if (InformBox)
+					{
+						int Type = 2;
+
+						bool isNumeric = true;
+						for (char ch : Tag.ToString())
+						{
+							if (!isdigit(ch))
+							{
+								isNumeric = false;
+								break;
+							}
+						}
+
+						int number = 0;
+						if (isNumeric)
+						{
+							std::string Temp = std::string(TCHAR_TO_UTF8(*Tag.ToString()));
+							int TagIntValue = std::stoi(Temp);
+							number = std::stoi(Temp);
+							float TempEL[20] = { Type, TagIntValue, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+							TCPModule& TCPModuleA = TCPModule::GetInstance();
+							TextStruct TempText = TCPModuleA.GetBuildingAddressAndName(TempEL, 2);
+
+							InformBox->DisplayInformWidget(TempText.BuildingName, TempText.BuildingAddress);
+						}
+					}
 				}
 			}
 			else

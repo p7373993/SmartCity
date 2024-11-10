@@ -102,12 +102,72 @@ std::vector<PriceData> TCPModule::GetSaleDataAccordingToDate(float* Elemental, i
 	std::vector<PriceData> Data;
 	int Size;
 	recv(Servers[ServerPort], (char*)&Size, sizeof(Size), 0);
-	for (int i=0; i<Size; ++i) 
+	for (int i = 0; i < Size; ++i)
 	{
 		PriceData DataTemp;
 		recv(Servers[ServerPort], (char*)&DataTemp, sizeof(DataTemp), 0);
 		Data.push_back(DataTemp);
 	}
+	return Data;
+}
+std::vector<PriceData> TCPModule::GetPRESaleDataAccordingToDate(float* Elemental, int ServerPort)
+{
+	SendingSelector(7, 1, Elemental, ServerPort);
+	std::vector<PriceData> Data;
+	int Size;
+	fd_set read_fds;
+	FD_ZERO(&read_fds);
+	FD_SET(Servers[ServerPort], &read_fds);
+	struct timeval timeout;
+	timeout.tv_sec = 30;
+	timeout.tv_usec = 0;
+	int select_result = select(Servers[ServerPort] + 1, &read_fds, NULL, NULL, &timeout);
+	if (select_result > 0) {
+		if (recv(Servers[ServerPort], (char*)&Size, sizeof(Size), 0) <= 0) {
+			std::cerr << "Error: Failed to receive data size\n";
+			return Data;
+		}
+		for (int i = 0; i < Size; ++i) {
+			PriceData DataTemp;
+			if (recv(Servers[ServerPort], (char*)&DataTemp, sizeof(DataTemp), 0) <= 0) {
+				std::cerr << "Error: Failed to receive price data\n";
+				break;
+			}
+			Data.push_back(DataTemp);
+		}
+	}
+	else if (select_result == 0) {
+		std::cerr << "Timeout: Server did not respond within 30 seconds.\n";
+	}
+	else {
+		std::cerr << "Error: select failed\n";
+	}
+	return Data;
+}
+TextStruct TCPModule::GetBuildingAddressAndName(float* Elemental, int ServerPort)
+{
+	SendingSelector(5, 0, Elemental, ServerPort);
+	TArray<SearchStruct> SendingTextArray;
+	TextStruct TempStruct;
+	recv(Servers[ServerPort], (char*)&buffer, sizeof(buffer), 0);
+	TempStruct.BuildingName = UTF8_TO_TCHAR(buffer);
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *TempStruct.BuildingName);
+	recv(Servers[ServerPort], (char*)&buffer, sizeof(buffer), 0);
+	TempStruct.BuildingAddress = UTF8_TO_TCHAR(buffer);
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *TempStruct.BuildingAddress);
+	return TempStruct;
+}
+
+std::vector<float> TCPModule::GetXYLocation(float* Elemental, int ServerPort)
+{
+	SendingSelector(7, 0, Elemental, ServerPort);
+	float TempX = 0;
+	float TempY = 0;
+	recv(Servers[ServerPort], (char*)&TempX, sizeof(TempX), 0);
+	recv(Servers[ServerPort], (char*)&TempY, sizeof(TempY), 0);
+	std::vector<float> Data;
+	Data.push_back(TempX);
+	Data.push_back(TempY);
 	return Data;
 }
 
@@ -143,7 +203,8 @@ void TCPModule::SendingSelector(int Type, int MaxElIndex, float *Elemental, int 
 }
 
 void TCPModule::TCPCunnect()
-{	int ports[3] = { PORT1, PORT2, PORT3 };
+{	
+	int ports[3] = { PORT1, PORT2, PORT3 };
 	for (int i = 0; i < 3; i++) {
 		WSADATA wsaData;
 		SOCKADDR_IN addr;
@@ -166,6 +227,16 @@ void TCPModule::TCPCunnect()
 		if (::connect(Servers[i], (const sockaddr*)&addr, sizeof(addr)) == INVALID_SOCKET)
 			HandleError("connet");
 	}
+}
+
+void TCPModule::TCPReCunnect()
+{
+	closesocket(Servers[0]);
+
+	closesocket(Servers[1]);
+
+	closesocket(Servers[2]);
+	TCPCunnect();
 }
 
 void TCPModule::HandleError(const char* cause)
