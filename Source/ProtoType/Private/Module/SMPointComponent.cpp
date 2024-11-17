@@ -13,7 +13,7 @@
 #include "GameFramework/Actor.h"
 #include "Engine/LevelBounds.h"
 #include "TimerManager.h"
-
+#include "UI/ChartData.h"	
 
 #include<stdio.h>
 #include <cmath>
@@ -58,7 +58,6 @@ USMPointComponent::USMPointComponent()
 void USMPointComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 	// ...
 	OwningActor = Cast<ACharacter>(GetOwner());
 	MyTCPModule.TCPCunnect();

@@ -261,6 +261,11 @@ void USMCharacterMoveComponent::GetActorTag()
 			else
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No Tags Found"));
+				UInfomBox* InformBox = UInfomBox::GetInstance(GetWorld());
+				if (InformBox)
+				{
+					InformBox->DisplayInformWidget("No Data", "No Data");
+				}
 			}
 		}
 	}

@@ -19,8 +19,8 @@ ADecalAct* DecalActSpawnManager::SpawnDecalActor(UWorld* World, FVector Location
     {
         FRotator SpawnRotation = FRotator(0, 0, 0);
         DecalInstance = World->SpawnActor<ADecalAct>(ObjectToSpawn->GeneratedClass, Location, SpawnRotation);
+        //DecalInstance
     }
     DecalActSpawnedInstance.Add(DecalInstance);
 	return DecalInstance;
 }
-
