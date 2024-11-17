@@ -17,7 +17,7 @@ public:
 		return instance;
 	}
 
-	ADecalAct* SpawnDecalActor(UWorld* wolrd, FVector location);
+	ADecalAct* SpawnDecalActor(UWorld* wolrd, FVector location, int Index);
 	
 	void HideAllActor();
 	void VisibleAllActor();

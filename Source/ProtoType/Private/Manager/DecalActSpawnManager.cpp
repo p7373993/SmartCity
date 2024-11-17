@@ -10,7 +10,7 @@ DecalActSpawnManager::DecalActSpawnManager()
 {
 }
 
-ADecalAct* DecalActSpawnManager::SpawnDecalActor(UWorld* World, FVector Location)
+ADecalAct* DecalActSpawnManager::SpawnDecalActor(UWorld* World, FVector Location, int Index)
 {
 
     ADecalAct* DecalInstance;
