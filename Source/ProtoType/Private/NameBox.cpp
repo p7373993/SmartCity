@@ -73,8 +73,8 @@ void UNameBox::OnNameBtnClicked()
     TCPModule& TCPModuleA = TCPModule::GetInstance();
     int Type = 1;
     float TempEL[20] = { Type,BuildingData.index,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
-    UInfomBox* InformBox = CreateWidget<UInfomBox>(GetWorld(), UInfomBox::StaticClass());
-    if (InformBox)
+    UInfomBox* InformBox = UInfomBox::GetInstance(GetWorld());
+    if (InformBox!=nullptr)
     {
 
         FString NameTextValue = NameText->GetText().ToString();
