@@ -21,7 +21,8 @@ void UChartData::SetData()
 	TCPModule& MyTCPModule = TCPModule::GetInstance();
 	float A[20] = { 107678 ,10,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0};
 	//std::vector<PriceData> Temp = MyTCPModule.GetSaleDataAccordingToDate(A, 2);
-	std::vector<PriceData> Temp = MyTCPModule.GetPRESaleDataAccordingToDate(A, 2);
+
+	std::vector<PriceData> Temp = MyTCPModule.GetPRESaleDataAccordingToDate(A, 1);
 
 	for (size_t i = 0; i<Temp.size(); i++)
 	{

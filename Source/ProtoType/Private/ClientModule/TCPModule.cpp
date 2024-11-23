@@ -112,7 +112,7 @@ std::vector<PriceData> TCPModule::GetSaleDataAccordingToDate(float* Elemental, i
 }
 std::vector<PriceData> TCPModule::GetPRESaleDataAccordingToDate(float* Elemental, int ServerPort)
 {
-	SendingSelector(7, 1, Elemental, ServerPort);
+	SendingSelector(6, 1, Elemental, ServerPort);
 	std::vector<PriceData> Data;
 	int Size;
 	fd_set read_fds;
