@@ -60,7 +60,6 @@ void USMPointComponent::BeginPlay()
 	Super::BeginPlay();
 	// ...
 	OwningActor = Cast<ACharacter>(GetOwner());
-	MyTCPModule.TCPCunnect();
 
 	UWorld* World = GetWorld();
 	if (World)
@@ -74,8 +73,10 @@ void USMPointComponent::BeginPlay()
 	FTimerHandle UnusedHandle;
 	OwningActor->GetWorldTimerManager().SetTimer(UnusedHandle, this, &USMPointComponent::LevelPoint, 0.5f, false);
 
-	FTimerHandle RangeChangeHandle;
-	OwningActor->GetWorldTimerManager().SetTimer(RangeChangeHandle, this, &USMPointComponent::RangeChange, 10.f, true);
+	RangeChange();
+	//FTimerHandle RangeChangeHandle;
+	//OwningActor->GetWorldTimerManager().SetTimer(RangeChangeHandle, this, &USMPointComponent::RangeChange, 10.f, true);
+
 }
 
 FViewLocation USMPointComponent::GetCornerPoints()
@@ -205,7 +206,6 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 	double latitude;
 	double longitude;
 
-
 	int i = 0;
 
 	for (const FVector2D& Vec : InLocation.GetArray())
@@ -217,7 +217,7 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 		i++;
 	}
 	GetAPDataThread();
-	if (MyTCPModule.IsInUse == false)
+	if (TCPManager.IsInUse == false)
 	{
 		Async(EAsyncExecution::Thread, [this]() {GetAPDataThread(); });
 	}
@@ -225,9 +225,8 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 
  void USMPointComponent::GetAPDataThread()
  {
-	 float TemplA[20] = { lA[0],lA[1],lA[2],lA[3],lA[4],lA[5],lA[6],lA[7],lA[8],lA[9],lA[10],lA[11],lA[12],lA[13],lA[14],lA[15],lA[16],lA[17],lA[18],lA[19]};
-	 std::vector<APData> TempAPData = MyTCPModule.GetAPData(TemplA, 0);
-	 std::vector<SaleData> TempSaleData = MyTCPModule.GetSaleData(TemplA, 0);
+	 std::vector<APData> TempAPData = TCPManager.TempAPData;
+	 std::vector<SaleData> TempSaleData = TCPManager.TempSaleData;
 	 Async(EAsyncExecution::TaskGraphMainThread, [&, TempAPData, TempSaleData]() {
 		 for (const auto& APDatas : TempAPData)
 		 {
@@ -242,7 +241,7 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 					 {
 						 DealIndex = SaleDatas.articleNo;
 						 Price = SaleDatas.dealOrWarrantPrc;
-						 UE_LOG(LogTemp, Warning, TEXT("001The value of number is: %d"), Price);
+						 UE_LOG(LogTemp, Warning, TEXT("The value of number is: %d, Index: %lld"), Price, DealIndex);
 					 }
 				 }
 			 }
@@ -255,7 +254,6 @@ void USMPointComponent::GetPoint(FViewLocation& InLocation)
 			 double x;
 			 double y;
 			 latLongToXY(Latitude, Longitude, x, y);
-			 UE_LOG(LogTemp, Warning, TEXT("002The value of number is: %d"), Price);
 			 RayCast(FVector(x, y, 10000000000), FVector(x, y, -1000), APDatas, Price);
 		 }
 		 });
@@ -280,8 +278,6 @@ void USMPointComponent::RayCast(const FVector& StartLocation, const FVector& End
 		break;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("003The value of number is: %d"), Price);
-	UE_LOG(LogTemp, Warning, TEXT("004The value of number is: %f"), value);
 	FLinearColor NewColor = IsNone ? FLinearColor::White :GetSpectrumColor(value);
 
 	UObject* WorldContextObject = GetWorld();
