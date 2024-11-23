@@ -126,10 +126,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "ClientModule/TCPModule.h"
 #include "ProtoType/Global/Structs.h"
+#include "Manager/TCPDataManager.h"
 #include "SMPointComponent.generated.h"
-
 
 UENUM(BlueprintType)
 enum class EVisibleType : uint8
@@ -206,10 +205,9 @@ public:
 
 	void latLongToXY(double latitude, double longitude, double& x, double& y);
 	void XYTolatLong(double x, double y, double& latitude, double& longitude);
+	TCPDataManager& TCPManager = TCPDataManager::GetInstance();
 	bool Te = false;
 	//통신 모듈
-	TCPModule& MyTCPModule = TCPModule::GetInstance();
-
 
 	//머트리얼 교체 관련
 protected:
