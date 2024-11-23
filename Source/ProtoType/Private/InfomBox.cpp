@@ -15,7 +15,7 @@ UInfomBox* UInfomBox::GetInstance(UObject* WorldContextObject)
         Instance->RemoveFromViewport();
     }
 
-    return Instance; 
+    return Instance;
 }
 
 void UInfomBox::NativeConstruct()
