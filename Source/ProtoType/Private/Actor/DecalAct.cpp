@@ -52,7 +52,7 @@ void ADecalAct::AdjustBuildingHeight(AActor* BuildingActor)
 
     // 기본 높이 조정 로직
     float BaseHeight = 300.0f; // 기본 높이 (예제 값)
-    float NewHeightScale = 1.0f + PredictedPercent / 100.0f;
+    float NewHeightScale = 1.0f + PredictedPercent / 10.0f;
 
     // Static Mesh Component 찾아서 높이 조정
     UStaticMeshComponent* Mesh = BuildingActor->FindComponentByClass<UStaticMeshComponent>();
@@ -61,6 +61,21 @@ void ADecalAct::AdjustBuildingHeight(AActor* BuildingActor)
         FVector NewScale = Mesh->GetComponentScale();
         NewScale.Z = NewHeightScale; // 높이 스케일만 조정
         Mesh->SetWorldScale3D(NewScale);
+    }
+}
+
+FLinearColor ADecalAct::GetBuildingColor(float Percentage)
+{
+    float Opacity = FMath::Clamp(FMath::Abs(Percentage) / 100.0f, 0.2f, 1.0f); // 불투명도 계산
+    if (Percentage > 0)
+    {
+        // 파란색 계열
+        return FLinearColor(0.0f, 0.0f, 1.0f, Opacity); // RGBA (파랑, 불투명도)
+    }
+    else
+    {
+        // 빨간색 계열
+        return FLinearColor(1.0f, 0.0f, 0.0f, Opacity); // RGBA (빨강, 불투명도)
     }
 }
 
