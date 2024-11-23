@@ -51,4 +51,5 @@ private:
 
 	float MaxPrice;
 	float MinPrice;
+
 };

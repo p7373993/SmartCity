@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "UI/ChartData.h"
@@ -19,12 +19,11 @@ void UChartData::NativeConstruct()
 void UChartData::SetData()
 {
 	TCPModule& MyTCPModule = TCPModule::GetInstance();
-	float A[20] = { 107678 ,10,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0};
+	float A[20] = { 107678 ,10,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0 };
 	//std::vector<PriceData> Temp = MyTCPModule.GetSaleDataAccordingToDate(A, 2);
+	std::vector<PriceData> Temp = MyTCPModule.GetSaleDataAccordingToDate(A, 2);
 
-	std::vector<PriceData> Temp = MyTCPModule.GetPRESaleDataAccordingToDate(A, 1);
-
-	for (size_t i = 0; i<Temp.size(); i++)
+	for (size_t i = 0; i < Temp.size(); i++)
 	{
 		DataSet.Add(FVector2D(Temp[i].Date, Temp[i].Price));
 	}
@@ -35,23 +34,23 @@ void UChartData::SetData()
 	//UE_LOG(LogTemp, Display, TEXT("%f:%f"),Temp[1].Date,Temp[1].Price);
 
 
-// Temp º¤ÅÍÀÇ Price °ª Áß ÃÖ´ñ°ª°ú ÃÖ¼Ú°ª ±¸ÇÏ±â
-	MaxPrice = std::max_element(Temp.begin(), Temp.end(),
-		[](const PriceData& a, const PriceData& b) {
-			return a.Price < b.Price;
-		})->Price;
+// Temp        Price        Ö´ñ°ª°   Ö¼Ú°     Ï± 
+	if (!Temp.empty())
+	{
+		MaxPrice = std::max_element(Temp.begin(), Temp.end(),
+			[](const PriceData& a, const PriceData& b) {
+				return a.Price < b.Price;
+			})->Price;
 
-	MinPrice = std::min_element(Temp.begin(), Temp.end(),
-		[](const PriceData& a, const PriceData& b) {
-			return a.Price < b.Price;
-		})->Price;
+		MinPrice = std::min_element(Temp.begin(), Temp.end(),
+			[](const PriceData& a, const PriceData& b) {
+				return a.Price < b.Price;
+			})->Price;
+	}
 
-	std::cout << "ÃÖ´ñ°ª: " << MaxPrice << ", ÃÖ¼Ú°ª: " << MinPrice << std::endl;
-
-	
 }
 
-void UChartData::PredictData()//¿¹Ãøµ¥ÀÌÅÍ ¼³Á¤
+void UChartData::PredictData()//               ,        â°£
 {
 	//std::vector<PriceData> Temp = MyTCPModule.predictData();// example
 
@@ -59,6 +58,19 @@ void UChartData::PredictData()//¿¹Ãøµ¥ÀÌÅÍ ¼³Á¤
 	//{
 	//	AIData.Add(FVector2D(Temp[i].Date, Temp[i].Price));
 	//}
+
+	TCPModule& MyTCPModule = TCPModule::GetInstance();
+	float A[20] = { 107678 ,10,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0 }; 
+	std::vector<PriceData> Temp = MyTCPModule.GetPRESaleDataAccordingToDate(A, 2);
+	//std::vector<PriceData> Temp = MyTCPModule.GetSaleDataAccordingToDate(A, 2);
+
+	for (size_t i = 0; i < Temp.size(); i++)
+	{
+		AIData.Add(FVector2D(Temp[i].Date, Temp[i].Price));
+		//AIData.Add(FVector2D(1,43000));
+		//AIData.Add(FVector2D(2, 43000));
+		//AIData.Add(FVector2D(3, 43000));
+	}
 }
 
 float UChartData::GetMinValue()
