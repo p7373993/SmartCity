@@ -14,11 +14,13 @@ class PROTOTYPE_API ADecalAct : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ADecalAct();
-
+	bool IsHidden = false;
+	int Index;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	int Index;
+	
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
