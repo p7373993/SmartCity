@@ -14,7 +14,13 @@ class PROTOTYPE_API ADecalAct : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ADecalAct();
+	void DetectBuildings();
+	void AdjustBuildingHeight(AActor* BuildingActor);
 
+	FLinearColor GetBuildingColor(float Percentage);
+
+	bool IsHidden = false;
+	int Index;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
