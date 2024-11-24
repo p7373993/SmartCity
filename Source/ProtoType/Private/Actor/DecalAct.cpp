@@ -39,7 +39,6 @@ void ADecalAct::DetectBuildings()
     FVector LandmarkLocation = GetActorLocation();
     TArray<AActor*> OverlappingActors;
     TMap<float, float> CurrentData = GetLandmarkData();
-
     for (const auto& Pair : CurrentData)
     {
         float Radius = Pair.Key;
@@ -58,16 +57,20 @@ void ADecalAct::DetectBuildings()
         UE_LOG(LogTemp, Error, TEXT("Distance: %f, Percent : %f "), Radius, PredictedPercent);
 
 
+
         for (AActor* Actor : OverlappingActors)
         {
+
             if (!UniqueOverlappingActors.Contains(Actor))
             {
                 UniqueOverlappingActors.Add(Actor);
 
-                AdjustBuildingColor(Actor, PredictedPercent);
+                AdjustBuildingColor(Actor, PredictedPercent);//color
 
-                //AdjustBuildingHeight(Actor, PredictedPercent);
+                //AdjustBuildingHeight(Actor, PredictedPercent);//height
             }
+
+
         }
 
 
@@ -177,13 +180,13 @@ FLinearColor ADecalAct::GetBuildingColor(float Percentage)
 {
     // 퍼센트 값을 채도로 매핑 (0~50 -> 0.5~1.0)
     float Saturation = FMath::GetMappedRangeValueClamped(
-        FVector2D(0.0f, 40.0f), FVector2D(100.0f, 255.0f), FMath::Abs(Percentage)
+        FVector2D(0.0f, 40.0f), FVector2D(50.0f, 255.0f), FMath::Abs(Percentage)
     );
 
     // 밝기 설정 (고정값 또는 동적으로 설정 가능)
     float Value = 1.0f; // 밝기를 유지
 
-    if (Percentage <= 0)
+    if (Percentage >= 0)
     {
         float Hue = 160.0f; // 파란색 (Hue: 240)
         //return FLinearColor::MakeFromHSV8(Hue, Saturation * 255, Value * 255);
