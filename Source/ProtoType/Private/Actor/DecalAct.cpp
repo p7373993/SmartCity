@@ -26,12 +26,14 @@ ADecalAct::ADecalAct()
         InstMaterial = MaterialFinder.Object;
     }
 
+
+    SelectedLandMark = ELandMarkType::Stadium;
 }
 
 void ADecalAct::DetectBuildings()
 {
     FVector LandmarkLocation = GetActorLocation(); // 랜드마크 위치
-    float Radius = 50000.0f; // 반경 설정 (5000)
+    float Radius = 200000.0f; // 반경 설정 (5000)
 
     // 부딪히는 액터들을 저장할 배열
     TArray<AActor*> OverlappingActors;
@@ -52,30 +54,43 @@ void ADecalAct::DetectBuildings()
     );
 
     // 탐지된 액터 처리
+    TMap<float, float> CurrentData = GetLandmarkData();
+
     for (AActor* Actor : OverlappingActors)
     {
-        float Distance = FVector::Dist(GetActorLocation(), Actor->GetActorLocation());
-        float PredictedPercent = 30;// 머신러닝 예측 값 가져오기
+        UStaticMeshComponent* StaticMeshComp = Actor->FindComponentByClass<UStaticMeshComponent>();
+        float Distance;
+        float PredictedPercent = 0;
+        // StaticMesh와의 거리 계산
+        if (StaticMeshComp)
+        {
+            // StaticMesh의 World 위치 가져오기
+            FVector MeshLocation = StaticMeshComp->GetComponentLocation();
+            // StaticMesh와의 거리 계산
+            Distance = FVector::Dist(GetActorLocation(), MeshLocation);
+        }
+        for (const auto& Pair : CurrentData)
+        {
+            float UnrealDistance = Pair.Key; // JSON 거리 값을 언리얼 거리 값으로 변환 (0.2 -> 20000)
 
-        // 색상 적용
+            if (FMath::IsNearlyEqual(UnrealDistance, Distance, 10000.0f))
+            {
+                PredictedPercent = Pair.Value;
+                break;
+            }
+
+        }
+
+        UE_LOG(LogTemp, Log, TEXT("DISTANCD :%f, percent :%f"), Distance, PredictedPercent);
         AdjustBuildingColor(Actor, PredictedPercent);
-
-        // (선택) 높이 조정
         AdjustBuildingHeight(Actor, PredictedPercent);
-
     }
 }
 
 void ADecalAct::AdjustBuildingHeight(AActor* BuildingActor, float PredictedPercent)
 {
-    // 랜드마크와의 거리 계산
-    float Distance = FVector::Dist(GetActorLocation(), BuildingActor->GetActorLocation());
-
-    // 머신러닝 모델에서 제공한 값 (샘플)
-    //float PredictedPercent = PredictHeightScale(Distance); // 머신러닝 예측 함수 호출
 
     // 기본 높이 조정 로직
-    float BaseHeight = 300.0f; // 기본 높이 (예제 값)
     float NewHeightScale = 1.0f + PredictedPercent / 10.0f;
 
     // Static Mesh Component 찾아서 높이 조정
@@ -117,17 +132,17 @@ FLinearColor ADecalAct::GetBuildingColor(float Percentage)
 {
     // 퍼센트 값을 채도로 매핑 (0~50 -> 0.5~1.0)
     float Saturation = FMath::GetMappedRangeValueClamped(
-        FVector2D(0.0f, 50.0f), FVector2D(150.0f, 255.0f), FMath::Abs(Percentage)
+        FVector2D(0.0f, 40.0f), FVector2D(0.0f, 255.0f), FMath::Abs(Percentage)
     );
 
     // 밝기 설정 (고정값 또는 동적으로 설정 가능)
     float Value = 1.0f; // 밝기를 유지
 
-    if (Percentage > 0)
+    if (Percentage >= 0)
     {
         float Hue = 160.0f; // 파란색 (Hue: 240)
         //return FLinearColor::MakeFromHSV8(Hue, Saturation * 255, Value * 255);
-        return FLinearColor::MakeFromHSV8(160, Saturation,  240);
+        return FLinearColor::MakeFromHSV8(160, 255,  240);
     }
     else
     {
@@ -140,7 +155,90 @@ FLinearColor ADecalAct::GetBuildingColor(float Percentage)
 void ADecalAct::BeginPlay()
 {
 	Super::BeginPlay();
+
+    MachineLearningData = LoadMachineLearningData(JsonPath);
+
+    if (MachineLearningData.Contains(SelectedLandMark))
+    {
+        UE_LOG(LogTemp, Log, TEXT("Data loaded for selected landmark."));
+    }
     DetectBuildings();
+}
+
+TMap<ELandMarkType, TMap<float, float>> ADecalAct::LoadMachineLearningData(const FString& FilePath)
+{
+    TMap<ELandMarkType, TMap<float, float>> ProcessedData;
+    UE_LOG(LogTemp, Log, TEXT("Attempting to load JSON file from: %s"), *FilePath);
+
+
+    FString JsonContent;
+    if (FFileHelper::LoadFileToString(JsonContent, *FilePath))
+    {
+        TSharedPtr<FJsonObject> JsonObject;
+        TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonContent);
+
+        if (!FFileHelper::LoadFileToString(JsonContent, *FilePath))
+        {
+            UE_LOG(LogTemp, Error, TEXT("Failed to load JSON file from path: %s"), *FilePath);
+            return TMap<ELandMarkType, TMap<float, float>>(); // 빈 데이터 반환
+        }
+        else
+        {
+            UE_LOG(LogTemp, Log, TEXT("Successfully loaded JSON file: %s"), *FilePath);
+        }
+
+        if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid())
+        {
+            TMap<FString, ELandMarkType> LandmarkNameMap = {
+                {"Bridge", ELandMarkType::Bridge},
+                {"Stadium", ELandMarkType::Stadium},
+                {"CityMuseum", ELandMarkType::CityMuseum},
+                {"NationalMuseum", ELandMarkType::NationalMuseum},
+                {"Hotel", ELandMarkType::Hotel}
+            };
+
+            for (const auto& LandmarkPair : JsonObject->Values)
+            {
+                FString LandmarkName = LandmarkPair.Key;
+                if (LandmarkNameMap.Contains(LandmarkName))
+                {
+                    ELandMarkType LandmarkType = LandmarkNameMap[LandmarkName];
+                    TSharedPtr<FJsonObject> LandmarkData = LandmarkPair.Value->AsObject();
+
+                    if (LandmarkData.IsValid())
+                    {
+                        TMap<float, float> DistanceToPercentage;
+
+                        for (const auto& DistancePair : LandmarkData->Values)
+                        {
+                            float JsonDistance = FCString::Atof(*DistancePair.Key);
+                            float UnrealDistance = JsonDistance * 100000.0f;
+                            float Percentage = DistancePair.Value->AsNumber();
+
+                            DistanceToPercentage.Add(UnrealDistance, Percentage);
+                        }
+
+                        ProcessedData.Add(LandmarkType, DistanceToPercentage);
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to load JSON file: %s"), *FilePath);
+    }
+
+    return ProcessedData;
+}
+
+TMap<float, float> ADecalAct::GetLandmarkData() const
+{
+    if (MachineLearningData.Contains(SelectedLandMark))
+    {
+        return MachineLearningData[SelectedLandMark];
+    }
+    return {};
 }
 
 

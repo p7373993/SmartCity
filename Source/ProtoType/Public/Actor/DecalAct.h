@@ -36,9 +36,27 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// JSON 데이터를 로드하는 함수
+	TMap<ELandMarkType, TMap<float, float>> LoadMachineLearningData(const FString& FilePath);
+
+	// 선택된 랜드마크의 데이터를 가져오는 함수
+	TMap<float, float> GetLandmarkData() const;
+
+	UPROPERTY(EditAnywhere, Category = "Landmark")
+	ELandMarkType SelectedLandMark;
+
 
 	UPROPERTY(EditAnywhere, Category = Material, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UMaterialInterface> InstMaterial;
+
+
+	// JSON 데이터 경로
+	FString JsonPath = FPaths::ProjectContentDir() + TEXT("MachineLearningData.json");
+
+	// 로드된 JSON 데이터를 저장하는 맵
+	TMap<ELandMarkType, TMap<float, float>> MachineLearningData;
+
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
