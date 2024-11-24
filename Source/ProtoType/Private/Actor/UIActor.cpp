@@ -6,8 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProtoType/Private/UI/DecalActSpawnButton.h"
-const double R = 6371000;
-const double DEG_TO_RAD = PI / 180.0;
+const double R_Local = 6371000;
+const double DEG_TO_RAD_Local = PI / 180.0;
 // Sets default values
 AUIActor::AUIActor()
 {
@@ -59,12 +59,12 @@ void AUIActor::BeginPlay()
 	const double baseLongitude = 127.2784241;
 	const double scaleX = -8691673.56;
 	const double scaleY = -10995829.86;
-	double phi0 = 36.50476937 * DEG_TO_RAD;
-	double lambda0 = 127.2784241 * DEG_TO_RAD;
-	double phi = latitude * DEG_TO_RAD;
-	double lambda = longitude * DEG_TO_RAD;
-	x = R * (lambda - lambda0) * cos(phi0) * 100 + 13167 - 3040 + 1000 + 1000;
-	y = -R * (phi - phi0) * 100 + 3073 + 6597 - 6000 - 200;
+	double phi0 = 36.50476937 * DEG_TO_RAD_Local;
+	double lambda0 = 127.2784241 * DEG_TO_RAD_Local;
+	double phi = latitude * DEG_TO_RAD_Local;
+	double lambda = longitude * DEG_TO_RAD_Local;
+	x = R_Local * (lambda - lambda0) * cos(phi0) * 100 + 13167 - 3040 + 1000 + 1000;
+	y = -R_Local * (phi - phi0) * 100 + 3073 + 6597 - 6000 - 200;
 	FVector NewLocation(x, y, 50);
 	SetActorLocation(NewLocation);
 }
