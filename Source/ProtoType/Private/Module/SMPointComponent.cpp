@@ -18,8 +18,6 @@
 #include<stdio.h>
 #include <cmath>
 
-const double R = 6371000;
-const double DEG_TO_RAD = PI / 180.0;
 
 float lA[20];
 
@@ -402,7 +400,8 @@ void USMPointComponent::latLongToXY(double latitude, double longitude, double& x
 	const double baseLatitude = 36.50476937;
 	const double baseLongitude = 127.2784241;
 
-
+	double R = 6371000;
+	double DEG_TO_RAD = PI / 180.0;
 
 	const double scaleX = -8691673.56;
 	const double scaleY = -10995829.86;
@@ -418,6 +417,8 @@ void USMPointComponent::latLongToXY(double latitude, double longitude, double& x
 
 void USMPointComponent::XYTolatLong(double x, double y, double& latitude, double& longitude)
 {
+	double R = 6371000;
+	double DEG_TO_RAD = PI / 180.0;
 	const double baseLatitude = 36.50476937;
 	const double baseLongitude = 127.2784241;
 
