@@ -27,64 +27,109 @@ ADecalAct::ADecalAct()
     }
 
 
-    SelectedLandMark = ELandMarkType::Stadium;
+    SelectedLandMark = ELandMarkType::Hotel;
 }
 
 void ADecalAct::DetectBuildings()
 {
-    FVector LandmarkLocation = GetActorLocation(); // 랜드마크 위치
-    float Radius = 200000.0f; // 반경 설정 (5000)
-
-    // 부딪히는 액터들을 저장할 배열
-    TArray<AActor*> OverlappingActors;
-
-    // Object Type 설정
+    TSet<AActor*> UniqueOverlappingActors; // 중복 방지를 위한 Set
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1)); // Building 채널 추가
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1)); // 대상 오브젝트 타입
 
-    // 콜리전 실행
-    UKismetSystemLibrary::SphereOverlapActors(
-        GetWorld(),
-        LandmarkLocation,
-        Radius,
-        ObjectTypes, // Object Types를 기준으로 탐지
-        nullptr, // 특정 클래스 제한 없음
-        {}, // 필터링할 액터
-        OverlappingActors
-    );
-
-    // 탐지된 액터 처리
+    FVector LandmarkLocation = GetActorLocation();
+    TArray<AActor*> OverlappingActors;
     TMap<float, float> CurrentData = GetLandmarkData();
 
-    for (AActor* Actor : OverlappingActors)
+    for (const auto& Pair : CurrentData)
     {
-        UStaticMeshComponent* StaticMeshComp = Actor->FindComponentByClass<UStaticMeshComponent>();
-        float Distance;
-        float PredictedPercent = 0;
-        // StaticMesh와의 거리 계산
-        if (StaticMeshComp)
-        {
-            // StaticMesh의 World 위치 가져오기
-            FVector MeshLocation = StaticMeshComp->GetComponentLocation();
-            // StaticMesh와의 거리 계산
-            Distance = FVector::Dist(GetActorLocation(), MeshLocation);
-        }
-        for (const auto& Pair : CurrentData)
-        {
-            float UnrealDistance = Pair.Key; // JSON 거리 값을 언리얼 거리 값으로 변환 (0.2 -> 20000)
+        float Radius = Pair.Key;
+        float PredictedPercent = Pair.Value;
 
-            if (FMath::IsNearlyEqual(UnrealDistance, Distance, 10000.0f))
+        UKismetSystemLibrary::SphereOverlapActors(
+            GetWorld(),
+            LandmarkLocation,
+            Radius,
+            ObjectTypes, // Object Types를 기준으로 탐지
+            nullptr, // 특정 클래스 제한 없음
+            {}, // 필터링할 액터
+            OverlappingActors
+        );
+
+        UE_LOG(LogTemp, Error, TEXT("Distance: %f, Percent : %f "), Radius, PredictedPercent);
+
+
+        for (AActor* Actor : OverlappingActors)
+        {
+            if (!UniqueOverlappingActors.Contains(Actor))
             {
-                PredictedPercent = Pair.Value;
-                break;
-            }
+                UniqueOverlappingActors.Add(Actor);
 
+                AdjustBuildingColor(Actor, PredictedPercent);
+
+                //AdjustBuildingHeight(Actor, PredictedPercent);
+            }
         }
 
-        UE_LOG(LogTemp, Log, TEXT("DISTANCD :%f, percent :%f"), Distance, PredictedPercent);
-        AdjustBuildingColor(Actor, PredictedPercent);
-        AdjustBuildingHeight(Actor, PredictedPercent);
+
+
+
     }
+
+ 
+
+    //FVector LandmarkLocation = GetActorLocation(); // 랜드마크 위치
+    //float Radius = 200000.0f; // 반경 설정 (5000)
+
+    //// 부딪히는 액터들을 저장할 배열
+    //TArray<AActor*> OverlappingActors;
+
+    //// Object Type 설정
+    //TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+    //ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1)); // Building 채널 추가
+
+    //// 콜리전 실행
+    //UKismetSystemLibrary::SphereOverlapActors(
+    //    GetWorld(),
+    //    LandmarkLocation,
+    //    Radius,
+    //    ObjectTypes, // Object Types를 기준으로 탐지
+    //    nullptr, // 특정 클래스 제한 없음
+    //    {}, // 필터링할 액터
+    //    OverlappingActors
+    //);
+
+    //// 탐지된 액터 처리
+    //TMap<float, float> CurrentData = GetLandmarkData();
+
+    //for (AActor* Actor : OverlappingActors)
+    //{
+    //    UStaticMeshComponent* StaticMeshComp = Actor->FindComponentByClass<UStaticMeshComponent>();
+    //    float Distance;
+    //    float PredictedPercent = 0;
+    //    // StaticMesh와의 거리 계산
+    //    if (StaticMeshComp)
+    //    {
+    //        // StaticMesh의 World 위치 가져오기
+    //        FVector MeshLocation = StaticMeshComp->GetComponentLocation();
+    //        // StaticMesh와의 거리 계산
+    //        Distance = FVector::Dist(GetActorLocation(), MeshLocation);
+    //        UE_LOG(LogTemp, Log, TEXT("Mesh Location : %f,%f,%f"), MeshLocation.X, MeshLocation.Y, MeshLocation.Z);
+    //    }
+    //    for (const auto& Pair : CurrentData)
+    //    {
+    //        float UnrealDistance = Pair.Key; // JSON 거리 값을 언리얼 거리 값으로 변환 (0.2 -> 20000)
+
+    //        if (FMath::IsNearlyEqual(UnrealDistance, Distance, 10000.0f))
+    //        {
+    //            PredictedPercent = Pair.Value;
+    //            break;
+    //        }
+
+    //    }
+
+    //    AdjustBuildingColor(Actor, PredictedPercent);
+    //    AdjustBuildingHeight(Actor, PredictedPercent);
+    //}
 }
 
 void ADecalAct::AdjustBuildingHeight(AActor* BuildingActor, float PredictedPercent)
@@ -132,17 +177,17 @@ FLinearColor ADecalAct::GetBuildingColor(float Percentage)
 {
     // 퍼센트 값을 채도로 매핑 (0~50 -> 0.5~1.0)
     float Saturation = FMath::GetMappedRangeValueClamped(
-        FVector2D(0.0f, 40.0f), FVector2D(0.0f, 255.0f), FMath::Abs(Percentage)
+        FVector2D(0.0f, 40.0f), FVector2D(100.0f, 255.0f), FMath::Abs(Percentage)
     );
 
     // 밝기 설정 (고정값 또는 동적으로 설정 가능)
     float Value = 1.0f; // 밝기를 유지
 
-    if (Percentage >= 0)
+    if (Percentage <= 0)
     {
         float Hue = 160.0f; // 파란색 (Hue: 240)
         //return FLinearColor::MakeFromHSV8(Hue, Saturation * 255, Value * 255);
-        return FLinearColor::MakeFromHSV8(160, 255,  240);
+        return FLinearColor::MakeFromHSV8(160, Saturation,  240);
     }
     else
     {
