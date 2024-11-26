@@ -5,9 +5,11 @@
 #include "Components/WidgetComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "UW_smMain.h"
+#include "HUD_smMain.h"
 #include "ProtoType/Private/UI/DecalActSpawnButton.h"
-const double R = 6371000;
-const double DEG_TO_RAD = PI / 180.0;
+const double R_Local = 6371000;
+const double DEG_TO_RAD_Local = PI / 180.0;
 // Sets default values
 AUIActor::AUIActor()
 {
@@ -25,6 +27,11 @@ AUIActor::AUIActor()
 		WidgetComponent->SetDrawSize(FVector2D(200, 100));
 		WidgetComponent->SetVisibility(true);
 	}
+
+	//if (UUW_smMain* MainWidget = UUW_smMain::GetInstance(GetWorld()))
+	//{
+	//	MainWidget->OnButtonStateChanged.AddDynamic(this, &AUIActor::HandleButtonStateChanged);
+	//}
 }
 
 void AUIActor::SpawnAct()
@@ -41,6 +48,28 @@ void AUIActor::DeleteAct()
 void AUIActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//----------------------
+	// UUW_smMain 위젯을 찾음
+	bIsUIActive = false;
+
+	// 현재 월드의 플레이어 컨트롤러 가져오기
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (PC && PC->GetHUD())
+	{
+		// HUD에 추가된 위젯 가져오기
+		AHUD_smMain* CustomHUD = Cast<AHUD_smMain>(PC->GetHUD());
+		if (CustomHUD && CustomHUD->getHudWidget())
+		{
+			UUW_smMain* Widget = CustomHUD->getHudWidget();
+			if (Widget)
+			{
+				// Delegate 구독
+				Widget->OnButtonStateChanged.AddDynamic(this, &AUIActor::OnUIStateChanged);
+			}
+		}
+	}
+	//------------------
 
 	UUserWidget* UserWidget = WidgetComponent->GetUserWidgetObject();
 	if (UserWidget)
@@ -59,12 +88,12 @@ void AUIActor::BeginPlay()
 	const double baseLongitude = 127.2784241;
 	const double scaleX = -8691673.56;
 	const double scaleY = -10995829.86;
-	double phi0 = 36.50476937 * DEG_TO_RAD;
-	double lambda0 = 127.2784241 * DEG_TO_RAD;
-	double phi = latitude * DEG_TO_RAD;
-	double lambda = longitude * DEG_TO_RAD;
-	x = R * (lambda - lambda0) * cos(phi0) * 100 + 13167 - 3040 + 1000 + 1000;
-	y = -R * (phi - phi0) * 100 + 3073 + 6597 - 6000 - 200;
+	double phi0 = 36.50476937 * DEG_TO_RAD_Local;
+	double lambda0 = 127.2784241 * DEG_TO_RAD_Local;
+	double phi = latitude * DEG_TO_RAD_Local;
+	double lambda = longitude * DEG_TO_RAD_Local;
+	x = R_Local * (lambda - lambda0) * cos(phi0) * 100 + 13167 - 3040 + 1000 + 1000;
+	y = -R_Local * (phi - phi0) * 100 + 3073 + 6597 - 6000 - 200;
 	FVector NewLocation(x, y, 50);
 	SetActorLocation(NewLocation);
 }
@@ -82,5 +111,30 @@ void AUIActor::Tick(float DeltaTime)
 		FRotator NewRotation = DirectionToWidget.Rotation();
 		WidgetComponent->SetWorldRotation(NewRotation);
 	}
+}
+
+void AUIActor::HandleButtonStateChanged(bool bIsActive)
+{
+	if (bIsActive)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Button activated!"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("Button deactivated!"));
+	}
+}
+//ui와 델리게이트로 연결
+void AUIActor::OnUIStateChanged(bool bIsActive)
+{
+	SetUIActive(bIsActive);
+}
+
+void AUIActor::SetUIActive(bool bActive)
+{
+	bIsUIActive = bActive;
+
+	// 실제 UI 상태를 변경하는 로직 (예: Mesh, Widget 등)
+	UE_LOG(LogTemp, Log, TEXT("UI %s"), bIsUIActive ? TEXT("Activated") : TEXT("Deactivated"));
 }
 
