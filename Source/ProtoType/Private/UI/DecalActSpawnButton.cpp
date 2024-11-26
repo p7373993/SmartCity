@@ -27,10 +27,34 @@ void UDecalActSpawnButton::InitializeWithActor(AUIActor* TOwnUIAct)
 
 void UDecalActSpawnButton::UIUnVisible()
 {
+    Button1->SetVisibility(ESlateVisibility::Hidden);
+    Button2->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UDecalActSpawnButton::UIVisible()
 {
+    if (IsOn)
+    {
+        if (Button1)
+        {
+            Button1->SetVisibility(ESlateVisibility::Hidden);
+        }
+        if (Button2)
+        {
+            Button2->SetVisibility(ESlateVisibility::Visible);
+        }
+    }
+    else
+    {
+        if (Button1)
+        {
+            Button1->SetVisibility(ESlateVisibility::Visible);
+        }
+        if (Button2)
+        {
+            Button2->SetVisibility(ESlateVisibility::Hidden);
+        }
+    }
 }
 
 void UDecalActSpawnButton::OnButtonClicked()

@@ -17,6 +17,10 @@ class UDecalActSpawnButton : public UUserWidget
 public:
     virtual void NativeConstruct() override;
     void InitializeWithActor(AUIActor* TOwnUIAct);
+    
+    void UIUnVisible();
+    void UIVisible();
+
     AUIActor* OwnUIAct;
 protected:
     UPROPERTY(meta = (BindWidget))
@@ -28,9 +32,7 @@ protected:
     bool IsOn;
 
 
-    void UIUnVisible();
-    void UIVisible();
-
+    
     UFUNCTION()
     void OnButtonClicked();
 

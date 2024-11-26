@@ -52,7 +52,7 @@ void AUIActor::BeginPlay()
 	//----------------------
 	// UUW_smMain 위젯을 찾음
 	bIsUIActive = false;
-
+	SetUIActive(bIsUIActive);
 	// 현재 월드의 플레이어 컨트롤러 가져오기
 	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (PC && PC->GetHUD())
@@ -133,6 +133,31 @@ void AUIActor::OnUIStateChanged(bool bIsActive)
 void AUIActor::SetUIActive(bool bActive)
 {
 	bIsUIActive = bActive;
+
+	if (bActive)
+	{
+		UUserWidget* UserWidget = WidgetComponent->GetUserWidgetObject();
+		if (UserWidget)
+		{
+			UDecalActSpawnButton* DecalWidget = Cast<UDecalActSpawnButton>(UserWidget);
+			if (DecalWidget)
+			{
+				DecalWidget->UIVisible();
+			}
+		}
+	}
+	else
+	{
+		UUserWidget* UserWidget = WidgetComponent->GetUserWidgetObject();
+		if (UserWidget)
+		{
+			UDecalActSpawnButton* DecalWidget = Cast<UDecalActSpawnButton>(UserWidget);
+			if (DecalWidget)
+			{
+				DecalWidget->UIUnVisible();
+			}
+		}
+	}
 
 	// 실제 UI 상태를 변경하는 로직 (예: Mesh, Widget 등)
 	UE_LOG(LogTemp, Log, TEXT("UI %s"), bIsUIActive ? TEXT("Activated") : TEXT("Deactivated"));
