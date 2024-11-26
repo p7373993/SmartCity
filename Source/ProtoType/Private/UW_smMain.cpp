@@ -9,6 +9,19 @@
 #include "Module/SMPointComponent.h"
 #include "WIdgetSMPointComponent.h"
 
+
+//UUW_smMain* UUW_smMain::Instance = nullptr;
+//
+//UUW_smMain* UUW_smMain::GetInstance(UObject* WorldContextObject)
+//{
+//	if (!Instance)
+//	{
+//		Instance = CreateWidget<UUW_smMain>(WorldContextObject->GetWorld(), UUW_smMain::StaticClass());
+//	}
+//
+//	return Instance;
+//}
+
 void UUW_smMain::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -95,7 +108,10 @@ void UUW_smMain::ColorChangeButtonClicked()
 
 void UUW_smMain::AddLandmarkButtonClicked()
 {
+	// 상태 토글
+	Btn_2On = !Btn_2On;
 
+	OnButtonStateChanged.Broadcast(Btn_2On); // 델리게이트 호출
 }
 
 void UUW_smMain::ShowingMenuButtonClicked()
