@@ -31,6 +31,18 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	//UUW_smMain* MainWidget;
+
+	void HandleButtonStateChanged(bool bIsActive);
+
+	//---------------------
+	UFUNCTION()
+	void OnUIStateChanged(bool bIsActive);
+
+	void SetUIActive(bool bActive);
+
+	bool bIsUIActive;
+	//---------------------
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

@@ -5,11 +5,13 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Module/SMPointComponent.h"
+#include "Actor/UIActor.h"
+#include "ButtonObserver.h"
 #include "UW_smMain.generated.h"
-
 /**
  * 
  */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnButtonStateChanged, bool, bIsActive);
 
 UCLASS()
 class PROTOTYPE_API UUW_smMain : public UUserWidget
@@ -17,6 +19,11 @@ class PROTOTYPE_API UUW_smMain : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	//static UUW_smMain* GetInstance(UObject* WorldContextObject);
+	// 버튼 상태 변경 델리게이트
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnButtonStateChanged OnButtonStateChanged;
+
 	UFUNCTION()
 	void ColorChangeButtonClicked();
 	UFUNCTION()
@@ -49,5 +56,8 @@ private:
 //protected:
 //	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget Actor")
 //	AWidgetActor* WidgetActor;  // WidgetActor 참조
+
+private:
+	//static UUW_smMain* Instance;
 	
 };

@@ -5,7 +5,8 @@
 #define PORT2 4961
 #define PORT3 4962
 
-#define ServerIP "203.249.91.170"
+#define ServerIP "192.168.0.6"
+//#define ServerIP "203.249.91.170"
 //#define ServerIP "203.249.91.175"//학교
 
 /* $ git update - index --assume - unchanged Properties.h

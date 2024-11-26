@@ -7,6 +7,7 @@
 #include "NameBox.h"
 #include "GameFramework/PlayerController.h"
 
+
 AHUD_smMain::AHUD_smMain()
 {
     static ConstructorHelpers::FClassFinder<UUW_smMain> UI_Main_C(TEXT("/Game/Kichan/WB_Main.WB_Main_C"));
@@ -25,6 +26,30 @@ AHUD_smMain::AHUD_smMain()
     //}
 }
 
+//UUW_smMain* AHUD_smMain::MyWidgetInstance = nullptr;
+//UUW_smMain* AHUD_smMain::GetInstance(UObject* WorldContextObject)
+//{
+//    if (!MyWidgetInstance)
+//    {
+//        MyWidgetInstance = CreateWidget<UUW_smMain>(WorldContextObject->GetWorld(), UUW_smMain::StaticClass());
+//    }
+//    return MyWidgetInstance;
+//}
+
+void AHUD_smMain::PostInitializeComponents()
+{
+    Super::PostInitializeComponents();
+
+    if (MyWidgetClass)
+    {
+        MyWidget = CreateWidget<UUW_smMain>(GetWorld(), MyWidgetClass);
+        if (MyWidget)
+        {
+            MyWidget->AddToViewport();
+        }
+    }
+}
+
 void AHUD_smMain::BeginPlay()
 {
     Super::BeginPlay();
@@ -35,11 +60,12 @@ void AHUD_smMain::BeginPlay()
         {
             PlayerController->bShowMouseCursor = true;
 
-            MyWidget = CreateWidget<UUW_smMain>(PlayerController, MyWidgetClass);
-            if (MyWidget)
-            {
-                MyWidget->AddToViewport();
-            }
+            //MyWidget = CreateWidget<UUW_smMain>(PlayerController, MyWidgetClass);
+            //if (MyWidget)
+            //{
+            //    MyWidget->AddToViewport();
+            //    //MyWidget->OnButtonStateChanged.AddDynamic(this, &AHUD_smMain::HandleButtonClicked);
+            //}
         }
     }
 
@@ -54,4 +80,14 @@ void AHUD_smMain::BeginPlay()
             }
         }
     }
+}
+
+UUW_smMain* AHUD_smMain::getHudWidget()
+{
+    return MyWidget;
+}
+
+void AHUD_smMain::HandleButtonClicked()
+{
+
 }
