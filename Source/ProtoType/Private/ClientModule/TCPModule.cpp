@@ -6,7 +6,7 @@
 #include<iostream>
 #include<Winsock2.h>
 #include<vector>
-
+#include<map>
 #include <thread>
 #include <chrono>
 
@@ -89,6 +89,23 @@ TArray<SearchStruct> TCPModule::SearchBuildingData(const FString& SearchText, in
 		SendingTextArray.Add(TempStruct);
 	}
 	return SendingTextArray;
+}
+
+std::vector<float> TCPModule::GetDecalDistance(float* Elemental, int ServerPort)
+{
+	SendingSelector(7, 8, Elemental, ServerPort);
+	std::vector<float> Data;
+
+	int DataSize;
+	recv(Servers[ServerPort], (char*)&DataSize, sizeof(DataSize), 0);
+	for (int32 i = 0; i < DataSize; ++i)
+	{
+		float TempPersent;
+		recv(Servers[ServerPort], (char*)&TempPersent, sizeof(TempPersent), 0);
+		Data.push_back(TempPersent);
+	}
+	IsInUse = false;
+	return Data;
 }
 
 std::vector<SaleData> TCPModule::GetPRESaleData(float *Elemental, int ServerPort)

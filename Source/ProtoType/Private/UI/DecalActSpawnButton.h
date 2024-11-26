@@ -25,6 +25,12 @@ protected:
     UPROPERTY(meta = (BindWidget))
     class UButton* Button2;
 
+    bool IsOn;
+
+
+    void UIUnVisible();
+    void UIVisible();
+
     UFUNCTION()
     void OnButtonClicked();
 
