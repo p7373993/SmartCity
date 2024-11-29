@@ -8,6 +8,7 @@
 #include "UW_smMain.h"
 #include "HUD_smMain.h"
 #include "ProtoType/Private/UI/DecalActSpawnButton.h"
+#include "Manager/DecalManager.h"
 const double R_Local = 6371000;
 const double DEG_TO_RAD_Local = PI / 180.0;
 // Sets default values
@@ -155,6 +156,10 @@ void AUIActor::SetUIActive(bool bActive)
 			if (DecalWidget)
 			{
 				DecalWidget->UIUnVisible();
+
+				UWorld* World = GetWorld();
+				ADecalManager* DecalManager = ADecalManager::GetInstance(World);
+				DecalManager->ClearInfluences();//퍼센트에 따른 영향 지우기 machinelearning data delete
 			}
 		}
 	}
