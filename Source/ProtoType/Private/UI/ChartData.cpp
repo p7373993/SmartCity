@@ -60,7 +60,7 @@ void UChartData::PredictData()//               ,        Ⱓ
 	//}
 
 	TCPModule& MyTCPModule = TCPModule::GetInstance();
-	float A[20] = { 107678 ,10,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0 }; 
+	float A[20] = { 107678 ,20,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0 }; 
 	std::vector<PriceData> Temp = MyTCPModule.GetPRESaleDataAccordingToDate(A, 2);
 	//std::vector<PriceData> Temp = MyTCPModule.GetSaleDataAccordingToDate(A, 2);
 

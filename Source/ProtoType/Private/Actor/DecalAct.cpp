@@ -6,6 +6,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/MaterialInterface.h"
 #include "Components/StaticMeshComponent.h"
+#include "Manager/DecalManager.h"
 
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
@@ -17,6 +18,8 @@
 #include "ProtoType/Global/Structs.h"
 
 #include <cmath>
+
+
 // Sets default values
 ADecalAct::ADecalAct()
 {
@@ -32,13 +35,19 @@ ADecalAct::ADecalAct()
 
 
     SelectedLandMark = ELandMarkType::Hotel;
+    
+
+
 }
 
 void ADecalAct::DetectBuildings()
 {
-    TSet<AActor*> UniqueOverlappingActors; // 중복 방지를 위한 Set
+
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1)); // 대상 오브젝트 타입
+
+    UWorld* World = GetWorld();
+    ADecalManager* DecalManager  = ADecalManager::GetInstance(World);
 
     FVector LandmarkLocation = GetActorLocation();
     TArray<AActor*> OverlappingActors;
@@ -69,7 +78,11 @@ void ADecalAct::DetectBuildings()
             {
                 UniqueOverlappingActors.Add(Actor);
 
-                AdjustBuildingColor(Actor, PredictedPercent);//color
+                if (DecalManager) 
+                {
+                    DecalManager->RegisterBuildingInfluence(this, Actor, PredictedPercent);
+                }
+                //AdjustBuildingColor(Actor, PredictedPercent);//color
 
                 //AdjustBuildingHeight(Actor, PredictedPercent);//height
             }
@@ -78,8 +91,8 @@ void ADecalAct::DetectBuildings()
         }
 
 
-
-
+        
+        DecalManager->ApplyInfluences();
     }
 
  
@@ -139,6 +152,37 @@ void ADecalAct::DetectBuildings()
     //}
 }
 
+void ADecalAct::ClearVisual()
+{
+    UniqueOverlappingActors;
+    FLinearColor WhiteColor = FLinearColor::White;
+    for (AActor* actor : UniqueOverlappingActors)
+    {
+        
+        UStaticMeshComponent* Mesh = actor->FindComponentByClass<UStaticMeshComponent>();
+        if (Mesh)
+        {
+            // 동적 머티리얼 인스턴스 생성
+            if (InstMaterial)
+            {
+                UMaterialInstanceDynamic* DynamicMaterialInstance = UMaterialInstanceDynamic::Create(InstMaterial, this);
+                if (DynamicMaterialInstance)
+                {
+                    // 머티리얼의 Color 파라미터 설정
+                    DynamicMaterialInstance->SetVectorParameterValue(FName("Color"), WhiteColor);
+
+                    // 스태틱 메쉬 컴포넌트에 머티리얼 적용
+                    Mesh->SetMaterial(0, DynamicMaterialInstance);
+                }
+            }
+        }
+    }
+}
+
+void ADecalAct::SetType(const ELandMarkType type)
+{
+    SelectedLandMark = type;
+}
 
 void ADecalAct::AdjustBuildingHeight(AActor* BuildingActor, float PredictedPercent)
 {
@@ -249,6 +293,7 @@ void ADecalAct::BeginPlay()
         UE_LOG(LogTemp, Log, TEXT("Data loaded for selected landmark."));
     }
     DetectBuildings();
+   
 }
 
 TMap<ELandMarkType, TMap<float, float>> ADecalAct::LoadMachineLearningData(const FString& FilePath)

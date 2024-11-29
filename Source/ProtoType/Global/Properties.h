@@ -5,7 +5,7 @@
 #define PORT2 4961
 #define PORT3 4962
 
-#define ServerIP "10.242.1.122"
+#define ServerIP "172.30.1.11"
 //#define ServerIP "203.249.91.170"
 //#define ServerIP "203.249.91.175"//학교
 
