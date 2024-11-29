@@ -173,53 +173,65 @@ void AUIActor::SetUIActive(bool bActive)
 				ADecalManager* DecalManager = ADecalManager::GetInstance(World);
 				DecalManager->ClearInfluences();//퍼센트에 따른 영향 지우기 machinelearning data delete
 
-				//FVector BoxExtent = FVector(100000000000000.0f, 100000000000000.0f, 500000000000000.0f);
-				//TArray<FOverlapResult> OverlapResults
-				//FCollisionQueryParams QueryParams(FName(TEXT("ECC_GameTraceChannel1_Overlap")), true);
-				//QueryParams.bTraceComplex = true;
-				//QueryParams.bReturnPhysicalMaterial = false;
-				//FCollisionObjectQueryParams ObjectQueryParams(ECC_GameTraceChannel1);
-				//FVector A = FVector(0.0f, 0.0f, 0.0f);
-				//bool bOverlap = GetWorld()->OverlapMultiByObjectType(
-				//	OverlapResults,
-				//	A,
-				//	FQuat::Identity,
-				//	ObjectQueryParams,
-				//	FCollisionShape::MakeBox(BoxExtent),
-				//	QueryParams
-				//);
-				//if (bOverlap)
-				//{
-				//	for (const FOverlapResult& Result : OverlapResults)
-				//	{
-				//		AActor* OverlappedActor = Result.GetActor();
-				//		if (OverlappedActor)
-				//		{
-				//			TArray<UActorComponent*> Components = OverlappedActor->GetComponentsByClass(UMeshComponent::StaticClass());
-				//			for (UActorComponent* Component : Components)
-				//			{
-				//				UMeshComponent* MeshComponent = Cast<UMeshComponent>(Component);
-				//				if (MeshComponent)
-				//				{
-				//					int32 MaterialCount = MeshComponent->GetNumMaterials();
-				//					for (int32 Index = 0; Index < MaterialCount; ++Index)
-				//					{
-				//						UMaterialInterface* Material = MeshComponent->GetMaterial(Index);
-				//						if (Material)
-				//						{
-				//							UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(Material, OverlappedActor);
-				//							if (DynamicMaterial)
-				//							{
-				//								DynamicMaterial->SetVectorParameterValue(FName("BaseColor"), FLinearColor::White);
-				//								MeshComponent->SetMaterial(Index, DynamicMaterial);
-				//							}
-				//						}
-				//					}
-				//				}
-				//			}
-				//		}
-				//	}
-				//}
+				FVector BoxExtent = FVector(100000000000000.0f, 100000000000000.0f, 500000000000000.0f);
+				TArray<FOverlapResult> OverlapResults;
+				FCollisionQueryParams QueryParams(FName(TEXT("ECC_GameTraceChannel1_Overlap")), true);
+				QueryParams.bTraceComplex = true;
+				QueryParams.bReturnPhysicalMaterial = false;
+				FCollisionObjectQueryParams ObjectQueryParams(ECC_GameTraceChannel1);
+				FVector A = FVector(0.0f, 0.0f, 0.0f);
+				bool bOverlap = GetWorld()->OverlapMultiByObjectType(
+					OverlapResults,
+					A,
+					FQuat::Identity,
+					ObjectQueryParams,
+					FCollisionShape::MakeBox(BoxExtent),
+					QueryParams
+				);
+				if (bOverlap)
+				{
+					for (const FOverlapResult& Result : OverlapResults)
+					{
+						AActor* OverlappedActor = Result.GetActor();
+						if (OverlappedActor)
+						{
+							TArray<UActorComponent*> Components = OverlappedActor->GetComponentsByClass(UMeshComponent::StaticClass());
+							for (UActorComponent* Component : Components)
+							{
+								UMeshComponent* MeshComponent = Cast<UMeshComponent>(Component);
+								if (MeshComponent)
+								{
+									int32 MaterialCount = MeshComponent->GetNumMaterials();
+									for (int32 Index = 0; Index < MaterialCount; ++Index)
+									{
+										UMaterialInterface* Material = MeshComponent->GetMaterial(Index);
+										if (Material)
+										{
+											UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(Material, OverlappedActor);
+											if (DynamicMaterial)
+											{
+												UMaterialInterface* NewMaterial = LoadObject<UMaterialInterface>(
+													nullptr,
+													TEXT("/Game/ProtoTypeIndividualAssets/Building/Fbx_Default_Material.Fbx_Default_Material")
+												);
+
+												if (NewMaterial && MeshComponent)
+												{
+													// Set the new material on the specified index
+													MeshComponent->SetMaterial(Index, NewMaterial);
+												}
+												else
+												{
+													UE_LOG(LogTemp, Warning, TEXT("Failed to load material or MeshComponent is null"));
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}

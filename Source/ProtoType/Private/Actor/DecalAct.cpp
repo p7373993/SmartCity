@@ -48,7 +48,7 @@ void ADecalAct::DetectBuildings()
 
     UWorld* World = GetWorld();
     ADecalManager* DecalManager  = ADecalManager::GetInstance(World);
-
+    UniqueOverlappingActors.Empty();
     FVector LandmarkLocation = GetActorLocation();
     TArray<AActor*> OverlappingActors;
     TMap<float, float> CurrentData = GetLandmarkData();
@@ -87,14 +87,12 @@ void ADecalAct::DetectBuildings()
                 //AdjustBuildingHeight(Actor, PredictedPercent);//height
             }
 
-
         }
 
 
         
         DecalManager->ApplyInfluences();
     }
-
  
 
     //FVector LandmarkLocation = GetActorLocation(); // 랜드마크 위치
