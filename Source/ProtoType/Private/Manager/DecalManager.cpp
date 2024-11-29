@@ -6,7 +6,8 @@
 #include "Materials/MaterialInterface.h"
 #include "Components/StaticMeshComponent.h"
 #include "EngineUtils.h"
-
+#include "Actor/DecalAct.h"
+#include "Kismet/GameplayStatics.h"
 
 ADecalManager* ADecalManager::Instance = nullptr;
 
@@ -107,6 +108,14 @@ void ADecalManager::ClearInfluences()
     }
 
     BuildingInfluenceMap.Empty();
+
+    //TArray<AActor*> DecalActs;
+    //UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADecalAct::StaticClass(), DecalActs);
+
+    //for (AActor* DecalActor : DecalActs)
+    //{
+    //    DecalActor->Destroy();
+    //}
 }
 
 FLinearColor ADecalManager::GetBuildingColor(float Percentage)
@@ -161,6 +170,7 @@ ADecalManager* ADecalManager::GetInstance(UWorld* World)
 {
     if (!Instance)
     {
+ 
         // 월드에서 매니저 검색
         for (TActorIterator<ADecalManager> It(World); It; ++It)
         {

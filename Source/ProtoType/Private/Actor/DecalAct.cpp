@@ -45,6 +45,7 @@ void ADecalAct::DetectBuildings()
 
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1)); // 대상 오브젝트 타입
+
     UWorld* World = GetWorld();
     ADecalManager* DecalManager  = ADecalManager::GetInstance(World);
 
