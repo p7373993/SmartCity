@@ -14,7 +14,8 @@ class PROTOTYPE_API UChartData : public UUserWidget
 {
 	GENERATED_BODY()
 	
-	
+public:
+	static void SetIndexVar(int Value) { Index = Value; }
 
 
 protected:
@@ -32,6 +33,8 @@ protected:
 	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true"))
 	float GetMaxValue();
 
+	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true"))
+	void RandomIndex();
 
 	UPROPERTY(BlueprintReadOnly, Category = "Data", meta = (AllowPrivateAccess = "true"))
 	TArray<FVector2D> DataSet;
@@ -47,9 +50,13 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Data", meta = (AllowPrivateAccess = "true"))
 	float Num;
 
+
+
 private:
 
 	float MaxPrice;
 	float MinPrice;
 
+	static int Index;
+	static int CallCount;
 };

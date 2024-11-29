@@ -9,6 +9,8 @@
 //#include <algorithm> // std::min_element, std::max_element
 //#include <vector>
 
+int UChartData::Index = 107678;
+int UChartData::CallCount = 0;
 void UChartData::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -19,7 +21,7 @@ void UChartData::NativeConstruct()
 void UChartData::SetData()
 {
 	TCPModule& MyTCPModule = TCPModule::GetInstance();
-	float A[20] = { 107678 ,10,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0 };
+	float A[20] = { Index ,10,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0 };
 	//std::vector<PriceData> Temp = MyTCPModule.GetSaleDataAccordingToDate(A, 2);
 	std::vector<PriceData> Temp = MyTCPModule.GetSaleDataAccordingToDate(A, 2);
 
@@ -60,7 +62,7 @@ void UChartData::PredictData()//               ,        Ⱓ
 	//}
 
 	TCPModule& MyTCPModule = TCPModule::GetInstance();
-	float A[20] = { 107678 ,20,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0 }; 
+	float A[20] = { Index ,20,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0,0 ,0,0,0,0 };
 	std::vector<PriceData> Temp = MyTCPModule.GetPRESaleDataAccordingToDate(A, 2);
 	//std::vector<PriceData> Temp = MyTCPModule.GetSaleDataAccordingToDate(A, 2);
 
@@ -81,6 +83,36 @@ float UChartData::GetMinValue()
 float UChartData::GetMaxValue()
 {
 	return MaxPrice;
+}
+
+void UChartData::RandomIndex()
+{
+	const int TotalSwitches = 4;
+
+	// 현재 호출에 해당하는 스위치 인덱스
+	int CurrentSwitchIndex = CallCount % TotalSwitches;
+
+	// 호출 횟수 증가
+	CallCount++;
+
+	// 스위치 분기 처리
+	switch (CurrentSwitchIndex)
+	{
+	case 0:
+		Index = 114524;
+		break;
+	case 1:
+		Index = 106688;
+		break;
+	case 2:
+		Index = 106205;
+		break;
+	case 3:
+		Index = 106187;
+		break;
+	default:
+		break;
+	}
 }
 
 
