@@ -1,7 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Actor/UIActor.h"
+#include "GameFramework/Actor.h"
+#include "Engine/World.h"
+#include "Components/PrimitiveComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Kismet/KismetSystemLibrary.h"
+
+
+#include "Actor/DecalAct.h"
 #include "Components/WidgetComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -143,6 +150,11 @@ void AUIActor::SetUIActive(bool bActive)
 			if (DecalWidget)
 			{
 				DecalWidget->UIVisible();
+				DecalActSpawnManager& Temp = DecalActSpawnManager::GetInstance();
+				if (Temp.FindActor(index) != nullptr)
+				{
+					Temp.FindActor(index)->DetectBuildings();
+				}
 			}
 		}
 	}
@@ -155,6 +167,57 @@ void AUIActor::SetUIActive(bool bActive)
 			if (DecalWidget)
 			{
 				DecalWidget->UIUnVisible();
+				FVector BoxExtent = FVector(100000000000000.0f, 100000000000000.0f, 500000000000000.0f);
+				TArray<FOverlapResult> OverlapResults;
+
+				FCollisionQueryParams QueryParams(FName(TEXT("ECC_GameTraceChannel1_Overlap")), true);
+				QueryParams.bTraceComplex = true;
+				QueryParams.bReturnPhysicalMaterial = false;
+
+				FCollisionObjectQueryParams ObjectQueryParams(ECC_GameTraceChannel1);
+				FVector A = FVector(0.0f, 0.0f, 0.0f);
+				bool bOverlap = GetWorld()->OverlapMultiByObjectType(
+					OverlapResults,
+					A,
+					FQuat::Identity,
+					ObjectQueryParams,
+					FCollisionShape::MakeBox(BoxExtent),
+					QueryParams
+				);
+
+				if (bOverlap)
+				{
+					for (const FOverlapResult& Result : OverlapResults)
+					{
+						AActor* OverlappedActor = Result.GetActor();
+						if (OverlappedActor)
+						{
+							TArray<UActorComponent*> Components = OverlappedActor->GetComponentsByClass(UMeshComponent::StaticClass());
+							for (UActorComponent* Component : Components)
+							{
+								UMeshComponent* MeshComponent = Cast<UMeshComponent>(Component);
+								if (MeshComponent)
+								{
+									int32 MaterialCount = MeshComponent->GetNumMaterials();
+									for (int32 Index = 0; Index < MaterialCount; ++Index)
+									{
+										UMaterialInterface* Material = MeshComponent->GetMaterial(Index);
+										if (Material)
+										{
+											UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(Material, OverlappedActor);
+											if (DynamicMaterial)
+											{
+												DynamicMaterial->SetVectorParameterValue(FName("BaseColor"), FLinearColor::White);
+												MeshComponent->SetMaterial(Index, DynamicMaterial);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
 			}
 		}
 	}

@@ -12,6 +12,10 @@
 #include "Json.h"
 #include "JsonUtilities.h"
 
+#include "ProtoType/Private/ClientModule/TCPModule.h"
+
+#include "ProtoType/Global/Structs.h"
+
 #include <cmath>
 // Sets default values
 ADecalAct::ADecalAct()
@@ -135,6 +139,7 @@ void ADecalAct::DetectBuildings()
     //}
 }
 
+
 void ADecalAct::AdjustBuildingHeight(AActor* BuildingActor, float PredictedPercent)
 {
 
@@ -203,9 +208,42 @@ FLinearColor ADecalAct::GetBuildingColor(float Percentage)
 void ADecalAct::BeginPlay()
 {
 	Super::BeginPlay();
-
+    /*
+    SSelectorType selector;
+    ELandMarkType Temp;
+    switch(Index)
+    {
+    case 1:
+        selector.Elemental[0] = 1;
+        Temp = ELandMarkType::Bridge;
+    case 2:
+        selector.Elemental[0] = 2;
+        Temp = ELandMarkType::Stadium;
+    case 3:
+        selector.Elemental[0] = 3;
+        Temp = ELandMarkType::CityMuseum;
+    case 4:
+        selector.Elemental[0] = 4;
+        Temp = ELandMarkType::NationalMuseum;
+    case 5:
+        selector.Elemental[0] = 5;
+        Temp = ELandMarkType::Hotel;
+    default:
+        break;
+    }
+    TCPModule& MyTCPModule = TCPModule::GetInstance();
+    selector.Elemental[1] = 10000;
+    selector.Elemental[2] = 1000;
+    std::vector<float>Data = MyTCPModule.GetDecalDistance(selector.Elemental,2);
+    float Temp3 = 0;
+    TMap<float, float> Temp4;
+    for(auto Temp2 : Data)
+    {
+        Temp3 = Temp3 + selector.Elemental[2];
+        Temp4.Add(Temp3, Temp2);
+    }
+    MachineLearningData.Add(Temp, Temp4);*/
     MachineLearningData = LoadMachineLearningData(JsonPath);
-
     if (MachineLearningData.Contains(SelectedLandMark))
     {
         UE_LOG(LogTemp, Log, TEXT("Data loaded for selected landmark."));
