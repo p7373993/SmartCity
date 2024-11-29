@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "InfomBox.h"
 #include "ProtoType/private/ClientModule/TCPModule.h"
+#include "UI/ChartData.h"
 #include <String>
 // Sets default values for this component's properties
 USMCharacterMoveComponent::USMCharacterMoveComponent()
@@ -206,7 +207,7 @@ void USMCharacterMoveComponent::GetActorTag()
 		);
 		if (bHit)
 		{
-			DrawDebugLine(GetWorld(), WorldLocation, HitResult.Location, FColor::Green, false, 5.f, 0, 1.f);
+			DrawDebugLine(GetWorld(), WorldLocation, HitResult.Location, FColor::Green, false, -1.f, 0, 1.f);
 			FString DebugMessage = FString::Printf(TEXT("Hit: %s"), *HitResult.GetActor()->GetName());
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, DebugMessage);
 		}
@@ -248,6 +249,8 @@ void USMCharacterMoveComponent::GetActorTag()
 						{
 							std::string Temp = std::string(TCHAR_TO_UTF8(*Tag.ToString()));
 							int TagIntValue = std::stoi(Temp);
+							//UChartData::SetIndexVar(TagIntValue);
+							UE_LOG(LogTemp, Display, TEXT("TagintValu = %d"), TagIntValue);
 							number = std::stoi(Temp);
 							float TempEL[20] = { Type, TagIntValue, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 							TCPModule& TCPModuleA = TCPModule::GetInstance();

@@ -55,6 +55,11 @@ void ADecalAct::DetectBuildings()
     for (const auto& Pair : CurrentData)
     {
         float Radius = Pair.Key;
+        if (Radius > 5.0f)
+        {
+            DecalManager->ApplyInfluences();
+            break;
+        }
         float PredictedPercent = Pair.Value;
 
         UKismetSystemLibrary::SphereOverlapActors(
@@ -91,9 +96,9 @@ void ADecalAct::DetectBuildings()
 
 
         
-
+        DecalManager->ApplyInfluences();
     }
-    DecalManager->ApplyInfluences();
+ 
 
     //FVector LandmarkLocation = GetActorLocation(); // 랜드마크 위치
     //float Radius = 200000.0f; // 반경 설정 (5000)
