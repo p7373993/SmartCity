@@ -93,7 +93,7 @@ TArray<SearchStruct> TCPModule::SearchBuildingData(const FString& SearchText, in
 
 std::vector<float> TCPModule::GetDecalDistance(float* Elemental, int ServerPort)
 {
-	SendingSelector(7, 8, Elemental, ServerPort);
+	SendingSelector(8, 8, Elemental, ServerPort);
 	std::vector<float> Data;
 
 	int DataSize;

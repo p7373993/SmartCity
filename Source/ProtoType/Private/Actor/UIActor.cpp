@@ -1,7 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Actor/UIActor.h"
+#include "GameFramework/Actor.h"
+#include "Engine/World.h"
+#include "Components/PrimitiveComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Kismet/KismetSystemLibrary.h"
+
+
+#include "Actor/DecalAct.h"
 #include "Components/WidgetComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -144,6 +151,11 @@ void AUIActor::SetUIActive(bool bActive)
 			if (DecalWidget)
 			{
 				DecalWidget->UIVisible();
+				DecalActSpawnManager& Temp = DecalActSpawnManager::GetInstance();
+				if (Temp.FindActor(index) != nullptr)
+				{
+					Temp.FindActor(index)->DetectBuildings();
+				}
 			}
 		}
 	}
